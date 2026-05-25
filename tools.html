@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Tools for DevOps & Developers — SelectAI</title>
+  <meta name="description" content="The definitive guide to AI-powered tools across automation, CI/CD, YAML, architecture diagrams, infrastructure, and every stage of the developer lifecycle." />
+  <meta name="author" content="SelectAI Innovations" />
+  <meta property="og:title" content="AI Tools for DevOps & Developers — SelectAI" />
+  <meta property="og:description" content="50+ AI tools for DevOps, CI/CD, YAML, IaC, Monitoring, Security, Code AI, Containers and Testing." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="1_logo_png/2_black_logo_png/5_selectAi%20logo%20mark%20black.png" />
+  <link rel="icon" type="image/png" href="1_logo_png/2_black_logo_png/5_selectAi%20logo%20mark%20black.png" />
+  <link rel="stylesheet" href="css/style.css?v=20260525c" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ──────────────────────────────────────────────────
+       AI Tools page — scoped styles (tools.html only)
+    ────────────────────────────────────────────────── */
+    :root {
+      --t-bg:          #0a0e1a;
+      --t-surface:     #111827;
+      --t-surface2:    #1a2236;
+      --t-border:      #1e2d45;
+      --t-accent:      #3b82f6;
+      --t-accent3:     #22d3ee;
+      --t-green:       #10b981;
+      --t-orange:      #f59e0b;
+      --t-pink:        #ec4899;
+      --t-purple:      #8b5cf6;
+      --t-text:        #f1f5f9;
+      --t-text-muted:  #94a3b8;
+      --t-text-dim:    #64748b;
+    }
+
+    /* page base */
+    .tools-page {
+      background: var(--t-bg);
+      color: var(--t-text);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+    }
+
+    /* animated bg behind everything */
+    .tools-page::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(59,130,246,.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(99,102,241,.1) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── TOOLS HERO ── */
+    .tools-hero {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 80px 20px 70px;
+    }
+
+    .tools-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(59,130,246,.12);
+      border: 1px solid rgba(59,130,246,.3);
+      border-radius: 999px;
+      padding: 6px 18px;
+      font-size: 13px;
+      color: var(--t-accent3);
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      font-family: 'Orbitron', monospace;
+    }
+
+    .tools-hero h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.9rem, 5vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -.01em;
+      max-width: 820px;
+      margin: 0 auto 22px;
+      color: #fff;
+    }
+
+    .tools-hero h1 .grad {
+      background: linear-gradient(135deg, var(--cyan, #00e5ff), var(--t-accent3), var(--t-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .tools-hero-sub {
+      font-size: 1.08rem;
+      color: var(--t-text-muted);
+      max-width: 620px;
+      margin: 0 auto 44px;
+      line-height: 1.75;
+    }
+
+    .tools-stats {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 36px;
+    }
+
+    .t-stat-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--t-accent), var(--t-accent3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .t-stat-label { font-size: .82rem; color: var(--t-text-dim); margin-top: 4px; }
+
+    /* ── CATEGORY PILL NAV ── */
+    .tools-nav-wrap {
+      position: sticky;
+      top: var(--nav-height);
+      z-index: 900;
+      background: rgba(10,14,26,.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--t-border);
+      padding: 12px 20px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .tools-nav-wrap::-webkit-scrollbar { display: none; }
+
+    .tools-nav-pills {
+      display: flex;
+      gap: 8px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: max-content;
+    }
+
+    .t-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: 'Orbitron', monospace;
+      cursor: pointer;
+      border: 1px solid var(--t-border);
+      background: var(--t-surface);
+      color: var(--t-text-muted);
+      transition: all .2s;
+      white-space: nowrap;
+      text-decoration: none;
+      letter-spacing: .04em;
+    }
+
+    .t-pill:hover, .t-pill.active {
+      background: linear-gradient(135deg, #9b00ff, #00e5ff);
+      border-color: #00e5ff;
+      color: #fff;
+      box-shadow: 0 0 18px rgba(0,229,255,.3);
+    }
+
+    /* ── TOOL SECTIONS ── */
+    .tools-section {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 72px 20px 0;
+    }
+
+    .tools-section-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 36px;
+    }
+
+    .tools-section-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+
+    .tools-section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #fff;
+    }
+
+    .tools-section-desc { color: var(--t-text-muted); font-size: .93rem; line-height: 1.65; max-width: 640px; }
+
+    /* ── TOOL CARDS ── */
+    .t-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 18px;
+    }
+
+    .t-card {
+      background: var(--t-surface);
+      border: 1px solid var(--t-border);
+      border-radius: 16px;
+      padding: 24px;
+      transition: transform .2s, box-shadow .2s, border-color .2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .t-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity .3s;
+      border-radius: inherit;
+    }
+
+    .t-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.45); }
+    .t-card:hover::before { opacity: 1; }
+
+    .t-card-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .t-tool-logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-family: 'Orbitron', monospace;
+      font-weight: 700;
+      flex-shrink: 0;
+      letter-spacing: .03em;
+    }
+
+    .t-tool-name { font-size: 1rem; font-weight: 700; color: #fff; font-family: 'Orbitron', monospace; letter-spacing: .02em; }
+    .t-tool-by   { font-size: .75rem; color: var(--t-text-dim); margin-top: 3px; }
+
+    .t-badge-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+
+    .t-badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: .03em;
+    }
+
+    .t-badge-free     { background: rgba(16,185,129,.15); color: var(--t-green);   border: 1px solid rgba(16,185,129,.25); }
+    .t-badge-paid     { background: rgba(245,158,11,.1);  color: var(--t-orange);  border: 1px solid rgba(245,158,11,.2); }
+    .t-badge-freemium { background: rgba(99,102,241,.15); color: #a5b4fc;          border: 1px solid rgba(99,102,241,.25); }
+    .t-badge-top      { background: rgba(236,72,153,.12); color: var(--t-pink);    border: 1px solid rgba(236,72,153,.2); }
+
+    .t-tool-desc { font-size: .87rem; color: var(--t-text-muted); line-height: 1.62; margin-bottom: 16px; }
+
+    .t-features { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+
+    .t-features li {
+      font-size: .81rem;
+      color: var(--t-text-dim);
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+    }
+
+    .t-features li::before {
+      content: '✓';
+      color: var(--t-green);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .t-card-footer {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--t-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .t-rating { display: flex; align-items: center; gap: 4px; font-size: .82rem; color: var(--t-orange); font-weight: 600; }
+
+    .t-link-btn {
+      font-size: .78rem;
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--t-border);
+      background: var(--t-surface2);
+      color: var(--t-text-muted);
+      text-decoration: none;
+      transition: all .18s;
+      font-weight: 600;
+      font-family: 'Orbitron', monospace;
+      letter-spacing: .05em;
+    }
+
+    .t-link-btn:hover { background: linear-gradient(135deg, #9b00ff, #00e5ff); border-color: #00e5ff; color: #fff; }
+
+    /* ── COLOUR THEMES ── */
+    .t-theme-blue   .tools-section-icon { background: rgba(59,130,246,.15);  color: var(--t-accent); }
+    .t-theme-blue   .t-card:hover       { border-color: rgba(59,130,246,.45); }
+    .t-theme-blue   .t-card::before     { background: radial-gradient(ellipse at top left, rgba(59,130,246,.06), transparent 70%); }
+    .t-theme-blue   .t-tool-logo        { background: rgba(59,130,246,.12); color: var(--t-accent); }
+
+    .t-theme-purple .tools-section-icon { background: rgba(139,92,246,.15); color: var(--t-purple); }
+    .t-theme-purple .t-card:hover       { border-color: rgba(139,92,246,.45); }
+    .t-theme-purple .t-card::before     { background: radial-gradient(ellipse at top left, rgba(139,92,246,.06), transparent 70%); }
+    .t-theme-purple .t-tool-logo        { background: rgba(139,92,246,.12); color: var(--t-purple); }
+
+    .t-theme-green  .tools-section-icon { background: rgba(16,185,129,.15); color: var(--t-green); }
+    .t-theme-green  .t-card:hover       { border-color: rgba(16,185,129,.45); }
+    .t-theme-green  .t-card::before     { background: radial-gradient(ellipse at top left, rgba(16,185,129,.06), transparent 70%); }
+    .t-theme-green  .t-tool-logo        { background: rgba(16,185,129,.12); color: var(--t-green); }
+
+    .t-theme-orange .tools-section-icon { background: rgba(245,158,11,.15); color: var(--t-orange); }
+    .t-theme-orange .t-card:hover       { border-color: rgba(245,158,11,.45); }
+    .t-theme-orange .t-card::before     { background: radial-gradient(ellipse at top left, rgba(245,158,11,.06), transparent 70%); }
+    .t-theme-orange .t-tool-logo        { background: rgba(245,158,11,.12); color: var(--t-orange); }
+
+    .t-theme-pink   .tools-section-icon { background: rgba(236,72,153,.15); color: var(--t-pink); }
+    .t-theme-pink   .t-card:hover       { border-color: rgba(236,72,153,.45); }
+    .t-theme-pink   .t-card::before     { background: radial-gradient(ellipse at top left, rgba(236,72,153,.06), transparent 70%); }
+    .t-theme-pink   .t-tool-logo        { background: rgba(236,72,153,.12); color: var(--t-pink); }
+
+    .t-theme-cyan   .tools-section-icon { background: rgba(34,211,238,.15); color: var(--t-accent3); }
+    .t-theme-cyan   .t-card:hover       { border-color: rgba(34,211,238,.45); }
+    .t-theme-cyan   .t-card::before     { background: radial-gradient(ellipse at top left, rgba(34,211,238,.06), transparent 70%); }
+    .t-theme-cyan   .t-tool-logo        { background: rgba(34,211,238,.12); color: var(--t-accent3); }
+
+    .t-theme-red    .tools-section-icon { background: rgba(239,68,68,.15); color: #f87171; }
+    .t-theme-red    .t-card:hover       { border-color: rgba(239,68,68,.45); }
+    .t-theme-red    .t-card::before     { background: radial-gradient(ellipse at top left, rgba(239,68,68,.06), transparent 70%); }
+    .t-theme-red    .t-tool-logo        { background: rgba(239,68,68,.12); color: #f87171; }
+
+    /* ── COMPARISON TABLE ── */
+    .t-compare-section {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 72px auto 0;
+      padding: 0 20px;
+    }
+
+    .t-compare-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      text-align: center;
+      color: #fff;
+    }
+
+    .t-table-wrap {
+      overflow-x: auto;
+      border-radius: 14px;
+      border: 1px solid var(--t-border);
+    }
+
+    .t-table-wrap table { width: 100%; border-collapse: collapse; font-size: .87rem; }
+
+    .t-table-wrap th {
+      background: var(--t-surface2);
+      padding: 14px 18px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--t-text-muted);
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      white-space: nowrap;
+      font-family: 'Orbitron', monospace;
+    }
+
+    .t-table-wrap td {
+      padding: 13px 18px;
+      border-top: 1px solid var(--t-border);
+      color: var(--t-text-muted);
+      vertical-align: middle;
+    }
+
+    .t-table-wrap tr:hover td { background: rgba(255,255,255,.025); }
+
+    .t-check { color: var(--t-green); font-size: 1.1rem; }
+    .t-cross { color: #475569; font-size: 1.1rem; }
+
+    .t-tool-cell { display: flex; align-items: center; gap: 10px; }
+    .t-tool-cell-icon { font-size: 20px; }
+    .t-tool-cell-name { color: #fff; font-weight: 600; }
+
+    /* ── TOOLS FOOTER banner ── */
+    .tools-footer-banner {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 64px 20px 32px;
+      border-top: 1px solid var(--t-border);
+      margin-top: 80px;
+      color: var(--t-text-dim);
+      font-size: .85rem;
+    }
+
+    .tools-footer-banner .t-foot-grad {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #00e5ff, #9b00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 14px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .tools-hero { padding: 50px 16px 44px; }
+      .t-cards { grid-template-columns: 1fr; }
+      .tools-stats { gap: 20px; }
+    }
+  </style>
+</head>
+<body class="tools-page">
+
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- ─── NAVIGATION (SelectAI shared) ─── -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo logo-img" aria-label="SelectAI home">
+        <img src="1_logo_png/1_main_logo_png/7_selectAi%20word%20mark%20white.png" alt="SelectAI" height="38" width="auto" />
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html#services">Services</a></li>
+        <li><a href="index.html#partners">Partners</a></li>
+        <li><a href="index.html#team">Team</a></li>
+        <li><a href="index.html#capabilities">Why Us</a></li>
+        <li><a href="index.html#live-metrics">Live KPI</a></li>
+        <li><a href="index.html#feedback">Stories</a></li>
+        <li><a href="tools.html" class="nav-cta" aria-current="page">AI Tools</a></li>
+        <li><a href="index.html#connect">Connect</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── TOOLS HERO ─── -->
+  <section class="tools-hero">
+    <div class="tools-hero-badge"><span>⚡</span> Updated May 2026</div>
+    <h1>Top AI Tools for <span class="grad">DevOps &amp; Developer</span> Workflows</h1>
+    <p class="tools-hero-sub">The definitive guide to AI-powered tools across automation, CI/CD, YAML, architecture diagrams, infrastructure, and every stage of the developer lifecycle.</p>
+    <div class="tools-stats">
+      <div><div class="t-stat-num">50+</div><div class="t-stat-label">AI Tools Covered</div></div>
+      <div><div class="t-stat-num">10</div><div class="t-stat-label">Categories</div></div>
+      <div><div class="t-stat-num">2026</div><div class="t-stat-label">Up-to-date</div></div>
+      <div><div class="t-stat-num">100%</div><div class="t-stat-label">Developer Focused</div></div>
+    </div>
+  </section>
+
+  <!-- ─── CATEGORY PILL NAV ─── -->
+  <nav class="tools-nav-wrap" aria-label="Tool categories">
+    <div class="tools-nav-pills">
+      <a class="t-pill active" href="#automation">⚙️ Automation</a>
+      <a class="t-pill" href="#cicd">🔁 CI/CD</a>
+      <a class="t-pill" href="#yaml">📄 YAML</a>
+      <a class="t-pill" href="#diagrams">🗺️ Architecture</a>
+      <a class="t-pill" href="#iac">🏗️ IaC</a>
+      <a class="t-pill" href="#monitoring">📊 Monitoring</a>
+      <a class="t-pill" href="#security">🔐 Security</a>
+      <a class="t-pill" href="#code">💻 Code AI</a>
+      <a class="t-pill" href="#containers">🐳 Containers</a>
+      <a class="t-pill" href="#testing">🧪 Testing</a>
+    </div>
+  </nav>
+
+  <!-- ═══ 1 · AUTOMATION ═══ -->
+  <section class="tools-section t-theme-blue" id="automation">
+    <div class="tools-section-header">
+      <div class="tools-section-icon">⚙️</div>
+      <div>
+        <div class="tools-section-title">Workflow &amp; Process Automation</div>
+        <div class="tools-section-desc">AI tools that let you automate repetitive developer and ops workflows, triggers, integrations, and task orchestration with minimal code.</div>
+      </div>
+    </div>
+    <div class="t-cards">
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">n8n</div>
+          <div><div class="t-tool-name">n8n AI</div><div class="t-tool-by">n8n GmbH</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span><span class="t-badge t-badge-top">🏆 Top Pick</span></div>
+        <p class="t-tool-desc">Open-source workflow automation with native AI nodes. Build complex DevOps automations visually — trigger on GitHub events, Slack messages, Jira updates and more.</p>
+        <ul class="t-features">
+          <li>400+ integrations including GitHub, GitLab, Jenkins</li>
+          <li>AI Agent nodes with LLM reasoning</li>
+          <li>Self-hostable on your infrastructure</li>
+          <li>Code nodes for custom logic</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.9</div><a class="t-link-btn" href="https://n8n.io" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">ZAP</div>
+          <div><div class="t-tool-name">Zapier AI</div><div class="t-tool-by">Zapier Inc.</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span></div>
+        <p class="t-tool-desc">Industry-leading no-code automation platform now with AI-powered Zap creation. Describe what you want in plain English and get a complete automation built.</p>
+        <ul class="t-features">
+          <li>7,000+ app integrations</li>
+          <li>AI-written automation from natural language</li>
+          <li>Multi-step Zaps with branching logic</li>
+          <li>ChatGPT &amp; Claude integration built-in</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.7</div><a class="t-link-btn" href="https://zapier.com" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">MS</div>
+          <div><div class="t-tool-name">Power Automate</div><div class="t-tool-by">Microsoft</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span></div>
+        <p class="t-tool-desc">Enterprise-grade automation with Copilot AI. Tight Azure DevOps integration, RPA capabilities, and AI Builder for intelligent document processing.</p>
+        <ul class="t-features">
+          <li>Deep Azure DevOps &amp; GitHub integration</li>
+          <li>AI Builder for document/form processing</li>
+          <li>Desktop automation via RPA</li>
+          <li>Copilot-driven flow generation</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.5</div><a class="t-link-btn" href="https://powerautomate.microsoft.com" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">AP</div>
+          <div><div class="t-tool-name">Activepieces</div><div class="t-tool-by">Activepieces</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-free">Open Source</span><span class="t-badge t-badge-top">Rising Star</span></div>
+        <p class="t-tool-desc">Open-source, self-hosted automation platform with AI pieces. Build automated workflows for code review, deployments, notifications and on-call management.</p>
+        <ul class="t-features">
+          <li>200+ pieces including DevOps tools</li>
+          <li>OpenAI / Gemini AI steps native</li>
+          <li>TypeScript-based custom pieces</li>
+          <li>Full self-hosting, no vendor lock-in</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.6</div><a class="t-link-btn" href="https://www.activepieces.com" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">MK</div>
+          <div><div class="t-tool-name">Make (Integromat)</div><div class="t-tool-by">Make</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span></div>
+        <p class="t-tool-desc">Visual integration platform with advanced routing, filters, and AI modules. Ideal for complex multi-branch DevOps event pipelines.</p>
+        <ul class="t-features">
+          <li>1,500+ app connectors</li>
+          <li>Error-handling and retry logic</li>
+          <li>HTTP / Webhooks for any API</li>
+          <li>Real-time execution monitoring</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.5</div><a class="t-link-btn" href="https://www.make.com" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ 2 · CI/CD ═══ -->
+  <section class="tools-section t-theme-purple" id="cicd">
+    <div class="tools-section-header">
+      <div class="tools-section-icon">🔁</div>
+      <div>
+        <div class="tools-section-title">CI/CD Pipeline Intelligence</div>
+        <div class="tools-section-desc">AI-enhanced continuous integration and delivery tools that optimize build times, auto-fix failures, and generate pipeline configurations.</div>
+      </div>
+    </div>
+    <div class="t-cards">
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">GC</div>
+          <div><div class="t-tool-name">GitHub Copilot Actions</div><div class="t-tool-by">GitHub / Microsoft</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-paid">Paid</span><span class="t-badge t-badge-top">🏆 Top Pick</span></div>
+        <p class="t-tool-desc">AI assistance directly in GitHub Actions workflows. Copilot generates, explains, and debugs YAML pipeline files, and summarises failed runs with root-cause analysis.</p>
+        <ul class="t-features">
+          <li>Inline YAML generation from comments</li>
+          <li>Failed-run root-cause summaries</li>
+          <li>Security vulnerability scanning in pipelines</li>
+          <li>Workflow optimization suggestions</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.9</div><a class="t-link-btn" href="https://github.com/features/copilot" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">DG</div>
+          <div><div class="t-tool-name">Digger AI</div><div class="t-tool-by">Digger</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-free">Open Source</span><span class="t-badge t-badge-top">Rising Star</span></div>
+        <p class="t-tool-desc">AI-native CI/CD orchestration for Terraform. Runs Terraform plan/apply inside your existing CI, with PR comments, drift detection, and AI-generated remediation steps.</p>
+        <ul class="t-features">
+          <li>Runs inside GitHub/GitLab CI</li>
+          <li>AI comments on Terraform plan diffs</li>
+          <li>Drift detection &amp; auto-remediation hints</li>
+          <li>Policy-as-code enforcement</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.6</div><a class="t-link-btn" href="https://digger.dev" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">LZ</div>
+          <div><div class="t-tool-name">Launchable</div><div class="t-tool-by">Launchable Inc.</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span></div>
+        <p class="t-tool-desc">ML-powered test selection that predicts which tests are most likely to fail for a given change, slashing CI run times by 80%+ without sacrificing coverage.</p>
+        <ul class="t-features">
+          <li>Predictive test selection via ML</li>
+          <li>Works with Maven, Gradle, pytest, Jest</li>
+          <li>CI time reduction analytics dashboard</li>
+          <li>Flaky test detection</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.5</div><a class="t-link-btn" href="https://www.launchableinc.com" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">WD</div>
+          <div><div class="t-tool-name">Warp Terminal AI</div><div class="t-tool-by">Warp</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span></div>
+        <p class="t-tool-desc">AI terminal + pipeline assistant. Understands build errors, suggests fixes, and can trigger CI runs — all from a conversational interface inside your terminal.</p>
+        <ul class="t-features">
+          <li>AI explains build errors on the fly</li>
+          <li>Natural language shell commands</li>
+          <li>Integrated with GitHub Actions &amp; CircleCI</li>
+          <li>Team-shared runbooks</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.6</div><a class="t-link-btn" href="https://www.warp.dev" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">HN</div>
+          <div><div class="t-tool-name">Harness AI</div><div class="t-tool-by">Harness</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span><span class="t-badge t-badge-top">Enterprise</span></div>
+        <p class="t-tool-desc">Enterprise AI Software Delivery Platform with AIDA — the AI Development Assistant that auto-generates pipelines, diagnoses failures, and optimises rollouts.</p>
+        <ul class="t-features">
+          <li>AIDA: AI pipeline authoring assistant</li>
+          <li>Automated rollback &amp; canary analysis</li>
+          <li>ML-based anomaly detection in deploys</li>
+          <li>Cost governance for cloud deployments</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.8</div><a class="t-link-btn" href="https://www.harness.io" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ 3 · YAML ═══ -->
+  <section class="tools-section t-theme-green" id="yaml">
+    <div class="tools-section-header">
+      <div class="tools-section-icon">📄</div>
+      <div>
+        <div class="tools-section-title">YAML Generation &amp; Validation</div>
+        <div class="tools-section-desc">AI tools that write, lint, validate, and explain YAML configs for Kubernetes, Helm, Docker Compose, Ansible, CI pipelines, and more.</div>
+      </div>
+    </div>
+    <div class="t-cards">
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">K8</div>
+          <div><div class="t-tool-name">k8sGPT</div><div class="t-tool-by">k8sGPT OSS</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-free">Open Source</span><span class="t-badge t-badge-top">🏆 Top Pick</span></div>
+        <p class="t-tool-desc">Scans your Kubernetes cluster, diagnoses issues, and generates or fixes YAML manifests using AI. Explains cryptic k8s errors in plain English.</p>
+        <ul class="t-features">
+          <li>Cluster health analysis with AI explanations</li>
+          <li>YAML manifest generation from descriptions</li>
+          <li>Supports OpenAI, LocalAI, Ollama backends</li>
+          <li>kubectl plugin support</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.9</div><a class="t-link-btn" href="https://k8sgpt.ai" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">DT</div>
+          <div><div class="t-tool-name">Datree AI</div><div class="t-tool-by">Datree</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span></div>
+        <p class="t-tool-desc">AI-powered Kubernetes YAML validation and policy enforcement. Catches misconfigurations before they reach production with 200+ built-in rules and AI fix suggestions.</p>
+        <ul class="t-features">
+          <li>200+ K8s misconfiguration rules</li>
+          <li>AI-generated fix recommendations</li>
+          <li>Helm chart scanning</li>
+          <li>Integrates into CI/CD pipelines</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.5</div><a class="t-link-btn" href="https://www.datree.io" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">GC</div>
+          <div><div class="t-tool-name">GitHub Copilot</div><div class="t-tool-by">GitHub</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-paid">Paid</span></div>
+        <p class="t-tool-desc">Context-aware YAML autocomplete in VS Code and JetBrains IDEs. Generates Kubernetes manifests, Helm values, Ansible playbooks, and GitHub Actions YAML from comments.</p>
+        <ul class="t-features">
+          <li>Inline YAML generation from natural language</li>
+          <li>Understands K8s, Helm, Ansible schemas</li>
+          <li>Multi-file context awareness</li>
+          <li>Workspace-level knowledge</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.8</div><a class="t-link-btn" href="https://github.com/features/copilot" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">AI</div>
+          <div><div class="t-tool-name">Aider</div><div class="t-tool-by">Paul Gauthier</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-free">Open Source</span></div>
+        <p class="t-tool-desc">Terminal-based AI coding assistant excellent at editing YAML, HCL, and config files. Understands multi-file changes, great for large Helm chart refactors.</p>
+        <ul class="t-features">
+          <li>Git-aware — writes clean commits</li>
+          <li>Supports GPT-4o, Claude Sonnet/Opus</li>
+          <li>Works with Terraform &amp; Helm files</li>
+          <li>Pair-programs from the command line</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.7</div><a class="t-link-btn" href="https://aider.chat" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">TF</div>
+          <div><div class="t-tool-name">Terraform AI (AIAC)</div><div class="t-tool-by">Community / OpenTofu</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-free">Open Source</span></div>
+        <p class="t-tool-desc">CLI tool that generates and explains Terraform / OpenTofu HCL from natural-language descriptions. Quickly scaffolds cloud infrastructure configs.</p>
+        <ul class="t-features">
+          <li>HCL generation from plain English</li>
+          <li>Supports AWS, Azure, GCP providers</li>
+          <li>Explains existing Terraform plans</li>
+          <li>Integrates with terraform plan output</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.4</div><a class="t-link-btn" href="https://github.com/gofireflyio/aiac" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ 4 · ARCHITECTURE DIAGRAMS ═══ -->
+  <section class="tools-section t-theme-orange" id="diagrams">
+    <div class="tools-section-header">
+      <div class="tools-section-icon">🗺️</div>
+      <div>
+        <div class="tools-section-title">Architecture Diagram Generation</div>
+        <div class="tools-section-desc">AI tools that turn text descriptions, code, or existing infrastructure into beautiful, accurate architecture and system design diagrams.</div>
+      </div>
+    </div>
+    <div class="t-cards">
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">ER</div>
+          <div><div class="t-tool-name">Eraser AI</div><div class="t-tool-by">Eraser</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span><span class="t-badge t-badge-top">🏆 Top Pick</span></div>
+        <p class="t-tool-desc">AI-native diagramming tool designed for engineering teams. Describe your architecture in natural language or paste your code and get a diagram instantly.</p>
+        <ul class="t-features">
+          <li>Text-to-diagram via AI (cloud arch, ER, flow)</li>
+          <li>Code-to-diagram from actual repos</li>
+          <li>GitHub sync for living diagrams</li>
+          <li>Native C4, AWS, GCP, Azure icon sets</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.9</div><a class="t-link-btn" href="https://www.eraser.io" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">D2</div>
+          <div><div class="t-tool-name">Diagrams.net + AI</div><div class="t-tool-by">JGraph</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-free">Free</span></div>
+        <p class="t-tool-desc">The classic draw.io now has AI shape suggestions and auto-layout. Generate AWS architecture diagrams from Terraform or CloudFormation templates.</p>
+        <ul class="t-features">
+          <li>IaC-to-diagram import (AWS CDK, CF)</li>
+          <li>AI shape search and placement</li>
+          <li>VSCode &amp; Confluence integrations</li>
+          <li>Offline-capable, self-hostable</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.5</div><a class="t-link-btn" href="https://www.diagrams.net" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">LS</div>
+          <div><div class="t-tool-name">Lucidscale AI</div><div class="t-tool-by">Lucid Software</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-paid">Paid</span></div>
+        <p class="t-tool-desc">Auto-generates cloud architecture diagrams by pulling live data from AWS, Azure, and GCP. AI enriches diagrams with cost, risk, and compliance annotations.</p>
+        <ul class="t-features">
+          <li>Live cloud resource discovery (AWS/Azure/GCP)</li>
+          <li>AI cost &amp; risk annotations</li>
+          <li>Automatic updates as infra changes</li>
+          <li>Compliance gap visualizations</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.8</div><a class="t-link-btn" href="https://www.lucidscale.com" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">MM</div>
+          <div><div class="t-tool-name">Mermaid AI</div><div class="t-tool-by">Mermaid.js</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-free">Open Source</span></div>
+        <p class="t-tool-desc">AI-assisted Mermaid diagram generation. Ask ChatGPT or Claude to write Mermaid syntax — renders in GitHub READMEs, Notion, Confluence, and all modern tools.</p>
+        <ul class="t-features">
+          <li>Renders in GitHub Markdown natively</li>
+          <li>AI generation via ChatGPT/Claude prompts</li>
+          <li>Sequence, flowchart, Gantt, ER diagrams</li>
+          <li>VS Code live preview extension</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.6</div><a class="t-link-btn" href="https://mermaid.js.org" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">MG</div>
+          <div><div class="t-tool-name">Mingrammer Diagrams</div><div class="t-tool-by">mingrammer</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-free">Open Source</span></div>
+        <p class="t-tool-desc">Python library for generating cloud architecture diagrams as code. Pair with AI code assistants to generate full AWS/GCP/Azure diagrams from infrastructure descriptions.</p>
+        <ul class="t-features">
+          <li>Python-as-code diagram generation</li>
+          <li>600+ cloud provider icons</li>
+          <li>Composable node &amp; cluster abstractions</li>
+          <li>AI-writable, version-controllable diagrams</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.6</div><a class="t-link-btn" href="https://diagrams.mingrammer.com" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ 5 · IAC ═══ -->
+  <section class="tools-section t-theme-pink" id="iac">
+    <div class="tools-section-header">
+      <div class="tools-section-icon">🏗️</div>
+      <div>
+        <div class="tools-section-title">Infrastructure as Code (IaC)</div>
+        <div class="tools-section-desc">AI tools that generate, validate, and refactor Terraform, Pulumi, CDK, Ansible, and other IaC configurations.</div>
+      </div>
+    </div>
+    <div class="t-cards">
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">AI</div>
+          <div><div class="t-tool-name">AIAC (AI Infrastructure)</div><div class="t-tool-by">Firefly</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-free">Open Source</span><span class="t-badge t-badge-top">🏆 Top Pick</span></div>
+        <p class="t-tool-desc">CLI tool to generate IaC code from natural language. Supports Terraform, CloudFormation, Pulumi, Kubernetes YAML, Dockerfiles, GitHub Actions, and Ansible.</p>
+        <ul class="t-features">
+          <li>10+ IaC format targets</li>
+          <li>Direct terminal workflow</li>
+          <li>GPT-4 powered generation</li>
+          <li>Output to file or clipboard</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.8</div><a class="t-link-btn" href="https://github.com/gofireflyio/aiac" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">PU</div>
+          <div><div class="t-tool-name">Pulumi AI</div><div class="t-tool-by">Pulumi Corp.</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span></div>
+        <p class="t-tool-desc">Conversational AI interface to generate cloud infrastructure in your preferred programming language — TypeScript, Python, Go, .NET, Java.</p>
+        <ul class="t-features">
+          <li>Natural language → real code (not YAML)</li>
+          <li>Supports 150+ cloud providers</li>
+          <li>Pulumi Cloud AI assistant built-in</li>
+          <li>Policy as code with CrossGuard</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.8</div><a class="t-link-btn" href="https://www.pulumi.com/ai" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">TF</div>
+          <div><div class="t-tool-name">HashiCorp AI (Terraform)</div><div class="t-tool-by">HashiCorp</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span></div>
+        <p class="t-tool-desc">Terraform Cloud includes AI-generated module documentation, intelligent plan explanations, and policy suggestions powered by HashiCorp's AI assistant.</p>
+        <ul class="t-features">
+          <li>AI plan summaries in natural language</li>
+          <li>Auto-generated module documentation</li>
+          <li>Sentinel policy AI suggestions</li>
+          <li>Cost estimation with AI recommendations</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.6</div><a class="t-link-btn" href="https://developer.hashicorp.com/terraform" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">AL</div>
+          <div><div class="t-tool-name">Ansible Lightspeed</div><div class="t-tool-by">Red Hat / IBM</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span></div>
+        <p class="t-tool-desc">AI assistant for Ansible automation. Generates playbooks and tasks from natural language descriptions directly inside VS Code with the Ansible extension.</p>
+        <ul class="t-features">
+          <li>Playbook generation from plain English</li>
+          <li>VS Code Ansible extension integration</li>
+          <li>IBM Watson AI Code model (Ansible-tuned)</li>
+          <li>Content suggestion for Ansible Galaxy</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.5</div><a class="t-link-btn" href="https://www.redhat.com/en/engage/project-wisdom" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ 6 · MONITORING ═══ -->
+  <section class="tools-section t-theme-cyan" id="monitoring">
+    <div class="tools-section-header">
+      <div class="tools-section-icon">📊</div>
+      <div>
+        <div class="tools-section-title">Monitoring &amp; Observability AI</div>
+        <div class="tools-section-desc">AI-powered observability tools that surface anomalies, root-cause incidents, and auto-generate runbooks from your metrics, logs, and traces.</div>
+      </div>
+    </div>
+    <div class="t-cards">
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">DY</div>
+          <div><div class="t-tool-name">Dynatrace Davis AI</div><div class="t-tool-by">Dynatrace</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-paid">Paid</span><span class="t-badge t-badge-top">🏆 Top Pick</span></div>
+        <p class="t-tool-desc">Causal AI engine that automatically detects anomalies, pinpoints root causes across distributed traces, and explains incidents in plain language.</p>
+        <ul class="t-features">
+          <li>Automatic root-cause analysis (Davis)</li>
+          <li>Full-stack topology correlation</li>
+          <li>AI-generated problem narratives</li>
+          <li>Predictive capacity management</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.9</div><a class="t-link-btn" href="https://www.dynatrace.com" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">GF</div>
+          <div><div class="t-tool-name">Grafana Sift / AI</div><div class="t-tool-by">Grafana Labs</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span></div>
+        <p class="t-tool-desc">Grafana's AI feature set — including Sift for automated incident investigation and AI-assisted query generation in Explore — cuts MTTR dramatically.</p>
+        <ul class="t-features">
+          <li>Sift: automated incident investigation</li>
+          <li>AI-powered LogQL / PromQL generation</li>
+          <li>Anomaly detection panels</li>
+          <li>Alerting with ML thresholds</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.8</div><a class="t-link-btn" href="https://grafana.com" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">DD</div>
+          <div><div class="t-tool-name">Datadog Bits AI</div><div class="t-tool-by">Datadog</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-paid">Paid</span></div>
+        <p class="t-tool-desc">Datadog's AI assistant for on-call engineers. Ask natural language questions about your stack, get incident summaries, auto-generated runbooks, and AI-suggested fixes.</p>
+        <ul class="t-features">
+          <li>Natural language querying of metrics/logs</li>
+          <li>Automated incident timelines</li>
+          <li>AI-written postmortem drafts</li>
+          <li>Watchdog anomaly detection</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.8</div><a class="t-link-btn" href="https://www.datadoghq.com/product/platform/bits-ai/" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">SP</div>
+          <div><div class="t-tool-name">Splunk AI</div><div class="t-tool-by">Cisco Splunk</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-paid">Paid</span></div>
+        <p class="t-tool-desc">AI-driven log analysis, threat detection, and SPL query generation. Splunk AI Assistant translates plain English into complex SPL searches across massive log datasets.</p>
+        <ul class="t-features">
+          <li>AI SPL query generation</li>
+          <li>Federated log anomaly detection</li>
+          <li>Automated alert triage</li>
+          <li>ITSI AI-powered service health</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.6</div><a class="t-link-btn" href="https://www.splunk.com/en_us/products/splunk-ai.html" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ 7 · SECURITY ═══ -->
+  <section class="tools-section t-theme-red" id="security">
+    <div class="tools-section-header">
+      <div class="tools-section-icon">🔐</div>
+      <div>
+        <div class="tools-section-title">AI Security &amp; DevSecOps</div>
+        <div class="tools-section-desc">AI-powered tools for vulnerability scanning, SAST, secret detection, dependency analysis, and shifting security left in your pipelines.</div>
+      </div>
+    </div>
+    <div class="t-cards">
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">SK</div>
+          <div><div class="t-tool-name">Snyk AI</div><div class="t-tool-by">Snyk</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span><span class="t-badge t-badge-top">🏆 Top Pick</span></div>
+        <p class="t-tool-desc">AI-assisted vulnerability scanning for code, dependencies, containers, and IaC. DeepCode AI generates fix PRs automatically for discovered vulnerabilities.</p>
+        <ul class="t-features">
+          <li>DeepCode AI: auto fix suggestions</li>
+          <li>SCA, SAST, Container, IaC scanning</li>
+          <li>Automatic fix PRs via GitHub/GitLab</li>
+          <li>CI/CD integration (15+ platforms)</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.9</div><a class="t-link-btn" href="https://snyk.io" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">GH</div>
+          <div><div class="t-tool-name">GitHub Advanced Security</div><div class="t-tool-by">GitHub</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-paid">Paid</span></div>
+        <p class="t-tool-desc">Copilot Autofix generates code fixes for CodeQL findings directly in the PR. Secret scanning, dependency review, and AI-generated security advisories baked into GitHub.</p>
+        <ul class="t-features">
+          <li>Copilot Autofix for CodeQL alerts</li>
+          <li>Secret scanning with push protection</li>
+          <li>Dependency review in PRs</li>
+          <li>AI-generated security advisories</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.8</div><a class="t-link-btn" href="https://docs.github.com/en/get-started/learning-about-github/about-github-advanced-security" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">SG</div>
+          <div><div class="t-tool-name">Semgrep Assistant</div><div class="t-tool-by">Semgrep</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span></div>
+        <p class="t-tool-desc">AI-powered SAST that generates Semgrep rules from natural language and triages findings with GPT-4 to eliminate false positives automatically.</p>
+        <ul class="t-features">
+          <li>GPT-4 powered false-positive filtering</li>
+          <li>Natural language → Semgrep rule generation</li>
+          <li>AI remediation guidance per finding</li>
+          <li>50+ language support</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.7</div><a class="t-link-btn" href="https://semgrep.dev" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">PC</div>
+          <div><div class="t-tool-name">Prisma Cloud AI</div><div class="t-tool-by">Palo Alto Networks</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-paid">Paid</span></div>
+        <p class="t-tool-desc">CNAPP with AI-powered attack path analysis, misconfiguration prioritization, and AI Copilot for security operations across cloud workloads.</p>
+        <ul class="t-features">
+          <li>AI attack path visualization</li>
+          <li>Risk-based misconfiguration prioritization</li>
+          <li>CSPM + CWPP + CIEM in one platform</li>
+          <li>AI Copilot for SOC analysts</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.6</div><a class="t-link-btn" href="https://www.paloaltonetworks.com/prisma/cloud" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ 8 · CODE AI ═══ -->
+  <section class="tools-section t-theme-blue" id="code">
+    <div class="tools-section-header">
+      <div class="tools-section-icon">💻</div>
+      <div>
+        <div class="tools-section-title">AI Code Assistants</div>
+        <div class="tools-section-desc">The best AI pair-programming tools for writing, reviewing, refactoring, and understanding code across every language and IDE.</div>
+      </div>
+    </div>
+    <div class="t-cards">
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">CC</div>
+          <div><div class="t-tool-name">Claude Code</div><div class="t-tool-by">Anthropic</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span><span class="t-badge t-badge-top">🏆 Top Pick</span></div>
+        <p class="t-tool-desc">Agentic CLI coding assistant that can autonomously edit files, run tests, manage git, write CI configs, and handle complex multi-step engineering tasks end-to-end.</p>
+        <ul class="t-features">
+          <li>Agentic file editing, git, and shell commands</li>
+          <li>Full codebase context awareness</li>
+          <li>Best-in-class for DevOps &amp; config files</li>
+          <li>Works in terminal, VS Code, JetBrains</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 5.0</div><a class="t-link-btn" href="https://claude.ai/code" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">GC</div>
+          <div><div class="t-tool-name">GitHub Copilot</div><div class="t-tool-by">GitHub / Microsoft</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-paid">Paid</span></div>
+        <p class="t-tool-desc">The original AI pair programmer. Inline completions, chat, code review, and workspace-level understanding. Now powered by GPT-4o and Claude models.</p>
+        <ul class="t-features">
+          <li>Inline completions in all major IDEs</li>
+          <li>Copilot Chat with workspace context</li>
+          <li>Code review summaries in PRs</li>
+          <li>CLI (gh copilot) for terminal use</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.9</div><a class="t-link-btn" href="https://github.com/features/copilot" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">CS</div>
+          <div><div class="t-tool-name">Cursor</div><div class="t-tool-by">Anysphere</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span><span class="t-badge t-badge-top">Rising Star</span></div>
+        <p class="t-tool-desc">VS Code fork with AI deeply integrated — Cmd+K edits, Composer multi-file agentic edits, and full codebase chat. Fastest-growing AI IDE in 2025–26.</p>
+        <ul class="t-features">
+          <li>Composer: AI agent edits across files</li>
+          <li>Codebase-indexed Q&amp;A (large repos)</li>
+          <li>BYO model: GPT-4o, Claude, Gemini</li>
+          <li>.cursorrules for project-level AI context</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.9</div><a class="t-link-btn" href="https://cursor.sh" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">CX</div>
+          <div><div class="t-tool-name">Codeium / Windsurf</div><div class="t-tool-by">Codeium</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span></div>
+        <p class="t-tool-desc">Free AI code assistant with unlimited completions in 70+ languages. Windsurf IDE adds Cascade — an agentic flow for multi-file DevOps tasks.</p>
+        <ul class="t-features">
+          <li>Unlimited completions on free tier</li>
+          <li>Cascade agent in Windsurf IDE</li>
+          <li>Supports all major IDEs including JetBrains</li>
+          <li>Codebase context search</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.7</div><a class="t-link-btn" href="https://codeium.com" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">TB</div>
+          <div><div class="t-tool-name">Tabnine</div><div class="t-tool-by">Tabnine</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span></div>
+        <p class="t-tool-desc">Privacy-first AI code assistant that can run fully on-premise. Strong enterprise story — learns your team's codebase patterns while keeping code off external servers.</p>
+        <ul class="t-features">
+          <li>On-premise / air-gapped deployment</li>
+          <li>Team-trained personalized models</li>
+          <li>SOC 2 &amp; GDPR compliant</li>
+          <li>IDE plugins for all major editors</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.5</div><a class="t-link-btn" href="https://www.tabnine.com" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ 9 · CONTAINERS ═══ -->
+  <section class="tools-section t-theme-purple" id="containers">
+    <div class="tools-section-header">
+      <div class="tools-section-icon">🐳</div>
+      <div>
+        <div class="tools-section-title">Containers &amp; Kubernetes AI</div>
+        <div class="tools-section-desc">AI tools for managing Docker, Kubernetes, and container workloads — from intelligent scheduling to auto-scaling and cluster troubleshooting.</div>
+      </div>
+    </div>
+    <div class="t-cards">
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">K8</div>
+          <div><div class="t-tool-name">k8sGPT</div><div class="t-tool-by">k8sGPT OSS</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-free">Open Source</span><span class="t-badge t-badge-top">🏆 Top Pick</span></div>
+        <p class="t-tool-desc">Diagnoses Kubernetes cluster issues using AI. Analyses pods, services, PVCs, events, and gives plain-language explanations with recommended fixes.</p>
+        <ul class="t-features">
+          <li>kubectl integration as a plugin</li>
+          <li>In-cluster operator mode</li>
+          <li>Prometheus / Trivy integration</li>
+          <li>Supports multiple AI backends</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.9</div><a class="t-link-btn" href="https://k8sgpt.ai" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">OS</div>
+          <div><div class="t-tool-name">OpenShift AI</div><div class="t-tool-by">Red Hat</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-paid">Paid</span></div>
+        <p class="t-tool-desc">Enterprise Kubernetes platform with Lightspeed AI assistant. Natural language management of OpenShift clusters, namespace creation, and troubleshooting from the console.</p>
+        <ul class="t-features">
+          <li>Lightspeed AI chat in the OCP console</li>
+          <li>AI-generated RBAC policies</li>
+          <li>Cluster operator troubleshooting</li>
+          <li>Integrated with Red Hat Insights</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.6</div><a class="t-link-btn" href="https://www.redhat.com/en/technologies/cloud-computing/openshift" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">DK</div>
+          <div><div class="t-tool-name">Docker AI (Gordon)</div><div class="t-tool-by">Docker Inc.</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span></div>
+        <p class="t-tool-desc">Docker Desktop's built-in AI assistant Gordon. Ask questions about your containers, get Dockerfile recommendations, debug container startup failures, and more.</p>
+        <ul class="t-features">
+          <li>Context-aware Dockerfile generation</li>
+          <li>Container error diagnosis in natural language</li>
+          <li>Docker Compose file generation</li>
+          <li>Built into Docker Desktop UI</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.5</div><a class="t-link-btn" href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">KV</div>
+          <div><div class="t-tool-name">Kubeview + AI</div><div class="t-tool-by">Community</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-free">Open Source</span></div>
+        <p class="t-tool-desc">Kubernetes cluster visualisation tool — pair it with AI assistants to get AI-narrated cluster state, topology analysis, and recommended scaling adjustments.</p>
+        <ul class="t-features">
+          <li>Real-time cluster topology visualisation</li>
+          <li>Namespace-level resource view</li>
+          <li>Lightweight, self-hosted</li>
+          <li>Works with any AI LLM via API</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.3</div><a class="t-link-btn" href="https://github.com/benc-uk/kubeview" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ 10 · TESTING ═══ -->
+  <section class="tools-section t-theme-green" id="testing">
+    <div class="tools-section-header">
+      <div class="tools-section-icon">🧪</div>
+      <div>
+        <div class="tools-section-title">AI Testing &amp; Quality Assurance</div>
+        <div class="tools-section-desc">AI tools that generate tests, detect flaky tests, analyse coverage gaps, and autonomously run quality checks in your CI pipelines.</div>
+      </div>
+    </div>
+    <div class="t-cards">
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">CG</div>
+          <div><div class="t-tool-name">CodiumAI (Qodo)</div><div class="t-tool-by">Qodo (formerly Codium)</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span><span class="t-badge t-badge-top">🏆 Top Pick</span></div>
+        <p class="t-tool-desc">AI test generation that understands your code's intent, not just its structure. Generates meaningful unit tests, edge cases, and integration tests with one click.</p>
+        <ul class="t-features">
+          <li>Tests generated from code intent analysis</li>
+          <li>Edge-case and boundary test coverage</li>
+          <li>VS Code &amp; JetBrains plugins</li>
+          <li>PR-level test impact analysis</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★★ 4.9</div><a class="t-link-btn" href="https://www.qodo.ai" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">DB</div>
+          <div><div class="t-tool-name">Diffblue Cover</div><div class="t-tool-by">Diffblue</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-paid">Paid</span></div>
+        <p class="t-tool-desc">Autonomous Java unit test writing at scale. Analyses bytecode with AI to generate and maintain a full unit test suite — no human intervention required.</p>
+        <ul class="t-features">
+          <li>Autonomous Java test generation</li>
+          <li>Maintains tests as code changes</li>
+          <li>CI integration (Jenkins, GitHub Actions)</li>
+          <li>Targets untested code branches</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.6</div><a class="t-link-btn" href="https://www.diffblue.com" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">WD</div>
+          <div><div class="t-tool-name">Waldo AI</div><div class="t-tool-by">Waldo</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span></div>
+        <p class="t-tool-desc">AI-powered mobile test automation that self-heals when UI elements change. Write tests in plain English and let AI maintain them through UI changes automatically.</p>
+        <ul class="t-features">
+          <li>Natural language mobile test creation</li>
+          <li>Self-healing tests when UI changes</li>
+          <li>Visual regression testing</li>
+          <li>CI/CD pipeline integration</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.5</div><a class="t-link-btn" href="https://www.waldo.com" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-top">
+          <div class="t-tool-logo">LB</div>
+          <div><div class="t-tool-name">Launchable</div><div class="t-tool-by">Launchable Inc.</div></div>
+        </div>
+        <div class="t-badge-row"><span class="t-badge t-badge-freemium">Freemium</span></div>
+        <p class="t-tool-desc">ML-based test intelligence that learns which tests are most likely to catch regressions for any given code change — slashing CI time by up to 80%.</p>
+        <ul class="t-features">
+          <li>Predictive test selection</li>
+          <li>Flaky test identification</li>
+          <li>Works with 30+ test frameworks</li>
+          <li>Historical test insights dashboard</li>
+        </ul>
+        <div class="t-card-footer"><div class="t-rating">★★★★☆ 4.6</div><a class="t-link-btn" href="https://www.launchableinc.com" target="_blank" rel="noopener noreferrer">Visit →</a></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ COMPARISON TABLE ═══ -->
+  <div class="t-compare-section" id="comparison">
+    <div class="t-compare-title">Quick Comparison: Top AI Tools by Category</div>
+    <div class="t-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tool</th><th>Category</th><th>Free Tier</th><th>Self-Host</th>
+            <th>K8s Native</th><th>CI/CD Plugins</th><th>IaC Support</th><th>Best For</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><div class="t-tool-cell"><span class="t-tool-cell-icon">⚙️</span><span class="t-tool-cell-name">n8n AI</span></div></td><td>Automation</td><td><span class="t-check">✓</span></td><td><span class="t-check">✓</span></td><td><span class="t-cross">—</span></td><td><span class="t-check">✓</span></td><td><span class="t-cross">—</span></td><td>Open-source automation</td></tr>
+          <tr><td><div class="t-tool-cell"><span class="t-tool-cell-icon">🔁</span><span class="t-tool-cell-name">Harness AI</span></div></td><td>CI/CD</td><td><span class="t-check">✓</span></td><td><span class="t-cross">—</span></td><td><span class="t-check">✓</span></td><td><span class="t-check">✓</span></td><td><span class="t-check">✓</span></td><td>Enterprise deployments</td></tr>
+          <tr><td><div class="t-tool-cell"><span class="t-tool-cell-icon">🐳</span><span class="t-tool-cell-name">k8sGPT</span></div></td><td>Containers</td><td><span class="t-check">✓</span></td><td><span class="t-check">✓</span></td><td><span class="t-check">✓</span></td><td><span class="t-cross">—</span></td><td><span class="t-cross">—</span></td><td>K8s troubleshooting</td></tr>
+          <tr><td><div class="t-tool-cell"><span class="t-tool-cell-icon">🏗️</span><span class="t-tool-cell-name">Pulumi AI</span></div></td><td>IaC</td><td><span class="t-check">✓</span></td><td><span class="t-cross">—</span></td><td><span class="t-check">✓</span></td><td><span class="t-check">✓</span></td><td><span class="t-check">✓</span></td><td>Multi-cloud IaC in code</td></tr>
+          <tr><td><div class="t-tool-cell"><span class="t-tool-cell-icon">📊</span><span class="t-tool-cell-name">Datadog Bits AI</span></div></td><td>Monitoring</td><td><span class="t-cross">—</span></td><td><span class="t-cross">—</span></td><td><span class="t-check">✓</span></td><td><span class="t-check">✓</span></td><td><span class="t-cross">—</span></td><td>Full-stack observability</td></tr>
+          <tr><td><div class="t-tool-cell"><span class="t-tool-cell-icon">🔐</span><span class="t-tool-cell-name">Snyk AI</span></div></td><td>Security</td><td><span class="t-check">✓</span></td><td><span class="t-cross">—</span></td><td><span class="t-check">✓</span></td><td><span class="t-check">✓</span></td><td><span class="t-check">✓</span></td><td>DevSecOps scanning</td></tr>
+          <tr><td><div class="t-tool-cell"><span class="t-tool-cell-icon">💻</span><span class="t-tool-cell-name">Claude Code</span></div></td><td>Code AI</td><td><span class="t-check">✓</span></td><td><span class="t-cross">—</span></td><td><span class="t-cross">—</span></td><td><span class="t-check">✓</span></td><td><span class="t-check">✓</span></td><td>Agentic DevOps tasks</td></tr>
+          <tr><td><div class="t-tool-cell"><span class="t-tool-cell-icon">🗺️</span><span class="t-tool-cell-name">Eraser AI</span></div></td><td>Diagrams</td><td><span class="t-check">✓</span></td><td><span class="t-cross">—</span></td><td><span class="t-cross">—</span></td><td><span class="t-cross">—</span></td><td><span class="t-cross">—</span></td><td>Architecture diagrams</td></tr>
+          <tr><td><div class="t-tool-cell"><span class="t-tool-cell-icon">📄</span><span class="t-tool-cell-name">Ansible Lightspeed</span></div></td><td>YAML / IaC</td><td><span class="t-check">✓</span></td><td><span class="t-cross">—</span></td><td><span class="t-check">✓</span></td><td><span class="t-check">✓</span></td><td><span class="t-check">✓</span></td><td>Ansible playbooks</td></tr>
+          <tr><td><div class="t-tool-cell"><span class="t-tool-cell-icon">🧪</span><span class="t-tool-cell-name">CodiumAI (Qodo)</span></div></td><td>Testing</td><td><span class="t-check">✓</span></td><td><span class="t-cross">—</span></td><td><span class="t-cross">—</span></td><td><span class="t-check">✓</span></td><td><span class="t-cross">—</span></td><td>AI unit test generation</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─── TOOLS FOOTER BANNER ─── -->
+  <div class="tools-footer-banner">
+    <div class="t-foot-grad">AI × DevOps</div>
+    <p style="max-width:520px;margin:0 auto 14px;line-height:1.75;">
+      This guide covers the top AI-powered tools across the full DevOps and developer lifecycle as of May 2026.
+      Tools are evaluated on capability, community adoption, pricing, and integration depth.
+    </p>
+    <p>Built by <strong style="color:#fff">SelectAI Innovations</strong> for developers, platform engineers, and DevOps teams.</p>
+  </div>
+
+  <!-- ─── FOOTER (SelectAI shared) ─── -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="logo logo-img" aria-label="SelectAI home">
+            <img src="1_logo_png/1_main_logo_png/7_selectAi%20word%20mark%20white.png" alt="SelectAI" height="44" width="auto" />
+          </a>
+          <p>Future Ready AI Solutions for Tomorrow's Challenges. Established by 2 Strong Women.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="index.html#services">Services</a></li>
+            <li><a href="index.html#partners">Partners</a></li>
+            <li><a href="index.html#team">Team</a></li>
+            <li><a href="index.html#capabilities">Why SelectAI</a></li>
+            <li><a href="index.html#live-metrics">Live KPI</a></li>
+            <li><a href="index.html#feedback">Stories</a></li>
+            <li><a href="tools.html">AI Tools</a></li>
+            <li><a href="index.html#connect">Connect</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Our Network</h4>
+          <ul>
+            <li><a href="https://hey.coach/" target="_blank" rel="noopener noreferrer">hey.coach</a></li>
+            <li><a href="https://www.linkedin.com/in/selectai-innovations-8633363bb" target="_blank" rel="noopener noreferrer">SelectAI LinkedIn</a></li>
+            <li><a href="https://www.coforge.com/" target="_blank" rel="noopener noreferrer">Coforge</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 SelectAI. All rights reserved. Established by 2 Strong Women.</p>
+      </div>
+    </div>
+  </footer>
+
+  <a href="#" class="back-top" id="backTop" title="Back to top" aria-label="Back to top">↑</a>
+
+  <script src="js/app-config.js?v=20260525c"></script>
+  <script src="js/main.js?v=20260525c"></script>
+  <script>
+    // Active pill tracking on scroll
+    const tSections = document.querySelectorAll('section[id], div[id]');
+    const tPills = document.querySelectorAll('.t-pill');
+
+    const tObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tPills.forEach(p => p.classList.remove('active'));
+          const match = document.querySelector(`.t-pill[href="#${entry.target.id}"]`);
+          if (match) match.classList.add('active');
+        }
+      });
+    }, { threshold: 0.25 });
+
+    tSections.forEach(s => tObserver.observe(s));
+
+    // Smooth scroll for category pills
+    tPills.forEach(p => {
+      p.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(p.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  </script>
+</body>
+</html>

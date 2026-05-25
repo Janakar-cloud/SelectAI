@@ -5,8 +5,11 @@
 (function () {
   'use strict';
 
+  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   // ── Navbar scroll effect ─────────────────────────────────
   const navbar = document.getElementById('navbar');
+  const scrollProgress = document.querySelector('.scroll-progress');
 
   function handleNavScroll() {
     if (window.scrollY > 60) {
@@ -16,6 +19,7 @@
     }
   }
   window.addEventListener('scroll', handleNavScroll, { passive: true });
+  handleNavScroll();
 
   // ── Back-to-top button ───────────────────────────────────
   const backTop = document.getElementById('backTop');
@@ -28,6 +32,47 @@
     }
   }
   window.addEventListener('scroll', handleBackTop, { passive: true });
+
+  // ── RAF-driven scroll effects (progress + section depth) ─────────
+  var ticking = false;
+  var motionSections = Array.prototype.slice.call(document.querySelectorAll('.motion-section'));
+
+  function updateScrollEffects() {
+    var doc = document.documentElement;
+    var scrollable = Math.max(doc.scrollHeight - window.innerHeight, 1);
+    var progress = Math.min(window.scrollY / scrollable, 1);
+
+    if (scrollProgress) {
+      scrollProgress.style.transform = 'scaleX(' + progress + ')';
+    }
+
+    if (!prefersReducedMotion) {
+      motionSections.forEach(function (section) {
+        var rect = section.getBoundingClientRect();
+        var speed = parseFloat(section.dataset.parallaxSpeed || '0.06');
+        var viewportCenter = window.innerHeight * 0.5;
+        var sectionCenter = rect.top + rect.height * 0.5;
+        var distance = sectionCenter - viewportCenter;
+        var offset = Math.max(Math.min(distance * -speed * 0.08, 14), -14);
+        var inViewRatio = 1 - Math.min(Math.abs(distance) / (window.innerHeight * 0.9), 1);
+        section.style.setProperty('--section-offset', offset.toFixed(2) + 'px');
+        section.style.setProperty('--section-glow', Math.max(inViewRatio, 0).toFixed(2));
+      });
+    }
+
+    ticking = false;
+  }
+
+  function onScrollRaf() {
+    if (!ticking) {
+      requestAnimationFrame(updateScrollEffects);
+      ticking = true;
+    }
+  }
+
+  window.addEventListener('scroll', onScrollRaf, { passive: true });
+  window.addEventListener('resize', onScrollRaf);
+  onScrollRaf();
 
   // ── Smooth scroll for all anchor links ──────────────────
   document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
@@ -88,6 +133,22 @@
     observer.observe(el);
   });
 
+  // ── Magnetic button interaction (desktop only) ───────────────────
+  if (!prefersReducedMotion) {
+    document.querySelectorAll('.btn').forEach(function (btn) {
+      btn.addEventListener('mousemove', function (e) {
+        var rect = btn.getBoundingClientRect();
+        var x = e.clientX - rect.left - rect.width / 2;
+        var y = e.clientY - rect.top - rect.height / 2;
+        btn.style.transform = 'translate(' + (x * 0.12).toFixed(2) + 'px,' + (y * 0.14).toFixed(2) + 'px)';
+      });
+
+      btn.addEventListener('mouseleave', function () {
+        btn.style.transform = '';
+      });
+    });
+  }
+
   // ── Animated counter (staggered node-map pulse) ──────────
   // Each .nm-node already animates via CSS keyframes.
   // This script refreshes the animation on hover for interactivity.
@@ -121,6 +182,11 @@
       btn.style.overflow = 'hidden';
       btn.appendChild(ripple);
       setTimeout(function () { ripple.remove(); }, 520);
+
+      var videoUrl = btn.dataset.videoUrl;
+      if (videoUrl) {
+        window.open(videoUrl, '_blank', 'noopener,noreferrer');
+      }
     });
   });
 
@@ -148,7 +214,7 @@
 
   // ── Gradient orb subtle mouse parallax on hero ──────────
   var hero = document.querySelector('.hero');
-  if (hero) {
+  if (hero && !prefersReducedMotion) {
     document.addEventListener('mousemove', function (e) {
       var mx = (e.clientX / window.innerWidth  - 0.5) * 20;
       var my = (e.clientY / window.innerHeight - 0.5) * 20;
