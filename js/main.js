@@ -5,7 +5,7 @@
 (function () {
   'use strict';
 
-  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ── Navbar scroll effect ─────────────────────────────────
   const navbar = document.getElementById('navbar');
@@ -34,8 +34,8 @@
   window.addEventListener('scroll', handleBackTop, { passive: true });
 
   // ── RAF-driven scroll effects (progress + section depth) ─────────
-  var ticking = false;
-  var motionSections = Array.prototype.slice.call(document.querySelectorAll('.motion-section'));
+  let ticking = false;
+  const motionSections = Array.from(document.querySelectorAll('.motion-section'));
 
   function updateScrollEffects() {
     var doc = document.documentElement;
@@ -87,8 +87,8 @@
   });
 
   // ── Mobile hamburger menu ────────────────────────────────
-  var hamburger = document.getElementById('hamburger');
-  var navLinks  = document.getElementById('navLinks');
+  const hamburger = document.getElementById('hamburger');
+  const navLinks  = document.getElementById('navLinks');
 
   function closeMobileMenu() {
     hamburger.classList.remove('open');
@@ -114,12 +114,12 @@
   });
 
   // ── Intersection Observer — scroll-in animations ─────────
-  var observerOptions = {
+  const observerOptions = {
     threshold: 0.12,
     rootMargin: '0px 0px -40px 0px'
   };
 
-  var observer = new IntersectionObserver(function (entries) {
+  const observer = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
@@ -190,11 +190,6 @@
     });
   });
 
-  // Inject ripple keyframe once
-  var style = document.createElement('style');
-  style.textContent = '@keyframes rippleAnim{to{transform:scale(3);opacity:0}}';
-  document.head.appendChild(style);
-
   // ── Parallax tilt on capability cards ───────────────────
   document.querySelectorAll('.cap-card').forEach(function (card) {
     card.addEventListener('mousemove', function (e) {
@@ -213,7 +208,7 @@
   });
 
   // ── Gradient orb subtle mouse parallax on hero ──────────
-  var hero = document.querySelector('.hero');
+  const hero = document.querySelector('.hero');
   if (hero && !prefersReducedMotion) {
     document.addEventListener('mousemove', function (e) {
       var mx = (e.clientX / window.innerWidth  - 0.5) * 20;
@@ -226,7 +221,7 @@
   }
 
   // ── Hero title stagger entrance ──────────────────────────
-  var heroSpans = document.querySelectorAll('.ht-sub, .ht-main, .ht-accent');
+  const heroSpans = document.querySelectorAll('.ht-sub, .ht-main, .ht-accent');
   heroSpans.forEach(function (span, i) {
     span.style.opacity = '0';
     span.style.transform = 'translateY(30px)';

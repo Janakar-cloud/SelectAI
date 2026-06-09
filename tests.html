@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>html { visibility: hidden; }</style>
+  <!-- Firebase SDKs (needed so auth-guard doesn't crash) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="js/app-config.js?v=20260609c"></script>
+  <script src="js/auth-guard.js?v=20260609c"></script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Suite — SelectAI</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/png" href="assets/images/logo-mark-black.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg:      #060612;
+      --surface: #0e0e24;
+      --cyan:    #00e5ff;
+      --pink:    #ff006e;
+      --green:   #00ff88;
+      --red:     #ff4444;
+      --g100:    #e0e0f0;
+      --g400:    #8890b5;
+      --border:  rgba(0,229,255,0.12);
+      --ff-display: 'Orbitron', monospace;
+      --ff-body:    'Space Grotesk', sans-serif;
+    }
+    html, body { height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--g100);
+      font-family: var(--ff-body);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* ── Header ──────────────────────────────────────────── */
+    .test-header {
+      background: linear-gradient(90deg, rgba(0,229,255,0.05) 0%, transparent 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .test-header-logo {
+      height: 36px;
+      width: auto;
+      filter: drop-shadow(0 0 8px rgba(0,229,255,0.4));
+    }
+    .test-header-title {
+      font-family: var(--ff-display);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+    .test-header-sub {
+      font-size: 0.78rem;
+      color: var(--g400);
+    }
+    .test-run-btn {
+      margin-left: auto;
+      background: linear-gradient(135deg, var(--pink), #9b00ff);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-family: var(--ff-display);
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0.65rem 1.4rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .test-run-btn:hover { transform: translateY(-2px); box-shadow: 0 0 24px rgba(255,0,110,0.4); }
+
+    /* ── Summary bar ─────────────────────────────────────── */
+    .summary-bar {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      padding: 1.1rem 2rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .summary-badge {
+      font-family: var(--ff-display);
+      font-size: 1.6rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .summary-label {
+      font-size: 0.72rem;
+      color: var(--g400);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+    .badge-pass  { color: var(--green); }
+    .badge-fail  { color: var(--red);   }
+    .badge-total { color: var(--cyan);  }
+    .summary-group { display: flex; flex-direction: column; gap: 0.15rem; }
+    .summary-bar .duration { margin-left: auto; font-size: 0.75rem; color: var(--g400); }
+    .progress-bar {
+      height: 4px;
+      background: rgba(255,255,255,0.06);
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+      transition: width 0.4s ease;
+    }
+
+    /* ── Results container ───────────────────────────────── */
+    .results-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* ── Suite header ────────────────────────────────────── */
+    .suite-title {
+      font-family: var(--ff-display);
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      padding: 1.8rem 0 0.5rem;
+      border-top: 1px solid var(--border);
+      margin-top: 1.8rem;
+    }
+    .suite-title:first-child { border-top: none; margin-top: 0; }
+
+    /* ── Test row ────────────────────────────────────────── */
+    .test-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .test-row:last-child { border-bottom: none; }
+    .test-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+    .icon-pass { background: rgba(0,255,136,0.15); color: var(--green); }
+    .icon-fail { background: rgba(255,68,68,0.15);  color: var(--red);   }
+    .test-desc { flex: 1; font-size: 0.85rem; color: var(--g100); }
+    .test-error {
+      display: block;
+      margin-top: 0.35rem;
+      font-size: 0.78rem;
+      color: var(--red);
+      font-family: monospace;
+      background: rgba(255,68,68,0.06);
+      border-left: 2px solid rgba(255,68,68,0.4);
+      padding: 0.4rem 0.7rem;
+      border-radius: 0 4px 4px 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* ── Idle state ──────────────────────────────────────── */
+    #idleMsg {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--g400);
+      font-size: 0.85rem;
+    }
+    #idleMsg span {
+      display: block;
+      font-family: var(--ff-display);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--cyan);
+      margin-bottom: 0.6rem;
+      text-transform: uppercase;
+    }
+
+    /* ── Back nav ────────────────────────────────────────── */
+    .back-link {
+      display: inline-block;
+      font-size: 0.78rem;
+      color: var(--g400);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--cyan); }
+  </style>
+</head>
+<body>
+
+<header class="test-header">
+  <img src="assets/images/logo-wordmark.png" alt="SelectAI" class="test-header-logo" />
+  <div>
+    <div class="test-header-title">Test Runner</div>
+    <div class="test-header-sub">Unit &amp; functional tests — vanilla JS, no external dependencies</div>
+  </div>
+  <button class="test-run-btn" onclick="runTests()" id="runBtn">▶ Run All Tests</button>
+</header>
+
+<div class="summary-bar" id="summaryBar" style="display:none;">
+  <div class="summary-group">
+    <span class="summary-badge badge-total" id="statTotal">0</span>
+    <span class="summary-label">Total</span>
+  </div>
+  <div class="summary-group">
+    <span class="summary-badge badge-pass" id="statPass">0</span>
+    <span class="summary-label">Passed</span>
+  </div>
+  <div class="summary-group">
+    <span class="summary-badge badge-fail" id="statFail">0</span>
+    <span class="summary-label">Failed</span>
+  </div>
+  <span class="duration" id="statDuration"></span>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+<div class="results-wrap" id="resultsWrap">
+  <div id="idleMsg">
+    <span>Ready</span>
+    Click <strong>Run All Tests</strong> to execute the full test suite.
+  </div>
+</div>
+
+<script src="js/tests.js?v=20260609c"></script>
+<script>
+'use strict';
+
+function runTests() {
+  var btn = document.getElementById('runBtn');
+  btn.textContent = '⏳ Running…';
+  btn.disabled = true;
+
+  /* Slight defer so the browser repaints first */
+  setTimeout(function () {
+    var t0   = performance.now();
+    var data = window.SELECTAI_TEST_RESULTS || [];
+    var t1   = performance.now();
+
+    var tests = data.filter(function (r) { return r.type === 'test'; });
+    var pass  = tests.filter(function (r) { return r.pass; }).length;
+    var fail  = tests.length - pass;
+    var pct   = tests.length ? Math.round((pass / tests.length) * 100) : 100;
+
+    /* Update summary bar */
+    document.getElementById('statTotal').textContent    = tests.length;
+    document.getElementById('statPass').textContent     = pass;
+    document.getElementById('statFail').textContent     = fail;
+    document.getElementById('statDuration').textContent = (t1 - t0).toFixed(1) + ' ms';
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('summaryBar').style.display = '';
+
+    /* Render results */
+    var wrap = document.getElementById('resultsWrap');
+    var html = '';
+    data.forEach(function (item) {
+      if (item.type === 'suite') {
+        html += '<div class="suite-title">' + esc(item.name) + '</div>';
+      } else {
+        var iconCls  = item.pass ? 'icon-pass' : 'icon-fail';
+        var iconChar = item.pass ? '✓' : '✗';
+        html += '<div class="test-row">'
+          + '<div class="test-icon ' + iconCls + '">' + iconChar + '</div>'
+          + '<div class="test-desc">' + esc(item.desc)
+          + (item.error ? '<code class="test-error">' + esc(item.error) + '</code>' : '')
+          + '</div>'
+          + '</div>';
+      }
+    });
+    wrap.innerHTML = html || '<div id="idleMsg"><span>No tests found</span>Make sure js/tests.js is loaded.</div>';
+
+    btn.textContent = '↺ Re-run';
+    btn.disabled    = false;
+    document.title  = (fail ? '✗ ' + fail + ' failed' : '✓ All passed') + ' — SelectAI Tests';
+  }, 50);
+}
+
+function esc(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/* Auto-run on load */
+document.addEventListener('DOMContentLoaded', runTests);
+</script>
+
+</body>
+</html>

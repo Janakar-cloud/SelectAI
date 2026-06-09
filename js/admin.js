@@ -1,0 +1,310 @@
+/* =========================================================
+   SelectAI — admin.js  v20260609c
+   Admin dashboard — MongoDB API, tables, CSV export.
+   Replaces Firestore listeners with REST API + polling.
+   Depends on: js/api.js, auth-guard.js, admin.html DOM.
+   ========================================================= */
+
+(function () {
+  'use strict';
+
+  /* ── State ─────────────────────────────────────────────── */
+  var allUsers      = [];
+  var allEnquiries  = [];
+  var usersFiltered = [];
+  var enqFiltered   = [];
+  var _pollTimer    = null;
+
+  /* ── Dev mode: API not available ───────────────────────── */
+  var cfg       = (window.SELECTAI_CONFIG || {}).firebase;
+  var isDevMode = !cfg || !cfg.apiKey || cfg.apiKey === 'YOUR_API_KEY';
+
+  if (isDevMode) {
+    document.addEventListener('DOMContentLoaded', function () {
+      var nameEl = document.getElementById('adminName');
+      if (nameEl) nameEl.textContent = 'Dev User';
+      var devMsg = '<div style="text-align:center;padding:2rem;color:#8890b5;font-size:.82rem;">'
+        + '⚙️ Dev mode — connect Firebase &amp; MongoDB to see live data.</div>';
+      ['recentUsersWrap', 'recentEnquiriesWrap', 'usersTableWrap', 'enquiriesTableWrap']
+        .forEach(function (id) { var el = document.getElementById(id); if (el) el.innerHTML = devMsg; });
+      ['statTotalUsers','statActiveNow','statEnquiries','statNewToday']
+        .forEach(function (id) { var el = document.getElementById(id); if (el) el.textContent = '0'; });
+    });
+    return;
+  }
+
+  /* ── Load all dashboard data via API ───────────────────── */
+  function loadDashboard() {
+    if (!window.SelectAI_API) return;
+
+    Promise.all([
+      SelectAI_API.getStats(),
+      SelectAI_API.getUsers(),
+      SelectAI_API.getEnquiries()
+    ]).then(function (results) {
+      var stats     = results[0] || {};
+      var userData  = results[1] || {};
+      var enqData   = results[2] || {};
+
+      /* Stats */
+      _setText('statTotalUsers', stats.totalUsers  || 0);
+      _setText('statActiveNow',  stats.activeNow   || 0);
+      _setText('statEnquiries',  stats.totalEnquiries || 0);
+      _setText('statNewToday',   stats.newToday    || 0);
+
+      /* Users */
+      allUsers      = userData.users  || [];
+      usersFiltered = allUsers.slice();
+      renderUsersTable(usersFiltered, 'usersTableWrap');
+      renderUsersPreview(allUsers.slice(0, 5));
+      _setText('userCount', allUsers.length + ' user' + (allUsers.length !== 1 ? 's' : ''));
+
+      /* Enquiries */
+      allEnquiries = enqData.enquiries || [];
+      enqFiltered  = allEnquiries.slice();
+      renderEnquiriesTable(enqFiltered, 'enquiriesTableWrap');
+      renderEnquiriesPreview(allEnquiries.slice(0, 5));
+      _setText('enqCount', allEnquiries.length + ' enquir' + (allEnquiries.length !== 1 ? 'ies' : 'y'));
+
+    }).catch(function (err) {
+      console.error('[SelectAI Admin] Data load error:', err.message);
+    });
+  }
+
+  function _setText(id, val) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  /* ── Bootstrap once auth confirms admin identity ──────── */
+  document.addEventListener('DOMContentLoaded', function () {
+    /* Populate header with admin display name */
+    var u = window.SELECTAI_USER;
+    if (u) {
+      var nameEl = document.getElementById('adminName');
+      if (nameEl) nameEl.textContent = u.firstName || u.displayName || u.email || '';
+    }
+
+    /* Initial load */
+    loadDashboard();
+
+    /* Poll every 30 seconds */
+    _pollTimer = setInterval(loadDashboard, 30 * 1000);
+  });
+
+  /* ── View switcher (called from HTML onclick) ──────────── */
+  window.showView = function (name) {
+    document.querySelectorAll('.adm-view').forEach(function (v) { v.classList.remove('active'); });
+    document.querySelectorAll('.sb-nav a').forEach(function (a) { a.classList.remove('active'); });
+    var view = document.getElementById('view-' + name);
+    var nav  = document.getElementById('nav-' + name);
+    if (view) view.classList.add('active');
+    if (nav)  nav.classList.add('active');
+    var titles = { dashboard: 'Dashboard Overview', users: 'User Management', enquiries: 'Enquiry Management' };
+    var titleEl = document.getElementById('headerTitle');
+    if (titleEl) titleEl.textContent = titles[name] || '';
+  };
+
+  /* ── Sign out ──────────────────────────────────────────── */
+  window.signOutAdmin = function () {
+    clearInterval(_pollTimer);
+    if (isDevMode || typeof firebase === 'undefined') {
+      window.location.replace('login.html');
+      return;
+    }
+    firebase.auth().signOut().then(function () {
+      window.location.replace('login.html');
+    });
+  };
+
+  /* ── Toast notification ──────────────────────────────── */
+  function showToast(msg, type) {
+    var el = document.getElementById('adminToast');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'show ' + (type || '');
+    clearTimeout(el._timer);
+    el._timer = setTimeout(function () { el.className = ''; }, 4000);
+  }
+
+  /* ── Admin: Send password reset email via backend ──────── */
+  window.adminResetPassword = function (uid, btnEl) {
+    if (!uid) { showToast('No user ID provided.', 'error'); return; }
+    if (isDevMode) {
+      showToast('Dev mode — would send reset email for UID: ' + uid, '');
+      return;
+    }
+    if (btnEl) btnEl.disabled = true;
+    SelectAI_API.resetUserPassword(uid)
+      .then(function (data) {
+        showToast(data.message || 'Reset email sent.', 'success');
+      })
+      .catch(function (err) {
+        showToast(err.message || 'Failed to send reset email.', 'error');
+        if (btnEl) btnEl.disabled = false;
+      });
+  };
+
+  /* ── Render: Users table ───────────────────────────────── */
+  function renderUsersTable(rows, containerId) {
+    var wrap = document.getElementById(containerId);
+    if (!wrap) return;
+    if (!rows.length) {
+      wrap.innerHTML = '<table class="data-table"><tbody><tr class="empty-row"><td colspan="8">No users found.</td></tr></tbody></table>';
+      return;
+    }
+    var html = '<div style="overflow-x:auto"><table class="data-table">'
+      + '<thead><tr>'
+      + '<th>Name</th><th>Email</th><th>Country</th><th>City</th><th>Role</th><th>Provider</th><th>Joined</th><th>Actions</th>'
+      + '</tr></thead><tbody>';
+    rows.forEach(function (u) {
+      var safeEmail = esc(u.email || '');
+      html += '<tr>'
+        + '<td>' + esc((u.firstName || '') + ' ' + (u.lastName || '')) + '</td>'
+        + '<td><span class="truncate">' + safeEmail + '</span></td>'
+        + '<td>' + esc(u.country || '—') + '</td>'
+        + '<td>' + esc(u.city    || '—') + '</td>'
+        + '<td><span class="role-badge role-' + (u.role || 'user') + '">' + esc(u.role || 'user') + '</span></td>'
+        + '<td>' + esc(u.provider || '—') + '</td>'
+        + '<td>' + fmtDate(u.createdAt) + '</td>'
+        + '<td><button class="action-btn" onclick="adminResetPassword(' + JSON.stringify(u.uid || u._id || '') + ', this)" title="Send password reset email">Reset PW</button></td>'
+        + '</tr>';
+    });
+    html += '</tbody></table></div>';
+    wrap.innerHTML = html;
+  }
+
+  function renderUsersPreview(rows) {
+    renderUsersTable(rows, 'recentUsersWrap');
+  }
+
+  /* ── Render: Enquiries table ───────────────────────────── */
+  function renderEnquiriesTable(rows, containerId) {
+    var wrap = document.getElementById(containerId);
+    if (!wrap) return;
+    if (!rows.length) {
+      wrap.innerHTML = '<table class="data-table"><tbody><tr class="empty-row"><td colspan="6">No enquiries found.</td></tr></tbody></table>';
+      return;
+    }
+    var html = '<div style="overflow-x:auto"><table class="data-table">'
+      + '<thead><tr>'
+      + '<th>Name</th><th>Email</th><th>Phone</th><th>Company</th><th>Message</th><th>Date</th>'
+      + '</tr></thead><tbody>';
+    rows.forEach(function (e) {
+      html += '<tr>'
+        + '<td>' + esc(e.name    || '—') + '</td>'
+        + '<td><span class="truncate">' + esc(e.email   || '—') + '</span></td>'
+        + '<td>' + esc(e.phone   || '—') + '</td>'
+        + '<td>' + esc(e.company || '—') + '</td>'
+        + '<td><span class="truncate">' + esc(e.message || '—') + '</span></td>'
+        + '<td>' + fmtDate(e.createdAt) + '</td>'
+        + '</tr>';
+    });
+    html += '</tbody></table></div>';
+    wrap.innerHTML = html;
+  }
+
+  function renderEnquiriesPreview(rows) {
+    renderEnquiriesTable(rows, 'recentEnquiriesWrap');
+  }
+
+  /* ── Search / filter ───────────────────────────────────── */
+  window.filterUsers = function (query) {
+    var q = query.toLowerCase();
+    usersFiltered = allUsers.filter(function (u) {
+      return (u.firstName + ' ' + u.lastName + ' ' + u.email + ' ' + u.country + ' ' + u.city)
+        .toLowerCase().includes(q);
+    });
+    renderUsersTable(usersFiltered, 'usersTableWrap');
+    var countEl = document.getElementById('userCount');
+    if (countEl) countEl.textContent = usersFiltered.length + ' user' + (usersFiltered.length !== 1 ? 's' : '');
+  };
+
+  window.filterEnquiries = function (query) {
+    var q = query.toLowerCase();
+    enqFiltered = allEnquiries.filter(function (e) {
+      return (e.name + ' ' + e.email + ' ' + e.company + ' ' + e.message)
+        .toLowerCase().includes(q);
+    });
+    renderEnquiriesTable(enqFiltered, 'enquiriesTableWrap');
+    var countEl = document.getElementById('enqCount');
+    if (countEl) countEl.textContent = enqFiltered.length + ' enquir' + (enqFiltered.length !== 1 ? 'ies' : 'y');
+  };
+
+  /* ── CSV export ─────────────────────────────────────────── */
+  window.exportUsers = function () {
+    var rows = usersFiltered.map(function (u) {
+      return {
+        'First Name':  u.firstName || '',
+        'Last Name':   u.lastName  || '',
+        'Email':       u.email     || '',
+        'Phone':       u.phone     || '',
+        'Country':     u.country   || '',
+        'City':        u.city      || '',
+        'Role':        u.role      || 'user',
+        'Provider':    u.provider  || '',
+        'Joined':      fmtDate(u.createdAt),
+        'Last Login':  fmtDate(u.lastLogin)
+      };
+    });
+    downloadCSV(rows, 'selectai-users-' + isoDate() + '.csv');
+  };
+
+  window.exportEnquiries = function () {
+    var rows = enqFiltered.map(function (e) {
+      return {
+        'Name':    e.name    || '',
+        'Email':   e.email   || '',
+        'Phone':   e.phone   || '',
+        'Company': e.company || '',
+        'Message': e.message || '',
+        'Date':    fmtDate(e.createdAt)
+      };
+    });
+    downloadCSV(rows, 'selectai-enquiries-' + isoDate() + '.csv');
+  };
+
+  /* ── Utility: CSV download ──────────────────────────────── */
+  function downloadCSV(rows, filename) {
+    if (!rows.length) { alert('No data to export.'); return; }
+    var headers = Object.keys(rows[0]);
+    var lines   = rows.map(function (row) {
+      return headers.map(function (h) {
+        return '"' + (row[h] || '').toString().replace(/"/g, '""') + '"';
+      }).join(',');
+    });
+    var csv  = '\uFEFF' + headers.join(',') + '\n' + lines.join('\n'); // BOM for Excel
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href     = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  /* ── Utility: format Firestore timestamp ─────────────────── */
+  function fmtDate(ts) {
+    if (!ts) return '—';
+    try {
+      var d = (typeof ts.toDate === 'function') ? ts.toDate() : new Date(ts);
+      return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch (e) { return '—'; }
+  }
+
+  function isoDate() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  /* ── Utility: escape HTML ───────────────────────────────── */
+  function esc(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+}());

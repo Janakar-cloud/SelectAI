@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>html { visibility: hidden; }</style>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="js/app-config.js?v=20260609c"></script>
+  <script src="js/auth-guard.js?v=20260609c"></script>
+  <!-- Head -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — SelectAI</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/png" href="assets/images/logo-mark-black.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── RESET & TOKENS ─────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg:       #060612;
+      --bg-alt:   #09091a;
+      --surface:  #0e0e24;
+      --surface2: #141430;
+      --cyan:     #00e5ff;
+      --pink:     #ff006e;
+      --purple:   #9b00ff;
+      --green:    #00ff88;
+      --white:    #ffffff;
+      --g100:     #dde0f5;
+      --g400:     #8890b5;
+      --g700:     #1e1e3a;
+      --border:   rgba(0,229,255,0.15);
+      --ff-display: 'Orbitron', monospace;
+      --ff-body:    'Space Grotesk', sans-serif;
+      --sidebar-w:  240px;
+      --ease: all 0.25s ease;
+    }
+    html, body { height: 100%; font-family: var(--ff-body); background: var(--bg); color: var(--white); overflow-x: hidden; }
+
+    /* ─── LAYOUT ─────────────────────────────────────────── */
+    .adm-layout { display: flex; min-height: 100vh; }
+
+    /* ─── SIDEBAR ────────────────────────────────────────── */
+    .adm-sidebar {
+      width: var(--sidebar-w);
+      background: var(--bg-alt);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      z-index: 100;
+      overflow-y: auto;
+    }
+
+    .sb-logo {
+      padding: 1.6rem 1.4rem 1.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sb-logo img { height: 30px; width: auto; }
+
+    .sb-label {
+      font-family: var(--ff-display);
+      font-size: 0.52rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--g400);
+      padding: 1.4rem 1.4rem 0.6rem;
+    }
+
+    .sb-nav { list-style: none; padding: 0 0.75rem; }
+    .sb-nav li { margin-bottom: 0.2rem; }
+    .sb-nav a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 0.8rem;
+      border-radius: 5px;
+      font-size: 0.85rem;
+      color: var(--g400);
+      text-decoration: none;
+      cursor: pointer;
+      transition: var(--ease);
+    }
+    .sb-nav a:hover    { background: rgba(0,229,255,0.07); color: var(--white); }
+    .sb-nav a.active   { background: rgba(0,229,255,0.12); color: var(--cyan); }
+    .sb-nav a svg      { flex-shrink: 0; opacity: 0.7; }
+    .sb-nav a.active svg { opacity: 1; }
+
+    .sb-bottom {
+      margin-top: auto;
+      padding: 1rem 0.75rem 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .sb-signout {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 0.8rem;
+      border-radius: 5px;
+      font-size: 0.85rem;
+      color: #ff6b9d;
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      transition: var(--ease);
+    }
+    .sb-signout:hover { background: rgba(255,0,110,0.1); }
+
+    /* ─── MAIN AREA ──────────────────────────────────────── */
+    .adm-main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .adm-header {
+      background: var(--bg-alt);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .adm-header-title {
+      font-family: var(--ff-display);
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      color: var(--g100);
+    }
+    .adm-user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .adm-user-info img {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--border);
+      display: none;
+    }
+    .adm-user-name {
+      font-size: 0.82rem;
+      color: var(--g100);
+    }
+    .adm-badge {
+      font-family: var(--ff-display);
+      font-size: 0.5rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: 3px;
+      background: linear-gradient(135deg, #ff006e, #9b00ff);
+      color: var(--white);
+    }
+
+    /* Content */
+    .adm-content { padding: 2rem; flex: 1; }
+
+    /* Views */
+    .adm-view { display: none; }
+    .adm-view.active { display: block; }
+
+    /* Section heading */
+    .view-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.8rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .view-heading h2 {
+      font-family: var(--ff-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .view-heading h2 span {
+      background: linear-gradient(135deg, #00e5ff, #9b00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Stat cards */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.2rem;
+      margin-bottom: 2.5rem;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.4rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s ease;
+    }
+    .stat-card:hover { border-color: rgba(0,229,255,0.35); }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 3px;
+    }
+    .stat-card.c1::before { background: linear-gradient(90deg, #00e5ff, #9b00ff); }
+    .stat-card.c2::before { background: linear-gradient(90deg, #00ff88, #00e5ff); }
+    .stat-card.c3::before { background: linear-gradient(90deg, #ff006e, #9b00ff); }
+    .stat-card.c4::before { background: linear-gradient(90deg, #ffe500, #ff006e); }
+    .stat-label {
+      font-family: var(--ff-display);
+      font-size: 0.57rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--g400);
+      margin-bottom: 0.75rem;
+    }
+    .stat-value {
+      font-family: var(--ff-display);
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .stat-card.c1 .stat-value { color: var(--cyan); }
+    .stat-card.c2 .stat-value { color: var(--green); }
+    .stat-card.c3 .stat-value { color: var(--pink); }
+    .stat-card.c4 .stat-value { color: #ffe500; }
+    .stat-sub { font-size: 0.75rem; color: var(--g400); }
+
+    /* Tables */
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    .table-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .table-head h3 {
+      font-family: var(--ff-display);
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--g100);
+    }
+    .table-actions { display: flex; gap: 0.7rem; align-items: center; flex-wrap: wrap; }
+    .tbl-search {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.42rem 0.85rem;
+      color: var(--white);
+      font-family: var(--ff-body);
+      font-size: 0.82rem;
+      outline: none;
+      transition: border-color 0.3s ease;
+      width: 200px;
+    }
+    .tbl-search:focus { border-color: var(--cyan); }
+    .btn-export {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.42rem 1rem;
+      background: transparent;
+      border: 1px solid var(--cyan);
+      border-radius: 4px;
+      color: var(--cyan);
+      font-family: var(--ff-display);
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--ease);
+      white-space: nowrap;
+    }
+    .btn-export:hover { background: rgba(0,229,255,0.1); }
+
+    /* Table */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      font-family: var(--ff-display);
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--g400);
+      padding: 0.7rem 1.1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .data-table td {
+      padding: 0.85rem 1.1rem;
+      font-size: 0.83rem;
+      color: var(--g100);
+      border-bottom: 1px solid rgba(0,229,255,0.06);
+      vertical-align: middle;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: rgba(0,229,255,0.03); }
+
+    .role-badge {
+      display: inline-block;
+      font-family: var(--ff-display);
+      font-size: 0.5rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 0.22rem 0.55rem;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    .role-admin { background: rgba(155,0,255,0.2); color: #c084fc; border: 1px solid rgba(155,0,255,0.3); }
+    .role-user  { background: rgba(0,229,255,0.1); color: var(--cyan);  border: 1px solid rgba(0,229,255,0.2); }
+
+    .action-btn {
+      background: none;
+      border: 1px solid rgba(0,229,255,0.3);
+      color: var(--cyan);
+      font-size: 0.72rem;
+      font-family: var(--ff-display);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.28rem 0.7rem;
+      border-radius: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .action-btn:hover { background: rgba(0,229,255,0.1); border-color: var(--cyan); }
+    .action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Admin toast notification */
+    #adminToast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: rgba(15,15,25,0.95);
+      border: 1px solid rgba(0,229,255,0.3);
+      border-radius: 8px;
+      padding: 0.85rem 1.4rem;
+      font-size: 0.83rem;
+      color: var(--g100);
+      z-index: 9999;
+      transform: translateY(120%);
+      transition: transform 0.3s ease;
+      max-width: 340px;
+    }
+    #adminToast.show { transform: translateY(0); }
+    #adminToast.success { border-color: rgba(0,255,136,0.4); color: #00ff88; }
+    #adminToast.error   { border-color: rgba(255,60,60,0.4);  color: #ff6b6b; }
+
+    .empty-row td {
+      text-align: center;
+      color: var(--g400);
+      padding: 2.5rem;
+      font-size: 0.85rem;
+    }
+
+    .tbl-loading {
+      text-align: center;
+      padding: 2.5rem;
+      color: var(--g400);
+      font-size: 0.85rem;
+    }
+
+    /* Pagination note */
+    .tbl-footer {
+      padding: 0.75rem 1.5rem;
+      font-size: 0.75rem;
+      color: var(--g400);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Truncate long text */
+    .truncate { max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────── */
+    @media (max-width: 1024px) { .stat-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 768px) {
+      .adm-sidebar { width: 60px; }
+      .sb-logo img, .sb-label, .sb-nav a span, .sb-signout span { display: none; }
+      .sb-nav a { justify-content: center; padding: 0.7rem; }
+      .adm-main { margin-left: 60px; }
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 500px) {
+      .stat-grid { grid-template-columns: 1fr; }
+      .adm-content { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="adm-layout">
+
+  <!-- ─── SIDEBAR ──────────────────────────────────────────── -->
+  <aside class="adm-sidebar">
+    <div class="sb-logo">
+      <img src="assets/images/logo-wordmark.png" alt="SelectAI" />
+    </div>
+
+    <p class="sb-label">Navigation</p>
+    <ul class="sb-nav">
+      <li>
+        <a class="active" id="nav-dashboard" onclick="showView('dashboard')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a id="nav-users" onclick="showView('users')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Users</span>
+        </a>
+      </li>
+      <li>
+        <a id="nav-enquiries" onclick="showView('enquiries')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span>Enquiries</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="sb-bottom">
+      <button class="sb-signout" onclick="signOutAdmin()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ─── MAIN ─────────────────────────────────────────────── -->
+  <div class="adm-main">
+
+    <!-- Header -->
+    <header class="adm-header">
+      <span class="adm-header-title" id="headerTitle">Dashboard Overview</span>
+      <div class="adm-user-info">
+        <img id="adminAvatar" src="" alt="Admin" />
+        <span class="adm-user-name" id="adminName">—</span>
+        <span class="adm-badge">Admin</span>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="adm-content">
+
+      <!-- ── VIEW: DASHBOARD ────────────────────────────────── -->
+      <div class="adm-view active" id="view-dashboard">
+        <div class="view-heading">
+          <h2>Dashboard <span>Overview</span></h2>
+        </div>
+
+        <!-- Stat cards -->
+        <div class="stat-grid">
+          <div class="stat-card c1">
+            <p class="stat-label">Total Users</p>
+            <p class="stat-value" id="statTotalUsers">—</p>
+            <p class="stat-sub">Registered accounts</p>
+          </div>
+          <div class="stat-card c2">
+            <p class="stat-label">Active Now</p>
+            <p class="stat-value" id="statActiveNow">—</p>
+            <p class="stat-sub">Visits in last 5 min</p>
+          </div>
+          <div class="stat-card c3">
+            <p class="stat-label">Total Enquiries</p>
+            <p class="stat-value" id="statEnquiries">—</p>
+            <p class="stat-sub">Lead form submissions</p>
+          </div>
+          <div class="stat-card c4">
+            <p class="stat-label">New Today</p>
+            <p class="stat-value" id="statNewToday">—</p>
+            <p class="stat-sub">Users joined today</p>
+          </div>
+        </div>
+
+        <!-- Recent users table (preview) -->
+        <div class="table-card">
+          <div class="table-head">
+            <h3>Recent Users</h3>
+            <div class="table-actions">
+              <button class="btn-export" onclick="showView('users')">View All →</button>
+            </div>
+          </div>
+          <div id="recentUsersWrap">
+            <div class="tbl-loading">Loading…</div>
+          </div>
+        </div>
+
+        <!-- Recent enquiries (preview) -->
+        <div class="table-card">
+          <div class="table-head">
+            <h3>Recent Enquiries</h3>
+            <div class="table-actions">
+              <button class="btn-export" onclick="showView('enquiries')">View All →</button>
+            </div>
+          </div>
+          <div id="recentEnquiriesWrap">
+            <div class="tbl-loading">Loading…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VIEW: USERS ─────────────────────────────────────── -->
+      <div class="adm-view" id="view-users">
+        <div class="view-heading">
+          <h2>All <span>Users</span></h2>
+          <div class="table-actions">
+            <input class="tbl-search" type="search" id="userSearch" placeholder="Search users…" oninput="filterUsers(this.value)" />
+            <button class="btn-export" onclick="exportUsers()">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export CSV
+            </button>
+          </div>
+        </div>
+        <div class="table-card">
+          <div id="usersTableWrap">
+            <div class="tbl-loading">Loading…</div>
+          </div>
+          <div class="tbl-footer">
+            <span id="userCount">—</span>
+            <span>Showing up to 200 records</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VIEW: ENQUIRIES ────────────────────────────────── -->
+      <div class="adm-view" id="view-enquiries">
+        <div class="view-heading">
+          <h2>All <span>Enquiries</span></h2>
+          <div class="table-actions">
+            <input class="tbl-search" type="search" id="enqSearch" placeholder="Search enquiries…" oninput="filterEnquiries(this.value)" />
+            <button class="btn-export" onclick="exportEnquiries()">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export CSV
+            </button>
+          </div>
+        </div>
+        <div class="table-card">
+          <div id="enquiriesTableWrap">
+            <div class="tbl-loading">Loading…</div>
+          </div>
+          <div class="tbl-footer">
+            <span id="enqCount">—</span>
+            <span>Showing up to 200 records</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /adm-content -->
+  </div><!-- /adm-main -->
+</div><!-- /adm-layout -->
+
+<!-- Admin toast notification -->
+<div id="adminToast"></div>
+
+<script src="js/api.js?v=20260609c"></script>
+<script src="js/admin.js?v=20260609c"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+# Python virtual environment
+.venv/
+venv/
+env/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Environment secrets — NEVER commit
+.env
+
+# PM2 logs
+logs/
+
+# OS artefacts
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/settings.json
+*.swp
+*.swo
+
+# Build / temp
+dist/
+build/
+*.log
+
+# Private business documents — keep out of version control
+*.docx
+*.xlsx
+*.pdf

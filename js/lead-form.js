@@ -105,6 +105,9 @@
       // Ignore storage failures.
     }
 
+    /* Save to backend MongoDB (fire-and-forget) */
+    saveEnquiryToApi(payload);
+
     if (!leadEndpoint) {
       toMailto(payload);
       setFeedback('Inquiry prepared. Your email app is opening to send it.', false);
@@ -123,4 +126,22 @@
       setFeedback('Endpoint unavailable. Opening email fallback to complete submission.', true);
     }
   });
+
+  /* ── Enquiry persistence via backend API ──────────────── */
+  function saveEnquiryToApi(payload) {
+    var uid = '';
+    try {
+      if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
+        var user = firebase.auth().currentUser;
+        if (user) uid = user.uid;
+      }
+    } catch (e) { /* ignore */ }
+
+    if (window.SelectAI_API) {
+      SelectAI_API.submitEnquiry(Object.assign({}, payload, { userId: uid }))
+        .catch(function (err) {
+          console.warn('[SelectAI] Enquiry API error:', err.message);
+        });
+    }
+  }
 }());
