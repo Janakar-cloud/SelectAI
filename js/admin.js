@@ -1,7 +1,6 @@
 /* =========================================================
-   SelectAI — admin.js  v20260609c
+   SelectAI — admin.js  v20260609e
    Admin dashboard — MongoDB API, tables, CSV export.
-   Replaces Firestore listeners with REST API + polling.
    Depends on: js/api.js, auth-guard.js, admin.html DOM.
    ========================================================= */
 
@@ -14,24 +13,6 @@
   var usersFiltered = [];
   var enqFiltered   = [];
   var _pollTimer    = null;
-
-  /* ── Dev mode: API not available ───────────────────────── */
-  var cfg       = (window.SELECTAI_CONFIG || {}).firebase;
-  var isDevMode = !cfg || !cfg.apiKey || cfg.apiKey === 'YOUR_API_KEY';
-
-  if (isDevMode) {
-    document.addEventListener('DOMContentLoaded', function () {
-      var nameEl = document.getElementById('adminName');
-      if (nameEl) nameEl.textContent = 'Dev User';
-      var devMsg = '<div style="text-align:center;padding:2rem;color:#8890b5;font-size:.82rem;">'
-        + '⚙️ Dev mode — connect Firebase &amp; MongoDB to see live data.</div>';
-      ['recentUsersWrap', 'recentEnquiriesWrap', 'usersTableWrap', 'enquiriesTableWrap']
-        .forEach(function (id) { var el = document.getElementById(id); if (el) el.innerHTML = devMsg; });
-      ['statTotalUsers','statActiveNow','statEnquiries','statNewToday']
-        .forEach(function (id) { var el = document.getElementById(id); if (el) el.textContent = '0'; });
-    });
-    return;
-  }
 
   /* ── Load all dashboard data via API ───────────────────── */
   function loadDashboard() {
@@ -108,13 +89,8 @@
   /* ── Sign out ──────────────────────────────────────────── */
   window.signOutAdmin = function () {
     clearInterval(_pollTimer);
-    if (isDevMode || typeof firebase === 'undefined') {
-      window.location.replace('login.html');
-      return;
-    }
-    firebase.auth().signOut().then(function () {
-      window.location.replace('login.html');
-    });
+    if (window.SelectAI_API) SelectAI_API.signOut();
+    window.location.replace('login.html');
   };
 
   /* ── Toast notification ──────────────────────────────── */

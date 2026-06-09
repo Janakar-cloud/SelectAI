@@ -302,6 +302,29 @@
     }
     .auth-notice a { color: var(--cyan); }
 
+    /* ─── Password field with toggle ─────────────────────── */
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 2.8rem; }
+    .pw-eye {
+      position: absolute; right: 0.75rem; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--g400); padding: 0; line-height: 1;
+      transition: color 0.2s;
+    }
+    .pw-eye:hover { color: var(--cyan); }
+    .pw-strength {
+      height: 4px; background: rgba(255,255,255,0.08);
+      border-radius: 2px; margin-top: 0.45rem; overflow: hidden;
+    }
+    .pw-strength #pwStrengthFill {
+      height: 100%; width: 0%; border-radius: 2px;
+      transition: width 0.3s ease, background 0.3s ease;
+    }
+    .pw-strength-label {
+      font-size: 0.68rem; color: var(--g400); margin-top: 0.25rem; display: block;
+    }
+
     .dev-banner {
       background: rgba(0,229,255,0.08);
       border: 1px solid rgba(0,229,255,0.25);
@@ -499,22 +522,24 @@
         <h1 class="auth-heading">Welcome Back</h1>
         <p class="auth-sub">Sign in to access the SelectAI platform.</p>
 
-        <button class="oauth-btn oauth-google" id="googleLoginBtn" onclick="handleGoogle(false)">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
-            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-          </svg>
-          Continue with Google
-        </button>
+        <form id="loginForm" onsubmit="return false;" novalidate>
+          <div class="form-field">
+            <label for="liEmail">Email Address</label>
+            <input type="email" id="liEmail" name="email" placeholder="jane@example.com" autocomplete="email" />
+          </div>
 
-        <button class="oauth-btn oauth-apple" id="appleLoginBtn" onclick="handleApple(false)">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="22" viewBox="0 0 814 1000" fill="white" aria-hidden="true">
-            <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 336.7 29 239.4 29 192.7c0-161.3 105.6-246.7 209.8-246.7 55.3 0 101.4 36.4 136.8 36.4 33.6 0 86.5-38.8 151.2-38.8 24.2 0 108.2 2.6 168.9 80.2zm-109.3-55.7c-6.5-30.5-17.8-65.3-40.3-95.2-19.5-25.7-54.1-51.8-96.3-51.8-7.1 0-16.6.6-25.1 2.6 30 22.6 61.4 64.4 73.7 106.4 7.1 22.6 10.4 44.5 10.4 65.3 0 7.8-.6 15.6-1.3 21.1 5.2.6 10.4.6 15.6.6 28 0 60.2-15.5 63.3-48.9z"/>
-          </svg>
-          Continue with Apple
-        </button>
+          <div class="form-field">
+            <label for="liPassword">Password</label>
+            <div class="pw-wrap">
+              <input type="password" id="liPassword" name="password" placeholder="Your password" autocomplete="current-password" />
+              <button type="button" class="pw-eye" aria-label="Toggle password visibility" onclick="togglePw('liPassword',this)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <button class="auth-btn" type="submit" id="loginBtn" onclick="handleSignIn()">Sign In</button>
+        </form>
 
         <p style="text-align:center;margin-top:1rem;">
           <button class="auth-link-btn" onclick="showForgotPanel()">Forgot Password?</button>
@@ -613,22 +638,29 @@
             </div>
           </div>
 
-          <button class="oauth-btn oauth-google" type="button" onclick="handleGoogle(true)">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
-              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-            </svg>
-            Sign up with Google
-          </button>
+          <div class="form-field">
+            <label for="spPassword">Password</label>
+            <div class="pw-wrap">
+              <input type="password" id="spPassword" name="password" placeholder="Min 8 chars, 1 uppercase, 1 number" autocomplete="new-password" oninput="updatePwStrength(this.value)" />
+              <button type="button" class="pw-eye" aria-label="Toggle password visibility" onclick="togglePw('spPassword',this)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <div class="pw-strength" id="pwStrengthBar"><div id="pwStrengthFill"></div></div>
+            <span class="pw-strength-label" id="pwStrengthLabel"></span>
+          </div>
 
-          <button class="oauth-btn oauth-apple" type="button" onclick="handleApple(true)">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="22" viewBox="0 0 814 1000" fill="white" aria-hidden="true">
-              <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 336.7 29 239.4 29 192.7c0-161.3 105.6-246.7 209.8-246.7 55.3 0 101.4 36.4 136.8 36.4 33.6 0 86.5-38.8 151.2-38.8 24.2 0 108.2 2.6 168.9 80.2zm-109.3-55.7c-6.5-30.5-17.8-65.3-40.3-95.2-19.5-25.7-54.1-51.8-96.3-51.8-7.1 0-16.6.6-25.1 2.6 30 22.6 61.4 64.4 73.7 106.4 7.1 22.6 10.4 44.5 10.4 65.3 0 7.8-.6 15.6-1.3 21.1 5.2.6 10.4.6 15.6.6 28 0 60.2-15.5 63.3-48.9z"/>
-            </svg>
-            Sign up with Apple
-          </button>
+          <div class="form-field">
+            <label for="spConfirm">Confirm Password</label>
+            <div class="pw-wrap">
+              <input type="password" id="spConfirm" name="confirmPassword" placeholder="Repeat your password" autocomplete="new-password" />
+              <button type="button" class="pw-eye" aria-label="Toggle confirm password visibility" onclick="togglePw('spConfirm',this)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <button class="auth-btn" type="submit" id="signupBtn" onclick="handleSignUp()">Create Account</button>
         </form>
 
         <p class="auth-notice">
@@ -689,53 +721,69 @@
         </p>
       </div>
 
+      <!-- ── SET NEW PASSWORD PANEL (from ?reset= link) ─────── -->
+      <div class="auth-panel" id="panelReset">
+        <h1 class="auth-heading">Set New Password</h1>
+        <p class="auth-sub">Choose a strong password for your SelectAI account.</p>
+
+        <div class="form-field">
+          <label for="resetPassword">New Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="resetPassword" name="resetPassword" placeholder="Min 8 chars, 1 uppercase, 1 number" autocomplete="new-password" oninput="updatePwStrength(this.value,'reset')" />
+            <button type="button" class="pw-eye" aria-label="Toggle password visibility" onclick="togglePw('resetPassword',this)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="pw-strength" id="pwStrengthBarReset"><div id="pwStrengthFillReset"></div></div>
+          <span class="pw-strength-label" id="pwStrengthLabelReset"></span>
+        </div>
+
+        <div class="form-field">
+          <label for="resetConfirm">Confirm New Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="resetConfirm" name="resetConfirm" placeholder="Repeat your new password" autocomplete="new-password" />
+            <button type="button" class="pw-eye" aria-label="Toggle confirm visibility" onclick="togglePw('resetConfirm',this)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <button class="auth-btn" id="resetBtn" onclick="handleSetNewPassword()">Set New Password</button>
+      </div>
+
     </div>
   </main>
 </div>
 
-<!-- Firebase SDKs (Auth only — no Firestore needed) -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="js/app-config.js?v=20260609c"></script>
-<script src="js/api.js?v=20260609c"></script>
+<!-- Scripts -->
+<script src="js/app-config.js?v=20260609e"></script>
+<script src="js/api.js?v=20260609e"></script>
 <script>
 /* =========================================================
-   SelectAI — login.html script
-   Covers: Sign In, Sign Up, OTP verification, Forgot Password
+   SelectAI — login.html  v20260609e
+   JWT-only auth. No Firebase dependency.
+   Covers: Sign In, Sign Up, OTP, Forgot Password, Reset Password
    ========================================================= */
 'use strict';
 
-var cfg = (window.SELECTAI_CONFIG || {}).firebase;
-var firebaseReady = false;
-var auth;
-
-/* ── Firebase init ─────────────────────────────────────── */
-if (cfg && cfg.apiKey && cfg.apiKey !== 'YOUR_API_KEY') {
-  if (!firebase.apps.length) firebase.initializeApp(cfg);
-  auth = firebase.auth();
-  firebaseReady = true;
-  auth.onAuthStateChanged(function (user) {
-    if (user) window.location.replace('index.html');
-  });
-} else {
-  var devBanner = document.createElement('div');
-  devBanner.className = 'dev-banner';
-  devBanner.innerHTML = '⚙️ <strong>Dev mode</strong> — Firebase not configured. '
-    + '<a href="index.html" style="color:inherit;text-decoration:underline">Continue without auth →</a>';
-  document.getElementById('panelLogin').insertBefore(devBanner, document.getElementById('panelLogin').firstChild);
+/* ── If already logged in, skip to the site ───────────── */
+if (localStorage.getItem('selectai_token')) {
+  window.location.replace('index.html');
 }
 
 /* ── Panel management ──────────────────────────────────── */
-var PANELS = ['panelLogin','panelSignup','panelOtp','panelForgot'];
+var PANELS = ['panelLogin','panelSignup','panelOtp','panelForgot','panelReset'];
 var currentPanel = 'panelLogin';
 
 function showPanel(id) {
   PANELS.forEach(function (p) {
-    document.getElementById(p).classList.toggle('active', p === id);
+    var el = document.getElementById(p);
+    if (el) el.classList.toggle('active', p === id);
   });
-  /* Hide tabs when on OTP/Forgot panels */
+  /* Hide tabs when on OTP/Forgot/Reset panels */
   var tabsVisible = (id === 'panelLogin' || id === 'panelSignup');
-  document.querySelector('.auth-tabs').style.display = tabsVisible ? '' : 'none';
+  var tabs = document.querySelector('.auth-tabs');
+  if (tabs) tabs.style.display = tabsVisible ? '' : 'none';
   currentPanel = id;
   clearMessages();
 }
@@ -767,51 +815,65 @@ function setLoading(on) {
   document.querySelectorAll('.oauth-btn, .auth-btn').forEach(function (b) { b.disabled = on; });
 }
 
-/* ── Signup form data & validation ────────────────────── */
-function getSignupData() {
-  return {
+/* ── Sign In ───────────────────────────────────────────── */
+window.handleSignIn = function () {
+  var email    = (document.getElementById('liEmail').value    || '').trim();
+  var password = (document.getElementById('liPassword').value || '');
+  if (!email || !password) { showError('Please enter your email and password.'); return; }
+  clearMessages();
+  setLoading(true);
+  SelectAI_API.login(email, password)
+    .then(function () {
+      setLoading(false);
+      window.location.replace('index.html');
+    })
+    .catch(function (err) {
+      setLoading(false);
+      showError(err.message || 'Sign in failed. Please try again.');
+    });
+};
+
+/* ── Sign Up ───────────────────────────────────────────── */
+window.handleSignUp = function () {
+  var data = {
     firstName: (document.getElementById('spFirstName').value || '').trim(),
     lastName:  (document.getElementById('spLastName').value  || '').trim(),
     phone:     (document.getElementById('spPhone').value     || '').trim(),
     email:     (document.getElementById('spEmail').value     || '').trim(),
     country:   (document.getElementById('spCountry').value   || '').trim(),
-    city:      (document.getElementById('spCity').value      || '').trim()
+    city:      (document.getElementById('spCity').value      || '').trim(),
+    password:  (document.getElementById('spPassword').value  || ''),
+    confirm:   (document.getElementById('spConfirm').value   || '')
   };
-}
-function validateSignup(d) {
-  if (d.firstName.length < 2)                        return 'Please enter a valid first name (min 2 characters).';
-  if (d.lastName.length  < 2)                        return 'Please enter a valid last name (min 2 characters).';
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email))  return 'Please enter a valid email address.';
-  if (!d.country)                                    return 'Please select your country.';
-  if (d.city.length < 2)                             return 'Please enter your city.';
-  return '';
-}
-
-/* ── Firestore user upsert → now via backend API ──────── */
-function upsertUser(user, formData, provider) {
-  var nameParts = (user.displayName || '').split(' ');
-  return SelectAI_API.upsertUser({
-    firstName: formData ? formData.firstName : (nameParts[0] || ''),
-    lastName:  formData ? formData.lastName  : (nameParts.slice(1).join(' ') || ''),
-    phone:     formData ? (formData.phone    || '') : '',
-    country:   formData ? (formData.country  || '') : '',
-    city:      formData ? (formData.city     || '') : '',
-    provider:  provider,
-    photoURL:  user.photoURL || ''
-  });
-}
+  if (data.firstName.length < 2)                        { showError('First name must be at least 2 characters.'); return; }
+  if (data.lastName.length  < 2)                        { showError('Last name must be at least 2 characters.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))  { showError('Please enter a valid email address.'); return; }
+  if (!data.country)                                    { showError('Please select your country.'); return; }
+  if (data.city.length < 2)                             { showError('Please enter your city.'); return; }
+  if (data.password.length < 8)                         { showError('Password must be at least 8 characters.'); return; }
+  if (!/[A-Z]/.test(data.password))                     { showError('Password must contain at least one uppercase letter.'); return; }
+  if (!/[0-9]/.test(data.password))                     { showError('Password must contain at least one number.'); return; }
+  if (data.password !== data.confirm)                   { showError('Passwords do not match.'); return; }
+  clearMessages();
+  setLoading(true);
+  SelectAI_API.register(data)
+    .then(function (res) {
+      setLoading(false);
+      initiateOtp(res.user.uid, res.user.email);
+    })
+    .catch(function (err) {
+      setLoading(false);
+      showError(err.message || 'Registration failed. Please try again.');
+    });
+};
 
 /* ═══════════════════════════════════════════════════════════
-   OTP  (6-digit, stored in Firestore, shown on screen in dev)
+   OTP (6-digit, email via backend)
    ═══════════════════════════════════════════════════════════ */
 var _otpUid     = null;
 var _otpCode    = null;
 var _otpTimer   = null;
 var _otpSeconds = 600; /* 10 min */
-
-function _generateOtp() {
-  return String(Math.floor(100000 + Math.random() * 900000));
-}
 
 function _startOtpCountdown() {
   _otpSeconds = 600;
@@ -830,12 +892,7 @@ function _startOtpCountdown() {
   }, 1000);
 }
 
-function _saveOtpToFirestore(uid, code) {
-  /* Legacy stub — OTP is now handled by the backend API */
-  return Promise.resolve();
-}
-
-/** Called after a new user's OAuth succeeds — show OTP panel */
+/** Kick off OTP verification after register */
 function initiateOtp(uid, email) {
   _otpUid = uid;
 
@@ -876,18 +933,6 @@ function initiateOtp(uid, email) {
       showError(err.message || 'Failed to send OTP. Please try again.');
     });
 }
-    inp.value = '';
-    inp.classList.remove('filled');
-  });
-  document.getElementById('otpVerifyBtn').disabled = true;
-  document.getElementById('otpResendBtn').disabled = false;
-
-  showPanel('panelOtp');
-  _startOtpCountdown();
-  /* Focus first input */
-  var first = document.querySelector('.otp-input');
-  if (first) setTimeout(function () { first.focus(); }, 100);
-}
 
 /** Verify OTP entered by user */
 window.verifyOtp = function () {
@@ -896,19 +941,7 @@ window.verifyOtp = function () {
 
   if (entered.length !== 6) { showError('Please enter all 6 digits.'); return; }
 
-  /* Dev mode (no backend): compare locally to devCode */
-  if (!firebaseReady && _otpCode) {
-    if (entered === _otpCode) {
-      clearInterval(_otpTimer);
-      showSuccess('Email verified! Redirecting…');
-      setTimeout(function () { window.location.replace('index.html'); }, 1200);
-    } else {
-      showError('Incorrect code. Please try again.');
-    }
-    return;
-  }
-
-  /* Production: verify via backend API */
+  /* Always verify via backend API */
   setLoading(true);
   SelectAI_API.verifyOtp(entered)
     .then(function () {
@@ -954,12 +987,83 @@ window.resendOtp = function () {
 
 window.cancelOtp = function () {
   clearInterval(_otpTimer);
-  if (firebaseReady && auth.currentUser) auth.signOut();
   showPanel('panelLogin');
 };
 
-/* OTP input — auto-advance / backspace / paste */
+/* ═══════════════════════════════════════════════════════════
+   FORGOT PASSWORD
+   ═══════════════════════════════════════════════════════════ */
+window.showForgotPanel = function (show) {
+  if (show === false) {
+    showPanel('panelLogin');
+    document.getElementById('tabLogin').classList.add('active');
+    document.getElementById('tabSignup').classList.remove('active');
+    return;
+  }
+  showPanel('panelForgot');
+};
+
+window.handleForgotPassword = function () {
+  var email = (document.getElementById('forgotEmail').value || '').trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showError('Please enter a valid email address.'); return;
+  }
+  var btn = document.getElementById('forgotBtn');
+  btn.disabled = true;
+  clearMessages();
+  SelectAI_API.forgotPassword(email)
+    .then(function (res) {
+      showSuccess(res.message || 'If an account exists for that email, a reset link has been sent.');
+      document.getElementById('forgotEmail').value = '';
+    })
+    .catch(function (err) {
+      showError(err.message || 'Failed to send reset email. Please try again.');
+    })
+    .finally(function () { btn.disabled = false; });
+};
+
+/* ═══════════════════════════════════════════════════════════
+   SET NEW PASSWORD (from ?reset= link)
+   ═══════════════════════════════════════════════════════════ */
+window.handleSetNewPassword = function () {
+  var password = (document.getElementById('resetPassword').value || '');
+  var confirm  = (document.getElementById('resetConfirm').value  || '');
+  if (password.length < 8)           { showError('Password must be at least 8 characters.');        return; }
+  if (!/[A-Z]/.test(password))       { showError('Password must contain at least one uppercase letter.'); return; }
+  if (!/[0-9]/.test(password))       { showError('Password must contain at least one number.');     return; }
+  if (password !== confirm)          { showError('Passwords do not match.');                        return; }
+
+  var params = new URLSearchParams(window.location.search);
+  var token  = params.get('reset');
+  if (!token) { showError('Invalid or missing reset token. Please request a new link.'); return; }
+
+  var btn = document.getElementById('resetBtn');
+  btn.disabled = true;
+  clearMessages();
+  SelectAI_API.resetPassword(token, password)
+    .then(function (res) {
+      showSuccess(res.message || 'Password updated! Redirecting to sign in…');
+      setTimeout(function () {
+        window.history.replaceState({}, '', 'login.html');
+        showPanel('panelLogin');
+      }, 2000);
+    })
+    .catch(function (err) {
+      showError(err.message || 'Failed to reset password. The link may have expired.');
+    })
+    .finally(function () { btn.disabled = false; });
+};
+
+/* ── On page load: check for ?reset= token ─────────────── */
 document.addEventListener('DOMContentLoaded', function () {
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('reset')) {
+    /* Remove token from URL without page reload */
+    showPanel('panelReset');
+    document.querySelector('.auth-tabs').style.display = 'none';
+  }
+
+  /* OTP input — auto-advance / backspace / paste */
   var inputs = document.querySelectorAll('.otp-input');
   inputs.forEach(function (inp, idx) {
     inp.addEventListener('input', function () {
@@ -988,127 +1092,33 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
-function checkOtpComplete(inputs) {
-  var filled = Array.from(inputs).every(function (i) { return i.value !== ''; });
-  document.getElementById('otpVerifyBtn').disabled = !filled;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   FORGOT PASSWORD
-   ═══════════════════════════════════════════════════════════ */
-window.showForgotPanel = function (show) {
-  if (show === false) {
-    showPanel('panelLogin');
-    document.getElementById('tabLogin').classList.add('active');
-    document.getElementById('tabSignup').classList.remove('active');
-    return;
-  }
-  showPanel('panelForgot');
+/* ── Password strength meter ────────────────────────────── */
+window.updatePwStrength = function (val, prefix) {
+  var barId   = prefix === 'reset' ? 'pwStrengthFillReset'  : 'pwStrengthFill';
+  var labelId = prefix === 'reset' ? 'pwStrengthLabelReset' : 'pwStrengthLabel';
+  var fill    = document.getElementById(barId);
+  var label   = document.getElementById(labelId);
+  if (!fill || !label) return;
+  var score = 0;
+  if (val.length >= 8)         score++;
+  if (/[A-Z]/.test(val))       score++;
+  if (/[0-9]/.test(val))       score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  var pct    = ['0%','25%','50%','75%','100%'][score];
+  var colour = ['#ff4444','#ff4444','#ffaa00','#88cc00','#00cc66'][score];
+  var text   = ['','Weak','Fair','Good','Strong'][score];
+  fill.style.width      = pct;
+  fill.style.background = colour;
+  label.textContent     = text;
+  label.style.color     = colour;
 };
 
-window.handleForgotPassword = function () {
-  var email = (document.getElementById('forgotEmail').value || '').trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    showError('Please enter a valid email address.'); return;
-  }
-
-  if (!firebaseReady) {
-    /* Dev mode: simulate */
-    showSuccess('Reset link sent! Check your inbox. (Dev mode — no email actually sent.)');
-    return;
-  }
-
-  var btn = document.getElementById('forgotBtn');
-  btn.disabled = true;
-  clearMessages();
-  auth.sendPasswordResetEmail(email)
-    .then(function () {
-      showSuccess('Password reset email sent to ' + email + '. Check your inbox and spam folder.');
-      document.getElementById('forgotEmail').value = '';
-    })
-    .catch(function (err) {
-      var msg = err.code === 'auth/user-not-found'
-        ? 'No account found with that email address.'
-        : (err.message || 'Failed to send reset email. Please try again.');
-      showError(msg);
-    })
-    .finally(function () { btn.disabled = false; });
-};
-
-/* ═══════════════════════════════════════════════════════════
-   OAUTH HANDLERS
-   ═══════════════════════════════════════════════════════════ */
-function handleAuthError(err) {
-  setLoading(false);
-  var msg;
-  switch (err.code) {
-    case 'auth/popup-closed-by-user':    msg = 'Sign-in popup was closed. Please try again.'; break;
-    case 'auth/popup-blocked':           msg = 'Popup blocked. Please allow popups for this site.'; break;
-    case 'auth/cancelled-popup-request': msg = 'Another sign-in is in progress. Please wait.'; break;
-    case 'auth/operation-not-supported-in-this-environment':
-      msg = 'Apple Sign-In requires HTTPS. Use a secure connection.'; break;
-    default: msg = err.message || 'Authentication failed. Please try again.';
-  }
-  showError(msg);
-}
-
-window.handleGoogle = function (isSignup) {
-  if (!firebaseReady) { window.location.replace('index.html'); return; }
-  var formData = null;
-  if (isSignup) {
-    formData = getSignupData();
-    var err = validateSignup(formData);
-    if (err) { showError(err); return; }
-  }
-  clearMessages();
-  setLoading(true);
-  var provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider)
-    .then(function (result) {
-      var isNew = result.additionalUserInfo && result.additionalUserInfo.isNewUser;
-      return upsertUser(result.user, formData, 'google')
-        .then(function () { return { user: result.user, isNew: isNew }; });
-    })
-    .then(function (res) {
-      setLoading(false);
-      if (res.isNew || isSignup) {
-        /* New user — require OTP verification */
-        initiateOtp(res.user.uid, res.user.email);
-      } else {
-        window.location.replace('index.html');
-      }
-    })
-    .catch(handleAuthError);
-};
-
-window.handleApple = function (isSignup) {
-  if (!firebaseReady) { window.location.replace('index.html'); return; }
-  var formData = null;
-  if (isSignup) {
-    formData = getSignupData();
-    var valErr = validateSignup(formData);
-    if (valErr) { showError(valErr); return; }
-  }
-  clearMessages();
-  setLoading(true);
-  var provider = new firebase.auth.OAuthProvider('apple.com');
-  provider.addScope('name');
-  provider.addScope('email');
-  auth.signInWithPopup(provider)
-    .then(function (result) {
-      var isNew = result.additionalUserInfo && result.additionalUserInfo.isNewUser;
-      return upsertUser(result.user, formData, 'apple')
-        .then(function () { return { user: result.user, isNew: isNew }; });
-    })
-    .then(function (res) {
-      setLoading(false);
-      if (res.isNew || isSignup) {
-        initiateOtp(res.user.uid, res.user.email);
-      } else {
-        window.location.replace('index.html');
-      }
-    })
-    .catch(handleAuthError);
+/* ── Toggle password visibility ─────────────────────────── */
+window.togglePw = function (id, btn) {
+  var inp = document.getElementById(id);
+  if (!inp) return;
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.setAttribute('aria-pressed', inp.type === 'text');
 };
 </script>
 </body>

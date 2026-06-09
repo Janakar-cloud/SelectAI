@@ -1,49 +1,51 @@
 /* =========================================================
-   SelectAI — api.js
+   SelectAI — api.js  v20260609d
    Centralised API client for all backend calls.
-   Automatically attaches Firebase ID token to every
-   authenticated request.
+   Reads JWT from localStorage('selectai_token').
    ========================================================= */
 'use strict';
 
 (function (global) {
 
-  /* Get current Firebase ID token, or null in dev mode */
+  var TOKEN_KEY = 'selectai_token';
+
+  /* Get stored JWT, or null if not present */
   function _getToken() {
-    try {
-      if (typeof firebase === 'undefined' ||
-          !firebase.apps || !firebase.apps.length) return Promise.resolve(null);
-      var user = firebase.auth().currentUser;
-      if (!user) return Promise.resolve(null);
-      return user.getIdToken(/* forceRefresh= */false);
-    } catch (e) {
-      return Promise.resolve(null);
-    }
+    try { return localStorage.getItem(TOKEN_KEY); } catch (e) { return null; }
+  }
+
+  /* Save token returned after login / register */
+  function _setToken(t) {
+    try { if (t) localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
+  }
+
+  /* Clear token on sign-out */
+  function _clearToken() {
+    try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
   }
 
   /**
    * Core fetch wrapper.
-   * @param {string}  path       - API path, e.g. '/api/admin/users'
-   * @param {object}  opts       - fetch options
-   * @param {boolean} withAuth   - attach Bearer token (default: true)
+   * @param {string}  path     - API path, e.g. '/api/admin/users'
+   * @param {object}  opts     - fetch options
+   * @param {boolean} withAuth - attach Bearer token (default: true)
    */
   function request(path, opts, withAuth) {
     opts         = Object.assign({}, opts);
     opts.headers = Object.assign({ 'Content-Type': 'application/json' }, opts.headers || {});
 
-    var tokenPromise = (withAuth !== false) ? _getToken() : Promise.resolve(null);
+    if (withAuth !== false) {
+      var token = _getToken();
+      if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+    }
 
-    return tokenPromise
-      .then(function (token) {
-        if (token) opts.headers['Authorization'] = 'Bearer ' + token;
-        return fetch(path, opts);
-      })
+    return fetch(path, opts)
       .then(function (res) {
         if (!res.ok) {
           return res.json()
             .catch(function () { return {}; })
             .then(function (body) {
-              var err   = new Error(body.message || 'Request failed (' + res.status + ')');
+              var err    = new Error(body.message || 'Request failed (' + res.status + ')');
               err.status = res.status;
               throw err;
             });
@@ -56,14 +58,37 @@
   global.SelectAI_API = {
 
     /* Auth */
-    upsertUser: function (data) {
-      return request('/api/auth/user', {
+    register: function (data) {
+      return request('/api/auth/register', {
         method: 'POST',
         body:   JSON.stringify(data)
-      });
+      }, /* withAuth= */ false)
+        .then(function (res) { _setToken(res.token); return res; });
+    },
+    login: function (email, password) {
+      return request('/api/auth/login', {
+        method: 'POST',
+        body:   JSON.stringify({ email: email, password: password })
+      }, /* withAuth= */ false)
+        .then(function (res) { _setToken(res.token); return res; });
     },
     getMe: function () {
       return request('/api/auth/me');
+    },
+    forgotPassword: function (email) {
+      return request('/api/auth/forgot-password', {
+        method: 'POST',
+        body:   JSON.stringify({ email: email })
+      }, /* withAuth= */ false);
+    },
+    resetPassword: function (token, password) {
+      return request('/api/auth/reset-password', {
+        method: 'POST',
+        body:   JSON.stringify({ token: token, password: password })
+      }, /* withAuth= */ false);
+    },
+    signOut: function () {
+      _clearToken();
     },
 
     /* OTP */

@@ -8,10 +8,10 @@ const mongoose = require('mongoose');
  */
 const sessionSchema = new mongoose.Schema(
   {
-    uid:         { type: String, required: true, unique: true, index: true },
+    uid:         { type: String, required: true, unique: true },
     email:       { type: String, default: '' },
     displayName: { type: String, default: '' },
-    lastActive:  { type: Date,   default: Date.now, index: true }
+    lastActive:  { type: Date,   default: Date.now }
   },
   {
     timestamps: false

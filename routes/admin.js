@@ -1,7 +1,8 @@
 'use strict';
 const router     = require('express').Router();
 const nodemailer = require('nodemailer');
-const { verifyToken, requireAdmin, admin } = require('../middleware/auth');
+const jwt                                   = require('jsonwebtoken');
+const { verifyToken, requireAdmin }         = require('../middleware/auth');
 const User          = require('../models/User');
 const Enquiry       = require('../models/Enquiry');
 const ActiveSession = require('../models/ActiveSession');
@@ -65,7 +66,7 @@ router.get('/enquiries', async (req, res, next) => {
 
 /* ─────────────────────────────────────────────────────────
    POST /api/admin/users/:uid/reset-password
-   Generates a Firebase password reset link and emails it.
+   Generates a JWT-based password reset link and emails it.
 ───────────────────────────────────────────────────────── */
 router.post('/users/:uid/reset-password', async (req, res, next) => {
   try {
@@ -73,16 +74,14 @@ router.post('/users/:uid/reset-password', async (req, res, next) => {
     if (!user)        return res.status(404).json({ message: 'User not found in database.' });
     if (!user.email)  return res.status(400).json({ message: 'User has no email address.' });
 
-    /* Generate Firebase password reset link */
-    let resetLink;
-    try {
-      resetLink = await admin.auth().generatePasswordResetLink(user.email);
-    } catch (fbErr) {
-      if (fbErr.code === 'auth/user-not-found') {
-        return res.status(404).json({ message: 'No Firebase Auth account found for ' + user.email + '. (OAuth-only users cannot use password reset.)' });
-      }
-      throw fbErr;
-    }
+    /* Generate JWT-based password reset link (1 hour expiry) */
+    const resetToken = jwt.sign(
+      { uid: user.uid, email: user.email, purpose: 'pw-reset' },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+    const base      = (process.env.FRONTEND_URL || 'http://localhost:8080').replace(/\/$/, '');
+    const resetLink = `${base}/login.html?reset=${encodeURIComponent(resetToken)}`;
 
     /* Send reset email via SMTP */
     if (process.env.SMTP_USER) {

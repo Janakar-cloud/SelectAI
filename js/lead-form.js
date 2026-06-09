@@ -129,13 +129,7 @@
 
   /* ── Enquiry persistence via backend API ──────────────── */
   function saveEnquiryToApi(payload) {
-    var uid = '';
-    try {
-      if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
-        var user = firebase.auth().currentUser;
-        if (user) uid = user.uid;
-      }
-    } catch (e) { /* ignore */ }
+    var uid = (window.SELECTAI_USER && window.SELECTAI_USER.uid) ? window.SELECTAI_USER.uid : '';
 
     if (window.SelectAI_API) {
       SelectAI_API.submitEnquiry(Object.assign({}, payload, { userId: uid }))
