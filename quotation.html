@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Quotation — SelectAI Innovations</title>
+  <link rel="icon" type="image/png" href="1_logo_png/2_black_logo_png/5_selectAi%20logo%20mark%20black.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0a0e1a;
+      --surface:   #111827;
+      --surface2:  #1a2236;
+      --border:    #1e2d45;
+      --accent:    #3b82f6;
+      --cyan:      #22d3ee;
+      --green:     #10b981;
+      --orange:    #f59e0b;
+      --pink:      #ec4899;
+      --purple:    #8b5cf6;
+      --text:      #f1f5f9;
+      --muted:     #94a3b8;
+      --dim:       #64748b;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 40px 20px 60px;
+    }
+
+    .page { max-width: 860px; margin: 0 auto; }
+
+    /* ── HEADER ── */
+    .q-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 24px;
+      padding: 36px 40px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px 20px 0 0;
+      border-bottom: none;
+    }
+
+    .q-logo img { height: 42px; }
+
+    .q-meta { text-align: right; }
+    .q-meta h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: .04em;
+    }
+    .q-meta .q-number { font-size: .82rem; color: var(--muted); margin-top: 6px; }
+    .q-meta .q-date   { font-size: .82rem; color: var(--dim);   margin-top: 3px; }
+
+    /* ── PARTIES ── */
+    .q-parties {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-bottom: none;
+    }
+
+    .q-party {
+      padding: 28px 40px;
+    }
+    .q-party + .q-party { border-left: 1px solid var(--border); }
+
+    .q-party-label {
+      font-size: .72rem;
+      font-family: 'Orbitron', monospace;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin-bottom: 10px;
+    }
+    .q-party-name  { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .q-party-info  { font-size: .84rem; color: var(--muted); line-height: 1.7; }
+
+    /* ── PROJECT SCOPE ── */
+    .q-scope {
+      padding: 28px 40px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-bottom: none;
+    }
+
+    .q-section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--cyan);
+      margin-bottom: 14px;
+    }
+
+    .q-scope-desc { font-size: .9rem; color: var(--muted); line-height: 1.8; }
+
+    /* ── LINE ITEMS TABLE ── */
+    .q-table-wrap {
+      border: 1px solid var(--border);
+      border-top: none;
+      border-bottom: none;
+      overflow-x: auto;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: .87rem; }
+
+    thead tr { background: var(--surface2); }
+    thead th {
+      padding: 14px 20px;
+      text-align: left;
+      font-family: 'Orbitron', monospace;
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    thead th:last-child { text-align: right; }
+
+    tbody tr { border-top: 1px solid var(--border); }
+    tbody tr:hover td { background: rgba(255,255,255,.02); }
+
+    tbody td { padding: 16px 20px; vertical-align: top; }
+    tbody td:last-child { text-align: right; white-space: nowrap; font-weight: 600; }
+
+    .td-phase {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      line-height: 28px;
+      text-align: center;
+      font-size: .72rem;
+      font-family: 'Orbitron', monospace;
+      font-weight: 700;
+      margin-right: 6px;
+      flex-shrink: 0;
+    }
+
+    .item-name  { font-weight: 600; color: #fff; }
+    .item-desc  { font-size: .8rem; color: var(--muted); margin-top: 4px; line-height: 1.55; }
+    .item-tags  { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+    .item-tag   {
+      font-size: .7rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--dim);
+      background: var(--surface2);
+    }
+
+    .amount { font-family: 'Orbitron', monospace; font-size: .92rem; }
+
+    /* row accent colours */
+    .row-blue   td:first-child { border-left: 3px solid var(--accent); }
+    .row-cyan   td:first-child { border-left: 3px solid var(--cyan); }
+    .row-green  td:first-child { border-left: 3px solid var(--green); }
+    .row-orange td:first-child { border-left: 3px solid var(--orange); }
+    .row-purple td:first-child { border-left: 3px solid var(--purple); }
+    .row-pink   td:first-child { border-left: 3px solid var(--pink); }
+    .row-red    td:first-child { border-left: 3px solid #f87171; }
+    .row-teal   td:first-child { border-left: 3px solid #2dd4bf; }
+    .row-yellow td:first-child { border-left: 3px solid #facc15; }
+    .row-indigo td:first-child { border-left: 3px solid #818cf8; }
+    .row-gray   td:first-child { border-left: 3px solid var(--dim); }
+
+    .phase-blue   { background: rgba(59,130,246,.18); color: var(--accent); }
+    .phase-cyan   { background: rgba(34,211,238,.15); color: var(--cyan); }
+    .phase-green  { background: rgba(16,185,129,.15); color: var(--green); }
+    .phase-orange { background: rgba(245,158,11,.15); color: var(--orange); }
+    .phase-purple { background: rgba(139,92,246,.15); color: var(--purple); }
+    .phase-pink   { background: rgba(236,72,153,.15); color: var(--pink); }
+    .phase-red    { background: rgba(248,113,113,.15); color: #f87171; }
+    .phase-teal   { background: rgba(45,212,191,.15); color: #2dd4bf; }
+    .phase-yellow { background: rgba(250,204,21,.12); color: #facc15; }
+    .phase-indigo { background: rgba(129,140,248,.15); color: #818cf8; }
+    .phase-gray   { background: rgba(100,116,139,.15); color: var(--muted); }
+
+    /* ── TOTALS ── */
+    .q-totals {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-top: none;
+      padding: 28px 40px;
+    }
+
+    .q-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+      font-size: .9rem;
+    }
+    .q-total-row:last-child { border-bottom: none; }
+
+    .q-total-label { color: var(--muted); }
+
+    .q-grand {
+      margin-top: 16px;
+      padding: 20px 24px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(59,130,246,.12), rgba(34,211,238,.08));
+      border: 1px solid rgba(34,211,238,.25);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .q-grand-label {
+      font-family: 'Orbitron', monospace;
+      font-size: .9rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: .06em;
+    }
+
+    .q-grand-amount {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.7rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── PAYMENT TERMS ── */
+    .q-payment {
+      padding: 28px 40px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+    }
+
+    .q-milestones {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .q-milestone {
+      padding: 18px 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      text-align: center;
+    }
+
+    .q-milestone-pct {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--cyan), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .q-milestone-amt  { font-size: .82rem; color: var(--muted); margin-top: 4px; font-weight: 600; }
+    .q-milestone-when { font-size: .77rem; color: var(--dim); margin-top: 6px; line-height: 1.5; }
+
+    /* ── DELIVERABLES ── */
+    .q-deliverables {
+      padding: 28px 40px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-top: none;
+    }
+
+    .q-checklist {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .q-check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      font-size: .84rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .q-check-item::before {
+      content: '✓';
+      color: var(--green);
+      font-weight: 700;
+      flex-shrink: 0;
+      font-size: .9rem;
+    }
+
+    /* ── TIMELINE ── */
+    .q-timeline {
+      padding: 28px 40px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+    }
+
+    .q-timeline-bars {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .q-tl-row {
+      display: grid;
+      grid-template-columns: 180px 1fr 60px;
+      align-items: center;
+      gap: 12px;
+      font-size: .82rem;
+    }
+
+    .q-tl-label { color: var(--muted); }
+    .q-tl-bar-bg { background: var(--border); border-radius: 999px; height: 8px; overflow: hidden; }
+    .q-tl-bar { height: 100%; border-radius: 999px; }
+    .q-tl-days { color: var(--dim); text-align: right; font-size: .78rem; }
+
+    /* ── TERMS ── */
+    .q-terms {
+      padding: 24px 40px 28px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-top: none;
+    }
+
+    .q-terms-list {
+      list-style: none;
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .q-terms-list li {
+      font-size: .82rem;
+      color: var(--dim);
+      line-height: 1.6;
+      display: flex;
+      gap: 8px;
+    }
+
+    .q-terms-list li::before { content: '•'; color: var(--accent); flex-shrink: 0; }
+
+    /* ── FOOTER ── */
+    .q-footer {
+      padding: 24px 40px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 20px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .q-footer-note { font-size: .8rem; color: var(--dim); line-height: 1.6; max-width: 420px; }
+    .q-footer-contact { font-size: .82rem; color: var(--muted); text-align: right; line-height: 1.8; }
+    .q-footer-contact a { color: var(--cyan); text-decoration: none; }
+
+    .q-valid-badge {
+      margin-top: 20px;
+      text-align: center;
+      font-size: .77rem;
+      color: var(--dim);
+      font-family: 'Orbitron', monospace;
+      letter-spacing: .06em;
+    }
+
+    @media print {
+      body { background: #fff; color: #111; padding: 0; }
+      .q-grand-amount, .q-logo img, .q-milestone-pct { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+
+    @media (max-width: 640px) {
+      .q-header, .q-party, .q-scope, .q-payment,
+      .q-deliverables, .q-timeline, .q-terms, .q-totals, .q-footer {
+        padding: 22px 20px;
+      }
+      .q-parties    { grid-template-columns: 1fr; }
+      .q-milestones { grid-template-columns: 1fr; }
+      .q-checklist  { grid-template-columns: 1fr; }
+      .q-tl-row     { grid-template-columns: 130px 1fr 50px; }
+      .q-meta { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="q-header">
+    <div class="q-logo">
+      <img src="1_logo_png/1_main_logo_png/5_selectAi%20word%20mark2.png" alt="SelectAI Innovations" />
+    </div>
+    <div class="q-meta">
+      <h1>QUOTATION</h1>
+      <div class="q-number">Ref # SAI-2026-0525</div>
+      <div class="q-date">Date: 25 May 2026 &nbsp;|&nbsp; Valid for 30 days</div>
+    </div>
+  </div>
+
+  <!-- PARTIES -->
+  <div class="q-parties">
+    <div class="q-party">
+      <div class="q-party-label">Prepared By</div>
+      <div class="q-party-name">SelectAI Innovations</div>
+      <div class="q-party-info">
+        Future Ready AI Solutions<br />
+        Established by 2 Strong Women<br />
+        <a href="https://github.com/Janakar-cloud/SelectAI" style="color:#22d3ee;text-decoration:none;font-size:.82rem;">github.com/Janakar-cloud/SelectAI</a>
+      </div>
+    </div>
+    <div class="q-party">
+      <div class="q-party-label">Prepared For</div>
+      <div class="q-party-name">Client / Organisation</div>
+      <div class="q-party-info">
+        [Client Name]<br />
+        [Organisation]<br />
+        [Email / Phone]
+      </div>
+    </div>
+  </div>
+
+  <!-- SCOPE -->
+  <div class="q-scope">
+    <div class="q-section-title">Project Scope</div>
+    <div class="q-scope-desc">
+      End-to-end website project covering UI/UX design, frontend development, content integration,
+      performance optimisation, quality assurance, domain registration, one-year managed hosting,
+      SSL security, and 30-day post-launch support. Deliverable is a fully responsive, production-ready
+      website deployed on a live URL.
+    </div>
+  </div>
+
+  <!-- LINE ITEMS -->
+  <div class="q-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:50%">Description</th>
+          <th>Phase</th>
+          <th>Duration</th>
+          <th>Amount (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- 1 Discovery -->
+        <tr class="row-blue">
+          <td>
+            <div class="item-name"><span class="td-phase phase-blue">01</span>Discovery &amp; Planning</div>
+            <div class="item-desc">Requirement gathering, competitor analysis, sitemap, technical specification document, and project kickoff meeting.</div>
+            <div class="item-tags"><span class="item-tag">Requirements</span><span class="item-tag">Sitemap</span><span class="item-tag">Tech Spec</span></div>
+          </td>
+          <td style="color:var(--muted);font-size:.82rem;">Pre-production</td>
+          <td style="color:var(--dim);font-size:.82rem;">2 days</td>
+          <td><span class="amount">₹ 1,500</span></td>
+        </tr>
+
+        <!-- 2 UI/UX Design -->
+        <tr class="row-cyan">
+          <td>
+            <div class="item-name"><span class="td-phase phase-cyan">02</span>UI/UX Design</div>
+            <div class="item-desc">Wireframes for all pages, high-fidelity mockups (desktop + mobile), colour system, typography system, component library, and design review session.</div>
+            <div class="item-tags"><span class="item-tag">Wireframes</span><span class="item-tag">Mockups</span><span class="item-tag">Style Guide</span><span class="item-tag">Figma</span></div>
+          </td>
+          <td style="color:var(--muted);font-size:.82rem;">Design</td>
+          <td style="color:var(--dim);font-size:.82rem;">5 days</td>
+          <td><span class="amount">₹ 5,000</span></td>
+        </tr>
+
+        <!-- 3 Frontend Dev -->
+        <tr class="row-purple">
+          <td>
+            <div class="item-name"><span class="td-phase phase-purple">03</span>Frontend Development</div>
+            <div class="item-desc">Pixel-perfect HTML5/CSS3/JavaScript coding of all designed pages, animations, scroll interactions, navigation, forms, KPI counters, and all UI components.</div>
+            <div class="item-tags"><span class="item-tag">HTML5</span><span class="item-tag">CSS3</span><span class="item-tag">JavaScript</span><span class="item-tag">Animations</span></div>
+          </td>
+          <td style="color:var(--muted);font-size:.82rem;">Development</td>
+          <td style="color:var(--dim);font-size:.82rem;">10 days</td>
+          <td><span class="amount">₹ 10,000</span></td>
+        </tr>
+
+        <!-- 4 Responsive -->
+        <tr class="row-green">
+          <td>
+            <div class="item-name"><span class="td-phase phase-green">04</span>Responsive &amp; Mobile Optimisation</div>
+            <div class="item-desc">Cross-device testing and adaptation for mobile, tablet, and desktop viewports. Includes hamburger menu, touch interactions, and viewport-specific layout fixes.</div>
+            <div class="item-tags"><span class="item-tag">Mobile-first</span><span class="item-tag">Tablet</span><span class="item-tag">Cross-browser</span></div>
+          </td>
+          <td style="color:var(--muted);font-size:.82rem;">Development</td>
+          <td style="color:var(--dim);font-size:.82rem;">3 days</td>
+          <td><span class="amount">₹ 2,500</span></td>
+        </tr>
+
+        <!-- 5 Content -->
+        <tr class="row-orange">
+          <td>
+            <div class="item-name"><span class="td-phase phase-orange">05</span>Content Integration</div>
+            <div class="item-desc">Integration of client-provided text, images, videos, and logos into all pages. Basic image optimisation (compression, WebP conversion, alt tags).</div>
+            <div class="item-tags"><span class="item-tag">Copy Integration</span><span class="item-tag">Image Optimisation</span><span class="item-tag">Logos</span></div>
+          </td>
+          <td style="color:var(--muted);font-size:.82rem;">Development</td>
+          <td style="color:var(--dim);font-size:.82rem;">2 days</td>
+          <td><span class="amount">₹ 2,000</span></td>
+        </tr>
+
+        <!-- 6 SEO & Performance -->
+        <tr class="row-teal">
+          <td>
+            <div class="item-name"><span class="td-phase phase-teal">06</span>SEO &amp; Performance Optimisation</div>
+            <div class="item-desc">On-page SEO setup (meta tags, OG tags, semantic HTML, structured data), page speed optimisation, asset minification, lazy loading, and Google PageSpeed score ≥ 90.</div>
+            <div class="item-tags"><span class="item-tag">Meta Tags</span><span class="item-tag">PageSpeed</span><span class="item-tag">Minification</span><span class="item-tag">Schema</span></div>
+          </td>
+          <td style="color:var(--muted);font-size:.82rem;">Optimisation</td>
+          <td style="color:var(--dim);font-size:.82rem;">2 days</td>
+          <td><span class="amount">₹ 2,000</span></td>
+        </tr>
+
+        <!-- 7 QA -->
+        <tr class="row-red">
+          <td>
+            <div class="item-name"><span class="td-phase phase-red">07</span>Testing &amp; Quality Assurance</div>
+            <div class="item-desc">Functional testing across Chrome, Edge, Firefox, Safari; mobile device testing; form validation testing; accessibility audit (WCAG AA); and bug-fix cycle.</div>
+            <div class="item-tags"><span class="item-tag">Cross-browser</span><span class="item-tag">Accessibility</span><span class="item-tag">Bug Fixes</span></div>
+          </td>
+          <td style="color:var(--muted);font-size:.82rem;">QA</td>
+          <td style="color:var(--dim);font-size:.82rem;">2 days</td>
+          <td><span class="amount">₹ 1,500</span></td>
+        </tr>
+
+        <!-- 8 Domain -->
+        <tr class="row-yellow">
+          <td>
+            <div class="item-name"><span class="td-phase phase-yellow">08</span>Domain Registration (1 Year)</div>
+            <div class="item-desc">Registration of a .com / .in / .co.in domain of client's choice for 1 year, including DNS configuration and domain pointing to hosting server.</div>
+            <div class="item-tags"><span class="item-tag">.com / .in</span><span class="item-tag">DNS Setup</span><span class="item-tag">1 Year</span></div>
+          </td>
+          <td style="color:var(--muted);font-size:.82rem;">Infrastructure</td>
+          <td style="color:var(--dim);font-size:.82rem;">1 day</td>
+          <td><span class="amount">₹ 1,000</span></td>
+        </tr>
+
+        <!-- 9 Hosting -->
+        <tr class="row-indigo">
+          <td>
+            <div class="item-name"><span class="td-phase phase-indigo">09</span>Web Hosting (1 Year)</div>
+            <div class="item-desc">Managed cloud hosting for 1 year — 99.9% uptime SLA, CDN-backed global delivery, automated daily backups, cPanel access, and 10 GB SSD storage.</div>
+            <div class="item-tags"><span class="item-tag">Cloud Hosting</span><span class="item-tag">CDN</span><span class="item-tag">Daily Backups</span><span class="item-tag">99.9% Uptime</span></div>
+          </td>
+          <td style="color:var(--muted);font-size:.82rem;">Infrastructure</td>
+          <td style="color:var(--dim);font-size:.82rem;">—</td>
+          <td><span class="amount">₹ 2,500</span></td>
+        </tr>
+
+        <!-- 10 SSL -->
+        <tr class="row-pink">
+          <td>
+            <div class="item-name"><span class="td-phase phase-pink">10</span>SSL Certificate (HTTPS)</div>
+            <div class="item-desc">Installation and configuration of SSL/TLS certificate for secure HTTPS connections. Includes auto-renewal setup and browser padlock verification.</div>
+            <div class="item-tags"><span class="item-tag">HTTPS</span><span class="item-tag">TLS</span><span class="item-tag">Auto-renew</span></div>
+          </td>
+          <td style="color:var(--muted);font-size:.82rem;">Security</td>
+          <td style="color:var(--dim);font-size:.82rem;">1 day</td>
+          <td><span class="amount">₹ 500</span></td>
+        </tr>
+
+        <!-- 11 Post-launch -->
+        <tr class="row-gray">
+          <td>
+            <div class="item-name"><span class="td-phase phase-gray">11</span>Post-Launch Support (30 Days)</div>
+            <div class="item-desc">30-day warranty period covering bug fixes, minor content updates (up to 3 change requests), uptime monitoring, and technical support via email/WhatsApp.</div>
+            <div class="item-tags"><span class="item-tag">Bug Fixes</span><span class="item-tag">3 Change Requests</span><span class="item-tag">Monitoring</span><span class="item-tag">Support</span></div>
+          </td>
+          <td style="color:var(--muted);font-size:.82rem;">Post-launch</td>
+          <td style="color:var(--dim);font-size:.82rem;">30 days</td>
+          <td><span class="amount">₹ 1,500</span></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TOTALS -->
+  <div class="q-totals">
+    <div class="q-total-row">
+      <span class="q-total-label">Subtotal (Development &amp; Design)</span>
+      <span style="font-family:'Orbitron',monospace;font-size:.85rem;">₹ 25,500</span>
+    </div>
+    <div class="q-total-row">
+      <span class="q-total-label">Infrastructure (Domain + Hosting + SSL)</span>
+      <span style="font-family:'Orbitron',monospace;font-size:.85rem;">₹ 4,000</span>
+    </div>
+    <div class="q-total-row">
+      <span class="q-total-label">Post-launch Support</span>
+      <span style="font-family:'Orbitron',monospace;font-size:.85rem;">₹ 1,500</span>
+    </div>
+    <div class="q-total-row">
+      <span class="q-total-label">GST / Taxes</span>
+      <span style="color:var(--dim);font-size:.82rem;">As applicable (not included)</span>
+    </div>
+    <div class="q-grand">
+      <span class="q-grand-label">TOTAL PROJECT COST</span>
+      <span class="q-grand-amount">₹ 30,000</span>
+    </div>
+  </div>
+
+  <!-- PAYMENT TERMS -->
+  <div class="q-payment">
+    <div class="q-section-title">Payment Schedule</div>
+    <div class="q-milestones">
+      <div class="q-milestone">
+        <div class="q-milestone-pct">50%</div>
+        <div class="q-milestone-amt">₹ 15,000</div>
+        <div class="q-milestone-when">Advance on project confirmation &amp; agreement signing</div>
+      </div>
+      <div class="q-milestone">
+        <div class="q-milestone-pct">30%</div>
+        <div class="q-milestone-amt">₹ 9,000</div>
+        <div class="q-milestone-when">On design approval &amp; development completion (staging review)</div>
+      </div>
+      <div class="q-milestone">
+        <div class="q-milestone-pct">20%</div>
+        <div class="q-milestone-amt">₹ 6,000</div>
+        <div class="q-milestone-when">On final delivery &amp; go-live handover</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELIVERABLES -->
+  <div class="q-deliverables">
+    <div class="q-section-title">What You Receive</div>
+    <div class="q-checklist">
+      <div class="q-check-item">Figma design files (all pages)</div>
+      <div class="q-check-item">Complete source code (HTML/CSS/JS)</div>
+      <div class="q-check-item">Hosted live website on your domain</div>
+      <div class="q-check-item">SSL-secured HTTPS site</div>
+      <div class="q-check-item">Fully responsive (mobile + tablet + desktop)</div>
+      <div class="q-check-item">Google PageSpeed score ≥ 90 (mobile)</div>
+      <div class="q-check-item">On-page SEO &amp; Open Graph setup</div>
+      <div class="q-check-item">GitHub repository with full commit history</div>
+      <div class="q-check-item">Hosting control panel (cPanel) credentials</div>
+      <div class="q-check-item">Domain &amp; DNS ownership transfer</div>
+      <div class="q-check-item">30-day post-launch support window</div>
+      <div class="q-check-item">Setup guide for future collaborators</div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="q-timeline">
+    <div class="q-section-title">Estimated Project Timeline — 25 Days Total</div>
+    <div class="q-timeline-bars">
+      <div class="q-tl-row">
+        <span class="q-tl-label">Discovery &amp; Planning</span>
+        <div class="q-tl-bar-bg"><div class="q-tl-bar" style="width:8%;background:var(--accent)"></div></div>
+        <span class="q-tl-days">Days 1–2</span>
+      </div>
+      <div class="q-tl-row">
+        <span class="q-tl-label">UI/UX Design</span>
+        <div class="q-tl-bar-bg"><div class="q-tl-bar" style="width:28%;background:var(--cyan)"></div></div>
+        <span class="q-tl-days">Days 3–7</span>
+      </div>
+      <div class="q-tl-row">
+        <span class="q-tl-label">Frontend Development</span>
+        <div class="q-tl-bar-bg"><div class="q-tl-bar" style="width:64%;background:var(--purple)"></div></div>
+        <span class="q-tl-days">Days 8–17</span>
+      </div>
+      <div class="q-tl-row">
+        <span class="q-tl-label">Content &amp; SEO</span>
+        <div class="q-tl-bar-bg"><div class="q-tl-bar" style="width:76%;background:#2dd4bf"></div></div>
+        <span class="q-tl-days">Days 18–19</span>
+      </div>
+      <div class="q-tl-row">
+        <span class="q-tl-label">QA &amp; Testing</span>
+        <div class="q-tl-bar-bg"><div class="q-tl-bar" style="width:84%;background:#f87171"></div></div>
+        <span class="q-tl-days">Days 20–21</span>
+      </div>
+      <div class="q-tl-row">
+        <span class="q-tl-label">Deployment &amp; Go-Live</span>
+        <div class="q-tl-bar-bg"><div class="q-tl-bar" style="width:92%;background:var(--green)"></div></div>
+        <span class="q-tl-days">Days 22–25</span>
+      </div>
+      <div class="q-tl-row">
+        <span class="q-tl-label">Post-Launch Support</span>
+        <div class="q-tl-bar-bg"><div class="q-tl-bar" style="width:100%;background:var(--dim)"></div></div>
+        <span class="q-tl-days">Days 26–55</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TERMS -->
+  <div class="q-terms">
+    <div class="q-section-title">Terms &amp; Conditions</div>
+    <ul class="q-terms-list">
+      <li>This quotation is valid for <strong style="color:var(--text)">30 days</strong> from the date of issue.</li>
+      <li>Timeline begins only after receipt of the advance payment and signed agreement.</li>
+      <li>Client is responsible for providing all content (text, images, brand assets) within 3 days of project start.</li>
+      <li>Up to <strong style="color:var(--text)">2 rounds of design revisions</strong> are included. Additional revisions billed at ₹ 500/round.</li>
+      <li>Post-launch support covers bug fixes and minor changes only — scope additions quoted separately.</li>
+      <li>Hosting renewal after Year 1 is charged at prevailing rates (approx. ₹ 2,000–3,000/year).</li>
+      <li>GST will be charged extra as per applicable government regulations.</li>
+      <li>Source code and design assets are handed over in full upon final payment clearance.</li>
+      <li>SelectAI reserves the right to display the project in its portfolio unless client requests otherwise in writing.</li>
+    </ul>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="q-footer">
+    <div class="q-footer-note">
+      Thank you for considering SelectAI Innovations.<br />
+      We are committed to delivering future-ready, high-quality digital solutions<br />
+      on time and within budget — as established by 2 Strong Women.
+    </div>
+    <div class="q-footer-contact">
+      <strong style="color:#fff">SelectAI Innovations</strong><br />
+      <a href="https://github.com/Janakar-cloud/SelectAI">github.com/Janakar-cloud/SelectAI</a><br />
+      [your@email.com]<br />
+      [+91 XXXXX XXXXX]
+    </div>
+  </div>
+
+  <div class="q-valid-badge">QUOTATION REF: SAI-2026-0525 &nbsp;·&nbsp; VALID UNTIL: 24 JUNE 2026</div>
+
+</div>
+</body>
+</html>
