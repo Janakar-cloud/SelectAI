@@ -132,6 +132,23 @@
       return request('/api/admin/users/' + encodeURIComponent(uid) + '/reset-password', {
         method: 'POST'
       });
+    },
+    createUser: function (data) {
+      return request('/api/admin/users', {
+        method: 'POST',
+        body:   JSON.stringify(data)
+      });
+    },
+    setUserRole: function (uid, role) {
+      return request('/api/admin/users/' + encodeURIComponent(uid) + '/role', {
+        method: 'PATCH',
+        body:   JSON.stringify({ role: role })
+      });
+    },
+    deleteUser: function (uid) {
+      return request('/api/admin/users/' + encodeURIComponent(uid), {
+        method: 'DELETE'
+      });
     }
   };
 

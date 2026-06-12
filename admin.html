@@ -398,7 +398,129 @@
     /* Truncate long text */
     .truncate { max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
 
-    /* ─── RESPONSIVE ─────────────────────────────────────── */
+    .btn-danger {
+      background: none;
+      border: 1px solid rgba(255,0,110,0.4);
+      color: #ff6b9d;
+      font-size: 0.72rem;
+      font-family: var(--ff-display);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.28rem 0.7rem;
+      border-radius: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .btn-danger:hover { background: rgba(255,0,110,0.12); border-color: #ff006e; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.42rem 1rem;
+      background: linear-gradient(135deg, #ff006e, #9b00ff);
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      font-family: var(--ff-display);
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+      white-space: nowrap;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+
+    /* ─── MODAL ──────────────────────────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 460px;
+      margin: 1rem;
+    }
+    .modal-title {
+      font-family: var(--ff-display);
+      font-size: 0.88rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 1.4rem;
+    }
+    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+    .modal-field { display: flex; flex-direction: column; gap: 0.35rem; }
+    .modal-field.full { grid-column: span 2; }
+    .modal-field label {
+      font-family: var(--ff-display);
+      font-size: 0.52rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--g400);
+    }
+    .modal-field input,
+    .modal-field select {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.48rem 0.8rem;
+      color: var(--white);
+      font-family: var(--ff-body);
+      font-size: 0.84rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .modal-field input:focus,
+    .modal-field select:focus { border-color: var(--cyan); }
+    .modal-field select option { background: var(--surface); }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    .btn-cancel {
+      padding: 0.5rem 1.2rem;
+      background: none;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 4px;
+      color: var(--g400);
+      font-family: var(--ff-display);
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--ease);
+    }
+    .btn-cancel:hover { border-color: rgba(255,255,255,0.35); color: var(--white); }
+    .btn-submit {
+      padding: 0.5rem 1.4rem;
+      background: linear-gradient(135deg, #ff006e, #9b00ff);
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      font-family: var(--ff-display);
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+    .btn-submit:hover { opacity: 0.85; }
+    .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; }
     @media (max-width: 1024px) { .stat-grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 768px) {
       .adm-sidebar { width: 60px; }
@@ -531,6 +653,10 @@
           <h2>All <span>Users</span></h2>
           <div class="table-actions">
             <input class="tbl-search" type="search" id="userSearch" placeholder="Search users…" oninput="filterUsers(this.value)" />
+            <button class="btn-primary" onclick="openCreateUserModal()">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add User
+            </button>
             <button class="btn-export" onclick="exportUsers()">
               <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               Export CSV
@@ -578,7 +704,57 @@
 <!-- Admin toast notification -->
 <div id="adminToast"></div>
 
-<script src="js/api.js?v=20260609e"></script>
-<script src="js/admin.js?v=20260609e"></script>
+<!-- ─── CREATE USER MODAL ─────────────────────────────────── -->
+<div class="modal-overlay" id="createUserModal" onclick="if(event.target===this)closeCreateUserModal()">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="cuModalTitle">
+    <p class="modal-title" id="cuModalTitle">Create New User</p>
+    <form id="createUserForm" onsubmit="submitCreateUser(event)" novalidate autocomplete="off">
+      <div class="modal-grid">
+        <div class="modal-field">
+          <label for="cu_firstName">First Name</label>
+          <input type="text" id="cu_firstName" name="firstName" placeholder="First name" required minlength="2" />
+        </div>
+        <div class="modal-field">
+          <label for="cu_lastName">Last Name</label>
+          <input type="text" id="cu_lastName" name="lastName" placeholder="Last name" required minlength="2" />
+        </div>
+        <div class="modal-field full">
+          <label for="cu_email">Email Address</label>
+          <input type="email" id="cu_email" name="email" placeholder="user@example.com" required />
+        </div>
+        <div class="modal-field full">
+          <label for="cu_password">Temporary Password</label>
+          <input type="text" id="cu_password" name="password" placeholder="Min 8 chars" required minlength="8" autocomplete="new-password" />
+        </div>
+        <div class="modal-field">
+          <label for="cu_phone">Phone (optional)</label>
+          <input type="text" id="cu_phone" name="phone" placeholder="+91 …" />
+        </div>
+        <div class="modal-field">
+          <label for="cu_country">Country (optional)</label>
+          <input type="text" id="cu_country" name="country" placeholder="India" />
+        </div>
+        <div class="modal-field">
+          <label for="cu_city">City (optional)</label>
+          <input type="text" id="cu_city" name="city" placeholder="Chennai" />
+        </div>
+        <div class="modal-field">
+          <label for="cu_role">Role</label>
+          <select id="cu_role" name="role">
+            <option value="user" selected>User</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeCreateUserModal()">Cancel</button>
+        <button type="submit" class="btn-submit" id="cuSubmitBtn">Create User</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/api.js?v=20260612"></script>
+<script src="js/admin.js?v=20260612"></script>
 </body>
 </html>

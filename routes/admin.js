@@ -1,7 +1,9 @@
 'use strict';
 const router     = require('express').Router();
 const nodemailer = require('nodemailer');
-const jwt                                   = require('jsonwebtoken');
+const jwt        = require('jsonwebtoken');
+const crypto     = require('crypto');
+const bcrypt     = require('bcryptjs');
 const { verifyToken, requireAdmin }         = require('../middleware/auth');
 const User          = require('../models/User');
 const Enquiry       = require('../models/Enquiry');
@@ -103,6 +105,115 @@ router.post('/users/:uid/reset-password', async (req, res, next) => {
     }
 
     res.json({ ok: true, message: 'Password reset email sent to ' + user.email });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/* ─────────────────────────────────────────────────────────
+   POST /api/admin/users
+   Create a new user account from the admin panel.
+───────────────────────────────────────────────────────── */
+router.post('/users', async (req, res, next) => {
+  try {
+    const { firstName, lastName, email, password, phone, country, city, role } = req.body;
+
+    if (!firstName || firstName.trim().length < 2)
+      return res.status(400).json({ message: 'First name must be at least 2 characters.' });
+    if (!lastName || lastName.trim().length < 2)
+      return res.status(400).json({ message: 'Last name must be at least 2 characters.' });
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      return res.status(400).json({ message: 'Please enter a valid email address.' });
+    if (!password || password.length < 8)
+      return res.status(400).json({ message: 'Password must be at least 8 characters.' });
+
+    const safeRole = (role === 'admin') ? 'admin' : 'user';
+    const emailLower = email.toLowerCase().trim();
+
+    const existing = await User.findOne({ email: emailLower }).lean();
+    if (existing)
+      return res.status(409).json({ message: 'An account with this email already exists.' });
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const uid          = crypto.randomUUID();
+
+    const user = await User.create({
+      uid,
+      firstName: firstName.trim(),
+      lastName:  lastName.trim(),
+      email:     emailLower,
+      passwordHash,
+      phone:     (phone   || '').trim(),
+      country:   (country || '').trim(),
+      city:      (city    || '').trim(),
+      role:      safeRole,
+      provider:  'email',
+      verified:  true,
+      lastLogin: new Date()
+    });
+
+    res.status(201).json({
+      ok: true,
+      message: 'User created successfully.',
+      user: {
+        uid:       user.uid,
+        firstName: user.firstName,
+        lastName:  user.lastName,
+        email:     user.email,
+        role:      user.role,
+        verified:  user.verified,
+        createdAt: user.createdAt
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/* ─────────────────────────────────────────────────────────
+   PATCH /api/admin/users/:uid/role
+   Toggle a user's role between 'user' and 'admin'.
+───────────────────────────────────────────────────────── */
+router.patch('/users/:uid/role', async (req, res, next) => {
+  try {
+    const { role } = req.body;
+    if (role !== 'admin' && role !== 'user')
+      return res.status(400).json({ message: 'Role must be "admin" or "user".' });
+
+    /* Prevent admin from demoting themselves */
+    if (req.uid === req.params.uid && role !== 'admin')
+      return res.status(400).json({ message: 'You cannot remove your own admin access.' });
+
+    const result = await User.findOneAndUpdate(
+      { uid: req.params.uid },
+      { $set: { role } },
+      { new: true, select: 'uid email role' }
+    ).lean();
+
+    if (!result)
+      return res.status(404).json({ message: 'User not found.' });
+
+    res.json({ ok: true, message: 'Role updated.', user: result });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/* ─────────────────────────────────────────────────────────
+   DELETE /api/admin/users/:uid
+   Permanently delete a user account.
+───────────────────────────────────────────────────────── */
+router.delete('/users/:uid', async (req, res, next) => {
+  try {
+    /* Prevent admin from deleting themselves */
+    if (req.uid === req.params.uid)
+      return res.status(400).json({ message: 'You cannot delete your own account.' });
+
+    const result = await User.deleteOne({ uid: req.params.uid });
+    if (result.deletedCount === 0)
+      return res.status(404).json({ message: 'User not found.' });
+
+    res.json({ ok: true, message: 'User deleted successfully.' });
   } catch (err) {
     next(err);
   }

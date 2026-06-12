@@ -13,6 +13,7 @@
   var usersFiltered = [];
   var enqFiltered   = [];
   var _pollTimer    = null;
+  var isDevMode     = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
   /* ── Load all dashboard data via API ───────────────────── */
   function loadDashboard() {
@@ -121,6 +122,81 @@
       });
   };
 
+  /* ── Admin: Toggle user role ───────────────────────────── */
+  window.adminToggleRole = function (uid, currentRole, btnEl) {
+    if (!uid) return;
+    var newRole = (currentRole === 'admin') ? 'user' : 'admin';
+    var label   = (newRole === 'admin') ? 'promote to admin' : 'demote to user';
+    if (!confirm('Are you sure you want to ' + label + '?')) return;
+    if (btnEl) btnEl.disabled = true;
+    SelectAI_API.setUserRole(uid, newRole)
+      .then(function () {
+        showToast('Role updated to ' + newRole + '.', 'success');
+        loadDashboard();
+      })
+      .catch(function (err) {
+        showToast(err.message || 'Failed to update role.', 'error');
+        if (btnEl) btnEl.disabled = false;
+      });
+  };
+
+  /* ── Admin: Delete user ─────────────────────────────────── */
+  window.adminDeleteUser = function (uid, email, btnEl) {
+    if (!uid) return;
+    if (!confirm('Permanently delete user ' + email + '? This cannot be undone.')) return;
+    if (btnEl) btnEl.disabled = true;
+    SelectAI_API.deleteUser(uid)
+      .then(function () {
+        showToast('User deleted.', 'success');
+        loadDashboard();
+      })
+      .catch(function (err) {
+        showToast(err.message || 'Failed to delete user.', 'error');
+        if (btnEl) btnEl.disabled = false;
+      });
+  };
+
+  /* ── Create User modal ──────────────────────────────────── */
+  window.openCreateUserModal = function () {
+    var form = document.getElementById('createUserForm');
+    if (form) form.reset();
+    var modal = document.getElementById('createUserModal');
+    if (modal) modal.classList.add('open');
+  };
+
+  window.closeCreateUserModal = function () {
+    var modal = document.getElementById('createUserModal');
+    if (modal) modal.classList.remove('open');
+  };
+
+  window.submitCreateUser = function (e) {
+    e.preventDefault();
+    var btn = document.getElementById('cuSubmitBtn');
+    if (btn) btn.disabled = true;
+
+    var data = {
+      firstName: document.getElementById('cu_firstName').value.trim(),
+      lastName:  document.getElementById('cu_lastName').value.trim(),
+      email:     document.getElementById('cu_email').value.trim(),
+      password:  document.getElementById('cu_password').value,
+      phone:     document.getElementById('cu_phone').value.trim(),
+      country:   document.getElementById('cu_country').value.trim(),
+      city:      document.getElementById('cu_city').value.trim(),
+      role:      document.getElementById('cu_role').value
+    };
+
+    SelectAI_API.createUser(data)
+      .then(function (res) {
+        closeCreateUserModal();
+        showToast(res.message || 'User created.', 'success');
+        loadDashboard();
+      })
+      .catch(function (err) {
+        showToast(err.message || 'Failed to create user.', 'error');
+        if (btn) btn.disabled = false;
+      });
+  };
+
   /* ── Render: Users table ───────────────────────────────── */
   function renderUsersTable(rows, containerId) {
     var wrap = document.getElementById(containerId);
@@ -134,16 +210,23 @@
       + '<th>Name</th><th>Email</th><th>Country</th><th>City</th><th>Role</th><th>Provider</th><th>Joined</th><th>Actions</th>'
       + '</tr></thead><tbody>';
     rows.forEach(function (u) {
+      var safeUid   = esc(u.uid || u._id || '');
       var safeEmail = esc(u.email || '');
+      var role      = u.role || 'user';
+      var toggleLabel = (role === 'admin') ? 'Make User' : 'Make Admin';
       html += '<tr>'
         + '<td>' + esc((u.firstName || '') + ' ' + (u.lastName || '')) + '</td>'
         + '<td><span class="truncate">' + safeEmail + '</span></td>'
         + '<td>' + esc(u.country || '—') + '</td>'
         + '<td>' + esc(u.city    || '—') + '</td>'
-        + '<td><span class="role-badge role-' + (u.role || 'user') + '">' + esc(u.role || 'user') + '</span></td>'
+        + '<td><span class="role-badge role-' + role + '">' + role + '</span></td>'
         + '<td>' + esc(u.provider || '—') + '</td>'
         + '<td>' + fmtDate(u.createdAt) + '</td>'
-        + '<td><button class="action-btn" onclick="adminResetPassword(' + JSON.stringify(u.uid || u._id || '') + ', this)" title="Send password reset email">Reset PW</button></td>'
+        + '<td style="display:flex;gap:0.4rem;flex-wrap:wrap">'
+        + '<button class="action-btn" onclick="adminResetPassword(' + JSON.stringify(u.uid || u._id || '') + ', this)" title="Send password reset email">Reset PW</button>'
+        + '<button class="action-btn" onclick="adminToggleRole(' + JSON.stringify(u.uid || '') + ',' + JSON.stringify(role) + ',this)" title="' + toggleLabel + '">' + toggleLabel + '</button>'
+        + '<button class="action-btn" style="border-color:rgba(255,0,110,0.4);color:#ff6b9d" onclick="adminDeleteUser(' + JSON.stringify(u.uid || '') + ',' + JSON.stringify(u.email || '') + ',this)" title="Delete user">Delete</button>'
+        + '</td>'
         + '</tr>';
     });
     html += '</tbody></table></div>';
