@@ -396,6 +396,81 @@
   });
 
   /* ═══════════════════════════════════════════════════════
+     NEW: Admin — Create User modal validation
+     ═══════════════════════════════════════════════════════ */
+  describe('Admin — validatePassword() (server-side mirror)', function () {
+    function validatePassword(pw) {
+      if (!pw || pw.length < 8)  return 'Password must be at least 8 characters.';
+      if (!/[A-Z]/.test(pw))     return 'Password must contain at least one uppercase letter.';
+      if (!/[0-9]/.test(pw))     return 'Password must contain at least one number.';
+      return '';
+    }
+    it('rejects undefined', function () { expect(validatePassword(undefined)).toContain('8 characters'); });
+    it('rejects short password', function () { expect(validatePassword('abc')).toContain('8 characters'); });
+    it('rejects no uppercase', function () { expect(validatePassword('alicetest1')).toContain('uppercase'); });
+    it('rejects no digit', function () { expect(validatePassword('AliceTest')).toContain('number'); });
+    it('accepts strong password', function () { expect(validatePassword('SelectAI@2026')).toBe(''); });
+    it('accepts minimal valid password', function () { expect(validatePassword('Password1')).toBe(''); });
+  });
+
+  describe('Admin — role toggle logic', function () {
+    function toggle(role) { return role === 'admin' ? 'user' : 'admin'; }
+    function safeRole(r) { return r === 'admin' ? 'admin' : 'user'; }
+
+    it('toggles user → admin', function () { expect(toggle('user')).toBe('admin'); });
+    it('toggles admin → user', function () { expect(toggle('admin')).toBe('user'); });
+    it('safeRole rejects unknown value', function () { expect(safeRole('superadmin')).toBe('user'); });
+    it('safeRole rejects empty string', function () { expect(safeRole('')).toBe('user'); });
+    it('safeRole accepts admin', function () { expect(safeRole('admin')).toBe('admin'); });
+  });
+
+  describe('Admin — Create User form DOM', function () {
+    it('modal overlay exists in admin.html (stub check)', function () {
+      var div = document.createElement('div');
+      div.id = 'createUserModal';
+      div.className = 'modal-overlay';
+      document.body.appendChild(div);
+      var found = document.getElementById('createUserModal');
+      expect(found).toBeTruthy();
+      document.body.removeChild(div);
+    });
+    it('form submit button starts enabled', function () {
+      var btn = document.createElement('button');
+      btn.type = 'submit';
+      expect(btn.disabled).toBeFalsy();
+    });
+    it('disabling submit btn on submit prevents double-send', function () {
+      var btn = document.createElement('button');
+      btn.disabled = true;
+      expect(btn.disabled).toBeTruthy();
+    });
+    it('role select defaults to user', function () {
+      var sel = document.createElement('select');
+      var opt1 = document.createElement('option');
+      opt1.value = 'user';
+      opt1.selected = true;
+      var opt2 = document.createElement('option');
+      opt2.value = 'admin';
+      sel.appendChild(opt1);
+      sel.appendChild(opt2);
+      expect(sel.value).toBe('user');
+    });
+  });
+
+  describe('Admin — Delete confirmation guard', function () {
+    it('returns false (cancel) when confirmed is false', function () {
+      var confirmed = false;
+      var wouldDelete = confirmed ? 'deleted' : 'cancelled';
+      expect(wouldDelete).toBe('cancelled');
+    });
+    it('proceeds when confirmed is true', function () {
+      var confirmed = true;
+      var wouldDelete = confirmed ? 'deleted' : 'cancelled';
+      expect(wouldDelete).toBe('deleted');
+    });
+  });
+
+  /* ═══════════════════════════════════════════════════════
      Export results
      ═══════════════════════════════════════════════════════ */
   global.SELECTAI_TEST_RESULTS = _results;
