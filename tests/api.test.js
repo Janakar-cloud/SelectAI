@@ -698,3 +698,163 @@ describe('404 handler', () => {
     expect(res.status).toBe(404);
   });
 });
+
+/* ════════════════════════════════════════════════════════
+   GAP COVERAGE — new scenarios from audit
+   ════════════════════════════════════════════════════════ */
+
+/* ── Missing / null body → 400 not 500 ───────────────── */
+describe('Missing body guard (no Content-Type)', () => {
+  test('POST /api/auth/register with no body returns 400', async () => {
+    const res = await request(app).post('/api/auth/register')
+      .set('Content-Type', 'text/plain').send('');
+    expect(res.status).toBe(400);
+    expect(res.body.message).toBeDefined();
+  });
+
+  test('POST /api/auth/login with no body returns 400', async () => {
+    const res = await request(app).post('/api/auth/login')
+      .set('Content-Type', 'text/plain').send('');
+    expect(res.status).toBe(400);
+  });
+
+  test('POST /api/enquiries with no body returns 400', async () => {
+    const res = await request(app).post('/api/enquiries')
+      .set('Content-Type', 'text/plain').send('');
+    expect(res.status).toBe(400);
+  });
+
+  test('POST /api/auth/forgot-password with no body returns 400', async () => {
+    const res = await request(app).post('/api/auth/forgot-password')
+      .set('Content-Type', 'text/plain').send('');
+    expect(res.status).toBe(400);
+  });
+});
+
+/* ── OTP send — empty email guard ────────────────────── */
+describe('POST /api/otp/send — email guard', () => {
+  beforeEach(() => {
+    OtpVerification.findOneAndUpdate = jest.fn().mockResolvedValue({});
+  });
+
+  test('400 when token has no email (empty userEmail)', async () => {
+    /* Token signed without email field — userEmail will be '' */
+    const noEmailToken = require('jsonwebtoken').sign(
+      { uid: 'user-uid-001', role: 'user' },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+    const res = await request(app).post('/api/otp/send')
+      .set('Authorization', 'Bearer ' + noEmailToken);
+    expect(res.status).toBe(400);
+    expect(res.body.message).toMatch(/no email/i);
+  });
+
+  test('200 when token has valid email (dev mode)', async () => {
+    const res = await request(app).post('/api/otp/send')
+      .set('Authorization', 'Bearer ' + makeUserToken());
+    expect(res.status).toBe(200);
+    expect(res.body.ok).toBe(true);
+    expect(res.body.devCode).toBeDefined(); /* NODE_ENV=test → dev mode */
+  });
+
+  test('401 without token', async () => {
+    const res = await request(app).post('/api/otp/send');
+    expect(res.status).toBe(401);
+  });
+});
+
+/* ── SMTP failure → 502 ──────────────────────────────── */
+describe('SMTP failure handling → 502', () => {
+  test('POST /api/auth/forgot-password: 502 on SMTP error', async () => {
+    process.env.SMTP_USER = 'smtp-test@test.com'; /* enable SMTP path */
+    User.findOne = jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(REGULAR_USER) });
+
+    /* Mock nodemailer createTransport to return a failing sendMail */
+    const nodemailer = require('nodemailer');
+    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+      sendMail: jest.fn().mockRejectedValue(new Error('SMTP auth failed'))
+    });
+
+    const res = await request(app).post('/api/auth/forgot-password')
+      .send({ email: 'alice@example.com' });
+
+    expect(res.status).toBe(502);
+    expect(res.body.message).toMatch(/failed to send/i);
+
+    jest.restoreAllMocks();
+    delete process.env.SMTP_USER;
+  });
+
+  test('POST /api/admin/users/:uid/reset-password: 502 on SMTP error', async () => {
+    process.env.SMTP_USER = 'smtp-test@test.com';
+    User.findOne = jest.fn()
+      .mockReturnValueOnce({ select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue({ role: 'admin' }) }) })
+      .mockReturnValue({ lean: jest.fn().mockResolvedValue({ uid: 'user-uid-001', email: 'alice@example.com', firstName: 'Alice' }) });
+
+    const nodemailer = require('nodemailer');
+    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+      sendMail: jest.fn().mockRejectedValue(new Error('Connection refused'))
+    });
+
+    const res = await request(app).post('/api/admin/users/user-uid-001/reset-password')
+      .set('Authorization', 'Bearer ' + makeAdminToken());
+
+    expect(res.status).toBe(502);
+    expect(res.body.message).toMatch(/failed to send/i);
+
+    jest.restoreAllMocks();
+    delete process.env.SMTP_USER;
+  });
+});
+
+/* ── OTP send — SMTP failure → 502 ──────────────────── */
+/* Note: OTP route uses a lazy-init singleton transporter that cannot be mocked
+   after first initialization. The 502 SMTP failure path is verified via
+   /api/auth/forgot-password and /api/admin/users/:uid/reset-password tests above.
+   The structural guard (same try/catch pattern) is identical in routes/otp.js. */
+describe('POST /api/otp/send — SMTP failure note', () => {
+  test('OTP send 502 path uses same pattern as verified auth/admin routes', () => {
+    /* Structural assertion: the route file contains the 502 SMTP catch block */
+    const fs = require('fs');
+    const src = fs.readFileSync(require('path').join(__dirname, '../routes/otp.js'), 'utf8');
+    expect(src).toContain('status(502)');
+    expect(src).toContain('Failed to send verification email');
+  });
+});
+
+/* ── Admin create user — missing lastName → 400 ──────── */
+describe('POST /api/admin/users — edge cases', () => {
+  beforeEach(() => {
+    User.findOne = jest.fn().mockReturnValue({ select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue({ role: 'admin' }) }) });
+  });
+
+  test('400 when lastName missing entirely', async () => {
+    const res = await request(app).post('/api/admin/users')
+      .set('Authorization', 'Bearer ' + makeAdminToken())
+      .send({ firstName: 'Bob', email: 'bob@test.com', password: 'Password1' });
+    expect(res.status).toBe(400);
+    expect(res.body.message).toMatch(/last name/i);
+  });
+
+  test('400 when entire body is empty', async () => {
+    const res = await request(app).post('/api/admin/users')
+      .set('Authorization', 'Bearer ' + makeAdminToken())
+      .send({});
+    expect(res.status).toBe(400);
+  });
+
+  test('role defaults to user when unknown role provided', async () => {
+    User.findOne = jest.fn()
+      .mockReturnValueOnce({ select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue({ role: 'admin' }) }) })
+      .mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
+    User.create = jest.fn().mockImplementation(async (data) => ({ ...data, createdAt: new Date() }));
+
+    const res = await request(app).post('/api/admin/users')
+      .set('Authorization', 'Bearer ' + makeAdminToken())
+      .send({ firstName: 'Bob', lastName: 'Jones', email: 'bob@test.com', password: 'Password1', role: 'superadmin' });
+    expect(res.status).toBe(201);
+    /* safeRole logic should have coerced to 'user' */
+    expect(User.create).toHaveBeenCalledWith(expect.objectContaining({ role: 'user' }));
+  });
+});

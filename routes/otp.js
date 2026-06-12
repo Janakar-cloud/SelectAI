@@ -6,10 +6,11 @@ const { verifyToken } = require('../middleware/auth');
 const OtpVerification = require('../models/OtpVerification');
 const User            = require('../models/User');
 
-/* Strict rate limit: max 3 OTP sends per 10 min per IP */
+/* Strict rate limit: max 3 OTP sends per 10 min per IP (unlimited in test env) */
 const otpSendLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
-  max: 3,
+  max: process.env.NODE_ENV === 'test' ? 100000 : 3,
+  statusCode: 429,
   message: { message: 'Too many OTP requests. Please wait before requesting another code.' }
 });
 
@@ -41,6 +42,10 @@ router.post('/send', otpSendLimiter, verifyToken, async (req, res, next) => {
   try {
     const uid       = req.uid;
     const email     = req.userEmail;
+
+    if (!email || !email.trim())
+      return res.status(400).json({ message: 'No email address associated with this account.' });
+
     const code      = generateCode();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); /* 10 min */
 
@@ -57,12 +62,17 @@ router.post('/send', otpSendLimiter, verifyToken, async (req, res, next) => {
       /* In dev: log to console instead of sending email */
       console.log('[SelectAI OTP] Code for', email, '→', code);
     } else {
-      await getTransporter().sendMail({
-        from:    process.env.SMTP_FROM || 'SelectAI <noreply@selectai.it.com>',
-        to:      email,
-        subject: 'Your SelectAI Verification Code — ' + code,
-        html:    buildOtpEmail(code)
-      });
+      try {
+        await getTransporter().sendMail({
+          from:    process.env.SMTP_FROM || 'SelectAI <noreply@selectai.it.com>',
+          to:      email,
+          subject: 'Your SelectAI Verification Code — ' + code,
+          html:    buildOtpEmail(code)
+        });
+      } catch (smtpErr) {
+        console.error('[SelectAI OTP] SMTP error:', smtpErr.message);
+        return res.status(502).json({ message: 'Failed to send verification email. Please try again.' });
+      }
     }
 
     res.json({

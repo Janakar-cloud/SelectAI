@@ -93,12 +93,17 @@ router.post('/users/:uid/reset-password', async (req, res, next) => {
         secure: process.env.SMTP_SECURE === 'true',
         auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
       });
-      await transporter.sendMail({
-        from:    process.env.SMTP_FROM || 'SelectAI <noreply@selectai.it.com>',
-        to:      user.email,
-        subject: 'Reset Your SelectAI Password — Action Requested by Admin',
-        html:    buildResetEmail(user.firstName || 'User', resetLink)
-      });
+      try {
+        await transporter.sendMail({
+          from:    process.env.SMTP_FROM || 'SelectAI <noreply@selectai.it.com>',
+          to:      user.email,
+          subject: 'Reset Your SelectAI Password — Action Requested by Admin',
+          html:    buildResetEmail(user.firstName || 'User', resetLink)
+        });
+      } catch (smtpErr) {
+        console.error('[SelectAI Admin] SMTP error (reset-password):', smtpErr.message);
+        return res.status(502).json({ message: 'Failed to send reset email. Please try again later.' });
+      }
     } else {
       /* Dev mode: log link to console */
       console.log('[SelectAI Admin] Password reset link for', user.email, ':', resetLink);

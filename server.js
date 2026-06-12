@@ -1,6 +1,19 @@
 'use strict';
 require('dotenv').config();
 
+/* ── Required environment variable check ─────────────────── */
+const REQUIRED_ENV = ['MONGODB_URI', 'JWT_SECRET'];
+const MISSING_ENV  = REQUIRED_ENV.filter(k => !process.env[k]);
+if (MISSING_ENV.length) {
+  console.error('[SelectAI] ✗ Missing required environment variables:', MISSING_ENV.join(', '));
+  console.error('[SelectAI]   Copy .env.example to .env and fill in all values.');
+  process.exit(1);
+}
+if (process.env.JWT_SECRET.length < 32) {
+  console.error('[SelectAI] ✗ JWT_SECRET must be at least 32 characters long.');
+  process.exit(1);
+}
+
 const express   = require('express');
 const mongoose  = require('mongoose');
 const helmet    = require('helmet');
@@ -11,7 +24,14 @@ const app  = express();
 const PORT = process.env.PORT || 3000;
 
 /* ── Security ─────────────────────────────────────────── */
-app.use(helmet({ contentSecurityPolicy: false }));
+/* CSP disabled — this is an API-only server; static HTML is served by nginx.
+   All other helmet protections (HSTS, X-Frame-Options, etc.) remain active. */
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false   /* allow embedding in same-origin iframes */
+}));
+/* Explicitly remove the X-Powered-By header (helmet does this too, belt-and-braces) */
+app.disable('x-powered-by');
 app.use(cors({
   origin: [
     process.env.FRONTEND_URL   || 'http://localhost:8080',
@@ -24,10 +44,14 @@ app.use(cors({
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: false }));
 
+/* Normalise body — ensures destructuring never throws on missing Content-Type */
+app.use((req, res, next) => { req.body = req.body || {}; next(); });
+
 /* ── Global API rate limit ────────────────────────────── */
 app.use('/api/', rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 300,
+  statusCode: 429,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: 'Too many requests. Please try again later.' }

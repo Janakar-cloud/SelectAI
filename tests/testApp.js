@@ -22,6 +22,7 @@ app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: false }));
+app.use((req, res, next) => { req.body = req.body || {}; next(); });
 
 /* Relax rate limit in test */
 app.use('/api/', rateLimit({ windowMs: 60000, max: 10000 }));

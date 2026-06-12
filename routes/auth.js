@@ -176,12 +176,17 @@ router.post('/forgot-password', async (req, res, next) => {
       const resetLink = `${base}/login.html?reset=${encodeURIComponent(resetToken)}`;
 
       if (process.env.SMTP_USER) {
-        await _mailer().sendMail({
-          from:    process.env.SMTP_FROM || 'SelectAI <noreply@selectai.it.com>',
-          to:      user.email,
-          subject: 'Reset Your SelectAI Password',
-          html:    _buildForgotEmail(user.firstName || 'User', resetLink)
-        });
+        try {
+          await _mailer().sendMail({
+            from:    process.env.SMTP_FROM || 'SelectAI <noreply@selectai.it.com>',
+            to:      user.email,
+            subject: 'Reset Your SelectAI Password',
+            html:    _buildForgotEmail(user.firstName || 'User', resetLink)
+          });
+        } catch (smtpErr) {
+          console.error('[SelectAI] SMTP error (forgot-password):', smtpErr.message);
+          return res.status(502).json({ message: 'Failed to send reset email. Please try again later.' });
+        }
       } else {
         /* Dev mode: print link to console */
         console.log('[SelectAI] Password reset link for', user.email, '→', resetLink);

@@ -32,7 +32,6 @@
   function validateLead(payload) {
     if (payload.name.trim().length < 2) return 'Please enter a valid name.';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email.trim())) return 'Please enter a valid email.';
-    if (payload.company.trim().length < 2) return 'Please enter your company name.';
     if (payload.message.trim().length < 10) return 'Please add a short project message (min 10 chars).';
     return '';
   }
