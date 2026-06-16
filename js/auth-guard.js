@@ -77,7 +77,15 @@
     })
     .catch(function (err) {
       console.error('[SelectAI] Auth guard error:', err.message);
-      document.documentElement.style.visibility = 'visible';
+      /* API unreachable (network down, nginx not proxying yet, etc.)
+         — clear the stale token and send to login rather than exposing
+         the protected page. */
+      try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+      if (PAGE !== 'login.html') {
+        window.location.replace('login.html');
+      } else {
+        document.documentElement.style.visibility = 'visible';
+      }
     });
 
   function _ping() {
