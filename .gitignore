@@ -10,8 +10,11 @@ npm-debug.log*
 # Environment secrets — NEVER commit
 .env
 
-# PM2 logs
-logs/
+# PM2 logs (keep the directory, ignore log files)
+logs/*.log
+
+# Test coverage output
+coverage/
 
 # OS artefacts
 .DS_Store
