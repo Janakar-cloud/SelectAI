@@ -34,7 +34,8 @@ app.use(helmet({
 app.disable('x-powered-by');
 app.use(cors({
   origin: [
-    process.env.FRONTEND_URL   || 'http://localhost:8080',
+    process.env.FRONTEND_URL   || 'https://www.selectai.it.com',
+    'https://www.selectai.it.com',
     'https://selectai.it.com',
     'http://selectai.it.com',
     'http://3.7.130.187'

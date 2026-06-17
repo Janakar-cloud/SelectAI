@@ -13,7 +13,7 @@
   var usersFiltered = [];
   var enqFiltered   = [];
   var _pollTimer    = null;
-  var isDevMode     = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  var isDevMode     = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '3.7.130.187');
 
   /* ── Load all dashboard data via API ───────────────────── */
   function loadDashboard() {

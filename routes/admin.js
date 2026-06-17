@@ -82,7 +82,7 @@ router.post('/users/:uid/reset-password', async (req, res, next) => {
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
-    const base      = (process.env.FRONTEND_URL || 'http://localhost:8080').replace(/\/$/, '');
+    const base      = (process.env.FRONTEND_URL || 'https://www.selectai.it.com').replace(/\/$/, '');
     const resetLink = `${base}/login.html?reset=${encodeURIComponent(resetToken)}`;
 
     /* Send reset email via SMTP */

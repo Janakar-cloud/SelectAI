@@ -54,7 +54,7 @@ You should see output like:
 ```
 Starting up http-server, serving .
 Available on:
-  http://127.0.0.1:8080
+  http://3.7.130.187:8080
   http://192.168.x.x:8080
 Hit CTRL-C to stop the server
 ```
@@ -66,13 +66,13 @@ Hit CTRL-C to stop the server
 Open your browser and go to:
 
 ```
-http://127.0.0.1:8080
+https://www.selectai.it.com
 ```
 
 | Page | URL |
 |------|-----|
-| Homepage | http://127.0.0.1:8080 |
-| AI Tools Guide | http://127.0.0.1:8080/tools.html |
+| Homepage | https://www.selectai.it.com |
+| AI Tools Guide | https://www.selectai.it.com/tools.html |
 
 ---
 
@@ -154,7 +154,7 @@ Use a different port:
 ```powershell
 npx http-server . -p 3000
 ```
-Then open http://127.0.0.1:3000 in your browser.
+Then open http://3.7.130.187:3000 in your browser.
 
 ### Git authentication error when cloning
 Make sure you have been granted access to the repository at https://github.com/Janakar-cloud/SelectAI.  
