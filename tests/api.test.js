@@ -10,6 +10,7 @@ process.env.JWT_SECRET  = 'test-secret-key-for-jest-at-least-32-chars-long';
 process.env.NODE_ENV    = 'test';
 process.env.SMTP_USER   = '';          /* suppress nodemailer in tests */
 process.env.MONGODB_URI = 'mongodb://127.0.0.1:27017/selectai_test';
+process.env.FRONTEND_URL = 'https://www.selectai.it.com';
 
 /* ── Mock all Mongoose models ─────────────────────────── */
 jest.mock('../models/User');
