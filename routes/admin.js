@@ -258,7 +258,7 @@ function buildResetEmail(firstName, resetLink) {
       <hr style="border:none;border-top:1px solid rgba(0,229,255,0.08);margin:28px 0 20px;">
       <p style="color:#4a4a6a;font-size:11px;margin:0;">
         © ${year} SelectAI Innovations &nbsp;·&nbsp;
-        <a href="https://selectai.it.com" style="color:#00e5ff;text-decoration:none;">selectai.it.com</a>
+        <a href="https://www.selectai.it.com" style="color:#00e5ff;text-decoration:none;">www.selectai.it.com</a>
       </p>
     </div>
   </div>
