@@ -395,10 +395,34 @@ describe('POST /api/otp/verify', () => {
 
   test('404 when no OTP record found', async () => {
     OtpVerification.findOne = jest.fn().mockResolvedValue(null);
+    User.findOne = jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue({ email: 'user@test.com' }) })
+    });
     const res = await request(app).post('/api/otp/verify')
       .set('Authorization', 'Bearer ' + makeUserToken())
       .send({ code: '123456' });
     expect(res.status).toBe(404);
+  });
+
+  test('200 when uid lookup misses but email fallback matches', async () => {
+    OtpVerification.findOne = jest.fn()
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({
+        code: '123456', expiresAt: new Date(Date.now() + 600000), verified: false
+      });
+    User.findOne = jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue({ email: 'user@test.com' }) })
+    });
+    OtpVerification.findOneAndUpdate = jest.fn().mockResolvedValue({});
+    User.findOneAndUpdate = jest.fn().mockResolvedValue({});
+
+    const res = await request(app).post('/api/otp/verify')
+      .set('Authorization', 'Bearer ' + makeUserToken())
+      .send({ code: '123456' });
+
+    expect(res.status).toBe(200);
+    expect(OtpVerification.findOne).toHaveBeenNthCalledWith(1, { uid: 'user-uid-001' });
+    expect(OtpVerification.findOne).toHaveBeenNthCalledWith(2, { email: 'user@test.com' });
   });
 
   test('410 when OTP expired', async () => {
@@ -736,6 +760,9 @@ describe('Missing body guard (no Content-Type)', () => {
 describe('POST /api/otp/send — email guard', () => {
   beforeEach(() => {
     OtpVerification.findOneAndUpdate = jest.fn().mockResolvedValue({});
+    User.findOne = jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) })
+    });
   });
 
   test('400 when token has no email (empty userEmail)', async () => {
@@ -752,6 +779,9 @@ describe('POST /api/otp/send — email guard', () => {
   });
 
   test('200 when token has valid email (dev mode)', async () => {
+    User.findOne = jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue({ email: 'user@test.com' }) })
+    });
     const res = await request(app).post('/api/otp/send')
       .set('Authorization', 'Bearer ' + makeUserToken());
     expect(res.status).toBe(200);

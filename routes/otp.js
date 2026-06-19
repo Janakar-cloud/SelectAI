@@ -41,7 +41,8 @@ function generateCode() {
 router.post('/send', otpSendLimiter, verifyToken, async (req, res, next) => {
   try {
     const uid       = req.uid;
-    const email     = req.userEmail;
+    const user      = await User.findOne({ uid }).select('email').lean();
+    const email     = ((user && user.email) || req.userEmail || '').trim().toLowerCase();
 
     if (!email || !email.trim())
       return res.status(400).json({ message: 'No email address associated with this account.' });
@@ -92,18 +93,26 @@ router.post('/send', otpSendLimiter, verifyToken, async (req, res, next) => {
 ───────────────────────────────────────────────────────── */
 router.post('/verify', verifyToken, async (req, res, next) => {
   try {
-    const { code } = req.body;
-    if (!code || !/^\d{6}$/.test(code))
+    const enteredCode = String(req.body.code || '').trim();
+    if (!enteredCode || !/^\d{6}$/.test(enteredCode))
       return res.status(400).json({ message: 'Please enter a valid 6-digit code.' });
 
-    const record = await OtpVerification.findOne({ uid: req.uid });
+    let record = await OtpVerification.findOne({ uid: req.uid });
+    if (!record) {
+      const user = await User.findOne({ uid: req.uid }).select('email').lean();
+      const email = ((user && user.email) || req.userEmail || '').trim().toLowerCase();
+      if (email) {
+        record = await OtpVerification.findOne({ email });
+      }
+    }
+
     if (!record)
       return res.status(404).json({ message: 'No OTP found. Please request a new code.' });
     if (record.verified)
       return res.json({ ok: true, message: 'Already verified.' });
     if (record.expiresAt < new Date())
       return res.status(410).json({ message: 'OTP has expired. Please request a new code.' });
-    if (record.code !== String(code))
+    if (String(record.code).trim() !== enteredCode)
       return res.status(400).json({ message: 'Incorrect verification code. Please try again.' });
 
     /* Mark verified in both OtpVerification and User collections */
