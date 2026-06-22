@@ -262,8 +262,19 @@ img         { max-width: 100%; display: block; }
 .nav-links {
   display: flex;
   list-style: none;
-  gap: 2.2rem;
+  gap: 1.7rem;
   align-items: center;
+}
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+}
+.btn-icon svg {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
 }
 .nav-links a {
   font-family: var(--ff-display);
@@ -638,6 +649,15 @@ img         { max-width: 100%; display: block; }
   height: 6px;
   border-radius: 50%;
   background: var(--cyan);
+}
+
+.service-card-actions {
+  margin-top: 1.2rem;
+}
+
+.service-card-actions .btn {
+  width: 100%;
+  text-align: center;
 }
 
 /* =========================================================

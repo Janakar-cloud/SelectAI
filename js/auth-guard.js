@@ -10,16 +10,36 @@
 
   var TOKEN_KEY = 'selectai_token';
   var PAGE      = (window.location.pathname.split('/').pop() || 'index.html').toLowerCase();
+  var PUBLIC_PAGES = {
+    'index.html': true,
+    'tools.html': true,
+    'quotation.html': true,
+    'practical-ai-ml-engineering.html': true,
+    'login.html': true
+  };
+
+  function _isPublicPage() {
+    return !!PUBLIC_PAGES[PAGE];
+  }
 
   function _getToken() {
     try { return localStorage.getItem(TOKEN_KEY); } catch (e) { return null; }
   }
 
+  function _revealPage() {
+    document.documentElement.style.visibility = 'visible';
+  }
+
   /* ── No token → redirect to login ────────────────────── */
   var token = _getToken();
   if (!token) {
-    if (PAGE !== 'login.html') window.location.replace('login.html');
-    else document.documentElement.style.visibility = 'visible';
+    if (_isPublicPage()) {
+      _revealPage();
+    } else if (PAGE !== 'login.html') {
+      window.location.replace('login.html');
+    } else {
+      _revealPage();
+    }
     return;
   }
 
@@ -66,7 +86,7 @@
       setInterval(_ping, 2 * 60 * 1000);
 
       /* Reveal page and populate nav UI */
-      document.documentElement.style.visibility = 'visible';
+      _revealPage();
       document.addEventListener('DOMContentLoaded', function () {
         _applyUserToUI(window.SELECTAI_USER);
       });
@@ -77,14 +97,15 @@
     })
     .catch(function (err) {
       console.error('[SelectAI] Auth guard error:', err.message);
-      /* API unreachable (network down, nginx not proxying yet, etc.)
-         — clear the stale token and send to login rather than exposing
-         the protected page. */
+      /* Public pages stay viewable even if auth validation cannot complete.
+         Private pages still require a valid authenticated session. */
       try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
-      if (PAGE !== 'login.html') {
+      if (_isPublicPage()) {
+        _revealPage();
+      } else if (PAGE !== 'login.html') {
         window.location.replace('login.html');
       } else {
-        document.documentElement.style.visibility = 'visible';
+        _revealPage();
       }
     });
 

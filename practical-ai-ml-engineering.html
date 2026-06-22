@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>html { visibility: hidden; }</style>
+  <script src="js/app-config.js?v=20260609e"></script>
+  <script src="js/auth-guard.js?v=20260617b"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practical AI/ML Engineering - SelectAI Innovations</title>
+  <meta name="description" content="A premium, hands-on AI/ML engineering learning path for working professionals focused on real projects, databases, LangChain, LangGraph, MCP, AI security, fine-tuning, and deployment." />
+  <meta name="author" content="SelectAI Innovations" />
+  <meta property="og:title" content="Practical AI/ML Engineering - SelectAI" />
+  <meta property="og:description" content="A flexible, inquiry-driven AI/ML engineering program built for working professionals who want practical experience on real-world projects." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/images/logo-mark-black.png" />
+  <link rel="icon" type="image/png" href="assets/images/logo-mark-black.png" />
+  <link rel="stylesheet" href="css/style.css?v=20260609c" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    .course-page {
+      background:
+        radial-gradient(circle at 15% 10%, rgba(0, 229, 255, 0.12), transparent 30%),
+        radial-gradient(circle at 85% 18%, rgba(155, 0, 255, 0.14), transparent 32%),
+        radial-gradient(circle at 50% 100%, rgba(255, 0, 110, 0.10), transparent 35%),
+        var(--bg);
+      color: var(--white);
+    }
+
+    .course-page::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        linear-gradient(rgba(0, 229, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 229, 255, 0.035) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.22;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .course-page .section,
+    .course-page .footer {
+      position: relative;
+      z-index: 1;
+    }
+
+    .course-hero {
+      position: relative;
+      min-height: calc(100vh - var(--nav-height));
+      display: flex;
+      align-items: center;
+      padding: 3.5rem 0 5rem;
+      overflow: hidden;
+    }
+
+    .course-hero::before,
+    .course-hero::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.48;
+      pointer-events: none;
+    }
+
+    .course-hero::before {
+      width: 360px;
+      height: 360px;
+      top: 8%;
+      left: -80px;
+      background: rgba(0, 229, 255, 0.28);
+    }
+
+    .course-hero::after {
+      width: 420px;
+      height: 420px;
+      right: -80px;
+      bottom: 0;
+      background: rgba(255, 0, 110, 0.22);
+    }
+
+    .course-hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .course-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+      font-family: var(--ff-display);
+      font-size: 0.68rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+
+    .course-kicker::before,
+    .course-kicker::after {
+      content: '';
+      width: 42px;
+      height: 1px;
+      background: rgba(0, 229, 255, 0.65);
+    }
+
+    .course-title {
+      font-family: var(--ff-display);
+      font-size: clamp(2.8rem, 5.8vw, 5.4rem);
+      line-height: 1.04;
+      margin-bottom: 1.35rem;
+      max-width: 11ch;
+    }
+
+    .course-subtitle {
+      max-width: 660px;
+      font-size: 1.06rem;
+      color: rgba(221, 224, 245, 0.92);
+    }
+
+    .course-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+      margin-top: 2rem;
+    }
+
+    .course-stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.95rem;
+      margin-top: 2.3rem;
+      max-width: 820px;
+    }
+
+    .course-stat {
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(0, 229, 255, 0.16);
+      border-radius: 14px;
+      padding: 1rem;
+      backdrop-filter: blur(12px);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .course-stat-value {
+      display: block;
+      font-family: var(--ff-display);
+      font-size: 1.45rem;
+      color: var(--white);
+      margin-bottom: 0.35rem;
+    }
+
+    .course-stat-label {
+      color: var(--g100);
+      font-size: 0.85rem;
+      opacity: 0.82;
+    }
+
+    .course-panel {
+      position: relative;
+      background: linear-gradient(180deg, rgba(14, 18, 38, 0.96), rgba(8, 9, 26, 0.92));
+      border: 1px solid rgba(0, 229, 255, 0.18);
+      border-radius: 24px;
+      padding: 1.45rem;
+      overflow: hidden;
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.45), 0 0 30px rgba(0, 229, 255, 0.12);
+      animation: panelFloat 7s ease-in-out infinite;
+    }
+
+    .course-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.10), transparent 35%, rgba(155, 0, 255, 0.16));
+      pointer-events: none;
+    }
+
+    .course-panel-header,
+    .course-panel-body,
+    .course-panel-footer {
+      position: relative;
+      z-index: 1;
+    }
+
+    .course-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .course-panel-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.42rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(0, 229, 255, 0.08);
+      border: 1px solid rgba(0, 229, 255, 0.18);
+      font-family: var(--ff-display);
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+
+    .course-panel-status {
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .course-panel-title {
+      font-family: var(--ff-display);
+      font-size: 1.2rem;
+      color: var(--white);
+      margin-bottom: 0.35rem;
+    }
+
+    .course-panel-desc {
+      font-size: 0.92rem;
+      color: rgba(221, 224, 245, 0.78);
+      margin-bottom: 1rem;
+    }
+
+    .phase-stream {
+      display: grid;
+      gap: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .phase-stream-item {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 0.85rem;
+      align-items: start;
+    }
+
+    .phase-stream-num {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(255, 0, 110, 0.28), rgba(0, 229, 255, 0.18));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-family: var(--ff-display);
+      font-size: 0.75rem;
+      color: var(--white);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .phase-stream-copy strong {
+      display: block;
+      font-size: 0.92rem;
+      color: var(--white);
+      margin-bottom: 0.22rem;
+    }
+
+    .phase-stream-copy span {
+      display: block;
+      font-size: 0.82rem;
+      color: rgba(221, 224, 245, 0.72);
+      line-height: 1.55;
+    }
+
+    .course-panel-footer {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.7rem;
+      margin-top: 1.15rem;
+    }
+
+    .course-mini {
+      padding: 0.8rem;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .course-mini strong {
+      display: block;
+      font-family: var(--ff-display);
+      font-size: 0.76rem;
+      color: var(--white);
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .course-mini span {
+      display: block;
+      font-size: 0.78rem;
+      color: rgba(221, 224, 245, 0.72);
+      line-height: 1.5;
+    }
+
+    .course-nav-wrap {
+      position: sticky;
+      top: var(--nav-height);
+      z-index: 950;
+      background: rgba(6, 6, 18, 0.88);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(0, 229, 255, 0.10);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .course-nav-wrap::-webkit-scrollbar {
+      display: none;
+    }
+
+    .course-pills {
+      display: flex;
+      gap: 0.75rem;
+      width: max-content;
+      margin: 0 auto;
+      padding: 0.95rem 2rem;
+    }
+
+    .course-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.72rem 1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 229, 255, 0.16);
+      background: rgba(255, 255, 255, 0.03);
+      font-family: var(--ff-display);
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(221, 224, 245, 0.74);
+      transition: var(--ease);
+      white-space: nowrap;
+    }
+
+    .course-pill:hover,
+    .course-pill.active {
+      color: var(--white);
+      background: linear-gradient(135deg, rgba(255, 0, 110, 0.22), rgba(0, 229, 255, 0.18));
+      border-color: rgba(0, 229, 255, 0.4);
+      box-shadow: 0 0 22px rgba(0, 229, 255, 0.16);
+    }
+
+    .overview-grid,
+    .support-grid,
+    .labs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.4rem;
+    }
+
+    .audience-panel,
+    .principle-card,
+    .lab-card,
+    .support-card,
+    .journey-band,
+    .capstone-card,
+    .phase-card,
+    .enroll-note,
+    .course-faq {
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(0, 229, 255, 0.14);
+      border-radius: 18px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .audience-panel {
+      padding: 1.55rem;
+    }
+
+    .audience-panel h3,
+    .journey-band h3,
+    .lab-card h3,
+    .support-card h3,
+    .capstone-card h3,
+    .phase-card h3 {
+      font-size: 1rem;
+      color: var(--white);
+      margin-bottom: 0.8rem;
+      letter-spacing: 0.04em;
+    }
+
+    .audience-points,
+    .phase-card ul,
+    .lab-card ul,
+    .support-card ul,
+    .journey-list,
+    .enroll-note ul {
+      list-style: none;
+      display: grid;
+      gap: 0.72rem;
+    }
+
+    .audience-points li,
+    .phase-card li,
+    .lab-card li,
+    .support-card li,
+    .journey-list li,
+    .enroll-note li {
+      position: relative;
+      padding-left: 1rem;
+      color: rgba(221, 224, 245, 0.82);
+      font-size: 0.92rem;
+    }
+
+    .audience-points li::before,
+    .phase-card li::before,
+    .lab-card li::before,
+    .support-card li::before,
+    .journey-list li::before,
+    .enroll-note li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.6rem;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.45);
+    }
+
+    .principle-grid,
+    .phase-grid,
+    .capstone-grid,
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.4rem;
+    }
+
+    .principle-card,
+    .lab-card,
+    .support-card,
+    .capstone-card,
+    .phase-card,
+    .course-faq {
+      padding: 1.45rem;
+      transition: var(--ease);
+    }
+
+    .principle-card:hover,
+    .lab-card:hover,
+    .support-card:hover,
+    .capstone-card:hover,
+    .phase-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(0, 229, 255, 0.3);
+      box-shadow: 0 22px 50px rgba(0, 0, 0, 0.32), 0 0 24px rgba(0, 229, 255, 0.10);
+    }
+
+    .principle-card strong,
+    .phase-meta strong,
+    .journey-band strong,
+    .lab-card strong,
+    .support-card strong,
+    .capstone-card strong {
+      display: block;
+      font-family: var(--ff-display);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.75rem;
+    }
+
+    .principle-card h3,
+    .support-card h3 {
+      font-size: 1rem;
+      margin-bottom: 0.55rem;
+    }
+
+    .principle-card p,
+    .lab-card p,
+    .support-card p,
+    .capstone-card p,
+    .journey-band p,
+    .phase-card p,
+    .enroll-note p {
+      font-size: 0.92rem;
+      color: rgba(221, 224, 245, 0.78);
+      opacity: 1;
+    }
+
+    .journey-band {
+      padding: 1.6rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .journey-band-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .journey-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 92px;
+      padding: 0.65rem 0.8rem;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.16), rgba(155, 0, 255, 0.18));
+      border: 1px solid rgba(0, 229, 255, 0.22);
+      font-family: var(--ff-display);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--white);
+      text-align: center;
+    }
+
+    .journey-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .kit-card {
+      position: relative;
+      padding: 1.2rem;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      overflow: hidden;
+    }
+
+    .kit-card::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 3px;
+      background: var(--g-hero);
+      opacity: 0.85;
+    }
+
+    .kit-card span {
+      display: block;
+      font-family: var(--ff-display);
+      font-size: 0.62rem;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.65rem;
+    }
+
+    .kit-card h3 {
+      font-size: 0.92rem;
+      margin-bottom: 0.45rem;
+      color: var(--white);
+    }
+
+    .kit-card p {
+      font-size: 0.84rem;
+      color: rgba(221, 224, 245, 0.72);
+      opacity: 1;
+    }
+
+    .phase-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .phase-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 100%;
+    }
+
+    .phase-card::after {
+      content: '';
+      position: absolute;
+      right: -30px;
+      top: -30px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 229, 255, 0.18), transparent 70%);
+      pointer-events: none;
+    }
+
+    .phase-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .phase-index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: rgba(0, 229, 255, 0.08);
+      border: 1px solid rgba(0, 229, 255, 0.18);
+      font-family: var(--ff-display);
+      font-size: 0.8rem;
+      color: var(--white);
+    }
+
+    .phase-length {
+      padding: 0.3rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      font-size: 0.72rem;
+      color: rgba(221, 224, 245, 0.78);
+    }
+
+    .phase-meta {
+      margin-top: 1rem;
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .phase-meta div {
+      padding-top: 0.85rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .phase-meta span {
+      display: block;
+      font-size: 0.85rem;
+      color: rgba(221, 224, 245, 0.72);
+      line-height: 1.55;
+    }
+
+    .labs-grid {
+      margin-bottom: 1.5rem;
+    }
+
+    .lab-card,
+    .support-card,
+    .capstone-card {
+      min-height: 100%;
+    }
+
+    .labs-note {
+      padding: 1.25rem 1.4rem;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .labs-note p {
+      margin: 0;
+      font-size: 0.92rem;
+      color: rgba(221, 224, 245, 0.78);
+      opacity: 1;
+    }
+
+    .support-grid {
+      margin-bottom: 1.5rem;
+    }
+
+    .capstone-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .capstone-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .capstone-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.02));
+      pointer-events: none;
+    }
+
+    .faq-grid {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .course-faq {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .course-faq summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 1.25rem 1.4rem;
+      font-family: var(--ff-display);
+      font-size: 0.8rem;
+      color: var(--white);
+      letter-spacing: 0.04em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .course-faq summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .course-faq summary::after {
+      content: '+';
+      font-size: 1.15rem;
+      color: var(--cyan);
+      transition: transform 0.25s ease;
+    }
+
+    .course-faq[open] summary::after {
+      transform: rotate(45deg);
+    }
+
+    .course-faq p {
+      padding: 0 1.4rem 1.35rem;
+      color: rgba(221, 224, 245, 0.78);
+      opacity: 1;
+    }
+
+    .course-enroll-wrap {
+      align-items: start;
+    }
+
+    .enroll-note {
+      padding: 1.4rem;
+      margin-top: 1.4rem;
+    }
+
+    .enroll-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-top: 1rem;
+    }
+
+    .enroll-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.55rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 229, 255, 0.18);
+      background: rgba(0, 229, 255, 0.06);
+      font-family: var(--ff-display);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+
+    .course-page .lead-form {
+      padding: 1.5rem;
+    }
+
+    .course-helper {
+      font-size: 0.82rem;
+      color: rgba(221, 224, 245, 0.68);
+      margin-top: -0.15rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .course-page .footer-grid {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr) minmax(0, 0.9fr);
+    }
+
+    @keyframes panelFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @media (max-width: 1200px) {
+      .phase-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .capstone-grid,
+      .journey-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .course-hero-grid,
+      .overview-grid,
+      .support-grid,
+      .labs-grid,
+      .principle-grid,
+      .faq-grid,
+      .course-page .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .course-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .course-hero {
+        padding: 2.2rem 0 3.5rem;
+      }
+
+      .course-title {
+        max-width: none;
+      }
+
+      .course-stats,
+      .course-panel-footer,
+      .phase-grid,
+      .capstone-grid,
+      .journey-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .course-pills {
+        padding: 0.85rem 1rem;
+      }
+
+      .course-pill {
+        font-size: 0.58rem;
+      }
+
+      .journey-band-top,
+      .labs-note {
+        flex-direction: column;
+        align-items: start;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .course-hero-grid {
+        gap: 1.5rem;
+      }
+
+      .course-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .course-panel,
+      .audience-panel,
+      .principle-card,
+      .lab-card,
+      .support-card,
+      .capstone-card,
+      .phase-card,
+      .enroll-note,
+      .course-faq summary,
+      .course-faq p,
+      .course-page .lead-form {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      .phase-stream-item {
+        grid-template-columns: 38px minmax(0, 1fr);
+      }
+
+      .phase-stream-num,
+      .phase-index {
+        width: 38px;
+        height: 38px;
+      }
+    }
+  </style>
+</head>
+<body class="course-page">
+
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo logo-img" aria-label="SelectAI home">
+        <img src="assets/images/logo-wordmark.png" alt="SelectAI" height="38" width="auto" />
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html#services">Services</a></li>
+        <li><a href="index.html#team">Team</a></li>
+        <li><a href="index.html#capabilities">Why Us</a></li>
+        <li><a href="tools.html">AI Tools</a></li>
+        <li><a href="practical-ai-ml-engineering.html" class="nav-cta" aria-current="page">Practical AI/ML Engineering</a></li>
+        <li><a href="#enroll">Enroll</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <section id="pageTop" class="course-hero">
+    <div class="container course-hero-grid">
+      <div class="animate-on-scroll">
+        <span class="course-kicker">SelectAI Course Prototype</span>
+        <h1 class="course-title">Practical <span class="gradient-text">AI/ML Engineering</span></h1>
+        <p class="course-subtitle">
+          A flexible, premium learning path for working professionals and slightly experienced builders who want hands-on AI/ML engineering practice tied to real databases, agentic systems, security, fine-tuning, and deployment.
+        </p>
+        <div class="course-actions">
+          <a href="#enroll" class="btn btn-primary btn-lg" data-enroll-intent="course">Enroll Now</a>
+          <a href="#phases" class="btn btn-outline btn-lg">Explore the Journey</a>
+          <a href="https://www.linkedin.com/in/selectai-innovations-8633363bb" class="btn btn-outline btn-lg btn-icon" target="_blank" rel="noopener noreferrer" aria-label="Follow SelectAI on LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 3A2 2 0 0 1 21 5V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V5A2 2 0 0 1 5 3H19ZM8.34 18.34V9.59H5.43V18.34H8.34ZM6.89 8.39C7.82 8.39 8.57 7.62 8.57 6.69C8.57 5.76 7.82 5 6.89 5C5.96 5 5.2 5.76 5.2 6.69C5.2 7.62 5.96 8.39 6.89 8.39ZM18.8 18.34V13.56C18.8 11.01 17.44 9.4 15.02 9.4C13.85 9.4 13.06 10.04 12.74 10.66V9.59H9.84C9.88 10.3 9.84 18.34 9.84 18.34H12.74V13.45C12.74 12.58 12.91 12.23 14.35 12.23C15.54 12.23 15.93 13.14 15.93 14.48V18.34H18.8Z"/></svg>
+            <span>Follow on LinkedIn</span>
+          </a>
+        </div>
+        <div class="course-stats">
+          <div class="course-stat">
+            <span class="course-stat-value">20 Weeks</span>
+            <span class="course-stat-label">Suggested, flexible guided path</span>
+          </div>
+          <div class="course-stat">
+            <span class="course-stat-value">9 Phases</span>
+            <span class="course-stat-label">Structured across 5 specialization kits</span>
+          </div>
+          <div class="course-stat">
+            <span class="course-stat-value">40+ Labs</span>
+            <span class="course-stat-label">Build-first exercises and challenge work</span>
+          </div>
+          <div class="course-stat">
+            <span class="course-stat-value">4 Capstones</span>
+            <span class="course-stat-label">Portfolio-ready applied projects</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="course-panel animate-on-scroll animate-delay-2" aria-label="Course summary panel">
+        <div class="course-panel-header">
+          <span class="course-panel-tag">Execution Model</span>
+          <span class="course-panel-status">High-level overview with selected deep dives</span>
+        </div>
+        <div class="course-panel-body">
+          <h2 class="course-panel-title">From traced prompts to production-grade agent systems</h2>
+          <p class="course-panel-desc">
+            Every stage is designed to move learners from local-first setup into real project delivery with databases, retrieval, workflows, guardrails, local models, and deployment discipline.
+          </p>
+
+          <div class="phase-stream">
+            <div class="phase-stream-item">
+              <div class="phase-stream-num">01</div>
+              <div class="phase-stream-copy">
+                <strong>Foundation Build</strong>
+                <span>Python, VS Code, Groq, prompt engineering, LCEL, and LangSmith tracing.</span>
+              </div>
+            </div>
+            <div class="phase-stream-item">
+              <div class="phase-stream-num">02</div>
+              <div class="phase-stream-copy">
+                <strong>Connected Intelligence</strong>
+                <span>SQLite, ChromaDB, FAISS, Text-to-SQL, RAG engineering, and evaluation.</span>
+              </div>
+            </div>
+            <div class="phase-stream-item">
+              <div class="phase-stream-num">03</div>
+              <div class="phase-stream-copy">
+                <strong>Production Delivery</strong>
+                <span>LangGraph, MCP, AI security, fine-tuning, FastAPI deployment, and AgentOps.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="course-panel-footer">
+          <div class="course-mini">
+            <strong>Audience</strong>
+            <span>Working professionals focused on practical upskilling.</span>
+          </div>
+          <div class="course-mini">
+            <strong>Format</strong>
+            <span>Self-paced, build-first, inquiry-driven access.</span>
+          </div>
+          <div class="course-mini">
+            <strong>Outcome</strong>
+            <span>Real project readiness with demonstrable implementation depth.</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <nav class="course-nav-wrap" aria-label="Course page sections">
+    <div class="course-pills">
+      <a class="course-pill active" href="#overview">Overview</a>
+      <a class="course-pill" href="#journey">20-Week Path</a>
+      <a class="course-pill" href="#phases">9 Phases</a>
+      <a class="course-pill" href="#labs">Selected Labs</a>
+      <a class="course-pill" href="#outcomes">Outcomes</a>
+      <a class="course-pill" href="#faq">FAQ</a>
+      <a class="course-pill" href="#enroll">Enroll</a>
+    </div>
+  </nav>
+
+  <section id="overview" class="section motion-section" data-parallax-speed="0.05">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <span class="section-tag">Program Overview</span>
+        <h2>Built for professionals who need <span class="gradient-text">real implementation confidence</span></h2>
+        <p>This is not theory-led AI learning. It is a project-shaped engineering path designed to produce hands-on delivery skill.</p>
+      </div>
+
+      <div class="overview-grid">
+        <article class="audience-panel animate-on-scroll animate-delay-1">
+          <h3>Who this is for</h3>
+          <ul class="audience-points">
+            <li>Working professionals who want to upskill without leaving practical engineering context.</li>
+            <li>Learners with slight experience who want to move beyond tutorials into live-project thinking.</li>
+            <li>Builders who need exposure to LangChain, LangGraph, MCP, database-connected AI, and deployment readiness.</li>
+            <li>Teams exploring AI implementation skills with emphasis on traceability, security, and production discipline.</li>
+          </ul>
+        </article>
+
+        <div class="principle-grid">
+          <article class="principle-card animate-on-scroll animate-delay-1">
+            <strong>Local-First</strong>
+            <h3>Setup that mirrors real engineering work</h3>
+            <p>Python, VS Code, Git, .venv, and .env usage are treated as baseline discipline from the first phase.</p>
+          </article>
+          <article class="principle-card animate-on-scroll animate-delay-2">
+            <strong>Connected Systems</strong>
+            <h3>Databases appear early, not at the end</h3>
+            <p>SQLite, ChromaDB, and FAISS are introduced early so learners build with state, retrieval, and persistent context.</p>
+          </article>
+          <article class="principle-card animate-on-scroll animate-delay-3">
+            <strong>Evaluation Driven</strong>
+            <h3>Tracing and checkpoints are part of the workflow</h3>
+            <p>LangSmith traces, retrieval checks, and graph checkpoints turn each lab into measurable engineering practice.</p>
+          </article>
+          <article class="principle-card animate-on-scroll animate-delay-4">
+            <strong>Scaffolded to Independent</strong>
+            <h3>Support reduces as delivery confidence rises</h3>
+            <p>Guided labs, solo exercises, and challenge tasks gradually shift learners toward independent project execution.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="journey" class="section bg-alt motion-section" data-parallax-speed="0.07">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <span class="section-tag">Flexible 20-Week Path</span>
+        <h2>A modular journey across <span class="gradient-text">5 specialization kits</span></h2>
+        <p>The pacing is flexible, but the path stays structured so working professionals can see how each layer compounds into production capability.</p>
+      </div>
+
+      <article class="journey-band animate-on-scroll">
+        <div class="journey-band-top">
+          <div>
+            <strong>Suggested Structure</strong>
+            <h3>One progression, multiple specialization pivots</h3>
+            <p>The course moves from foundations into retrieval, agent systems, protocol design, safety, local models, and deployment without breaking continuity.</p>
+          </div>
+          <div class="journey-chip">Flexible Schedule</div>
+        </div>
+        <ul class="journey-list">
+          <li>Phases 1-2 establish engineering setup, LLM calling patterns, and database-connected workflows.</li>
+          <li>Phases 3-5 advance into RAG, LangGraph, and Model Context Protocol integration.</li>
+          <li>Phases 6-8 add security, fine-tuning, deployment, and AgentOps discipline.</li>
+          <li>Phase 9 turns the stack into capstone delivery with business framing and demonstrable output.</li>
+        </ul>
+      </article>
+
+      <div class="journey-grid">
+        <article class="kit-card animate-on-scroll animate-delay-1">
+          <span>Kit 01</span>
+          <h3>Foundations and Environment</h3>
+          <p>Local-first setup, Groq basics, prompt engineering, LCEL, and tracing foundations.</p>
+        </article>
+        <article class="kit-card animate-on-scroll animate-delay-2">
+          <span>Kit 02</span>
+          <h3>Data and Retrieval Systems</h3>
+          <p>SQLite, text-to-SQL, chunking, embeddings, ChromaDB persistence, and FAISS retrieval.</p>
+        </article>
+        <article class="kit-card animate-on-scroll animate-delay-3">
+          <span>Kit 03</span>
+          <h3>Agentic Workflows</h3>
+          <p>RAG patterns, LangGraph supervisors, tool-calling agents, and memory-backed flows.</p>
+        </article>
+        <article class="kit-card animate-on-scroll animate-delay-4">
+          <span>Kit 04</span>
+          <h3>Security and Model Customization</h3>
+          <p>Prompt injection defense, PII masking, source validation, LoRA and QLoRA practicals.</p>
+        </article>
+        <article class="kit-card animate-on-scroll animate-delay-4">
+          <span>Kit 05</span>
+          <h3>Deployment and Capstone</h3>
+          <p>FastAPI, streaming, CI/CD, environment separation, production tracing, and final project delivery.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="phases" class="section motion-section" data-parallax-speed="0.06">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <span class="section-tag">Nine Phases</span>
+        <h2>The curriculum path from basics to <span class="gradient-text">live-project readiness</span></h2>
+        <p>Each phase stays outcome-oriented and connects directly to the tools, systems, and operating practices used in applied AI work.</p>
+      </div>
+
+      <div class="phase-grid">
+        <article class="phase-card animate-on-scroll animate-delay-1">
+          <div class="phase-top">
+            <span class="phase-index">01</span>
+            <span class="phase-length">Weeks 1-2</span>
+          </div>
+          <h3>Foundations and Environment Setup</h3>
+          <ul>
+            <li>Python local setup, developer ergonomics, and project organization.</li>
+            <li>Groq API basics, prompt engineering, LCEL, and first traced LLM calls.</li>
+          </ul>
+          <div class="phase-meta">
+            <div>
+              <strong>Build focus</strong>
+              <span>Simple prompt routing and traced interactions that establish debugging habits early.</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="phase-card animate-on-scroll animate-delay-2">
+          <div class="phase-top">
+            <span class="phase-index">02</span>
+            <span class="phase-length">Weeks 3-4</span>
+          </div>
+          <h3>Database Connection and LLM Strategy</h3>
+          <ul>
+            <li>SQLite for AI workloads and text-to-SQL with LangChain SQLDatabaseChain.</li>
+            <li>Chunking, embeddings, ChromaDB persistence, and FAISS indexing strategy.</li>
+          </ul>
+          <div class="phase-meta">
+            <div>
+              <strong>Build focus</strong>
+              <span>Connected applications that combine structured data and vector retrieval, not isolated prompts.</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="phase-card animate-on-scroll animate-delay-3">
+          <div class="phase-top">
+            <span class="phase-index">03</span>
+            <span class="phase-length">Weeks 5-7</span>
+          </div>
+          <h3>RAG Engineering</h3>
+          <ul>
+            <li>Naive to advanced RAG patterns, conversational memory, and routing.</li>
+            <li>Retrieval and faithfulness evaluation using measurable checks.</li>
+          </ul>
+          <div class="phase-meta">
+            <div>
+              <strong>Build focus</strong>
+              <span>Move from document retrieval demos into grounded answer systems with evaluation in place.</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="phase-card animate-on-scroll animate-delay-1">
+          <div class="phase-top">
+            <span class="phase-index">04</span>
+            <span class="phase-length">Weeks 8-10</span>
+          </div>
+          <h3>Agentic AI with LangGraph</h3>
+          <ul>
+            <li>StateGraph workflows, tool calling, supervisor patterns, and multi-agent graphs.</li>
+            <li>Database-connected agents with long-term memory and checkpointing.</li>
+          </ul>
+          <div class="phase-meta">
+            <div>
+              <strong>Build focus</strong>
+              <span>Agent flows that are inspectable, stateful, and shaped for reliable operations.</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="phase-card animate-on-scroll animate-delay-2">
+          <div class="phase-top">
+            <span class="phase-index">05</span>
+            <span class="phase-length">Weeks 11-12</span>
+          </div>
+          <h3>Model Context Protocol</h3>
+          <ul>
+            <li>MCP host, client, and server concepts with transport awareness.</li>
+            <li>Custom tools, resources, and multi-server agent connections.</li>
+          </ul>
+          <div class="phase-meta">
+            <div>
+              <strong>Build focus</strong>
+              <span>Protocol-driven tool orchestration for web, database, and filesystem workflows.</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="phase-card animate-on-scroll animate-delay-3">
+          <div class="phase-top">
+            <span class="phase-index">06</span>
+            <span class="phase-length">Weeks 13-14</span>
+          </div>
+          <h3>AI Security and Guardrails</h3>
+          <ul>
+            <li>Prompt injection defense, jailbreak awareness, PII masking, and source validation.</li>
+            <li>Least-privilege tool design and secure agent control surfaces.</li>
+          </ul>
+          <div class="phase-meta">
+            <div>
+              <strong>Build focus</strong>
+              <span>Security is treated as implementation design, not a post-delivery patch.</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="phase-card animate-on-scroll animate-delay-1">
+          <div class="phase-top">
+            <span class="phase-index">07</span>
+            <span class="phase-length">Weeks 15-16</span>
+          </div>
+          <h3>Fine-Tuning and Local Models</h3>
+          <ul>
+            <li>LoRA and QLoRA with Unsloth, dataset preparation, and experiment comparison.</li>
+            <li>Colab training plus local inference with Ollama.</li>
+          </ul>
+          <div class="phase-meta">
+            <div>
+              <strong>Build focus</strong>
+              <span>Measured comparison between base and tuned behavior rather than tuning for its own sake.</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="phase-card animate-on-scroll animate-delay-2">
+          <div class="phase-top">
+            <span class="phase-index">08</span>
+            <span class="phase-length">Weeks 17-18</span>
+          </div>
+          <h3>Deployment and AgentOps</h3>
+          <ul>
+            <li>FastAPI wrapping, streaming responses, environment separation, and connection discipline.</li>
+            <li>CI/CD with tests and evaluation checks on every pull request.</li>
+          </ul>
+          <div class="phase-meta">
+            <div>
+              <strong>Build focus</strong>
+              <span>Production-facing delivery standards that align AI prototypes with engineering operations.</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="phase-card animate-on-scroll animate-delay-3">
+          <div class="phase-top">
+            <span class="phase-index">09</span>
+            <span class="phase-length">Weeks 19-20</span>
+          </div>
+          <h3>Business Patterns and Capstone</h3>
+          <ul>
+            <li>Business-oriented AI use cases, ROI framing, and solution positioning.</li>
+            <li>Build, document, and demonstrate a capstone with repository, app, and traces.</li>
+          </ul>
+          <div class="phase-meta">
+            <div>
+              <strong>Build focus</strong>
+              <span>Delivery narrative, implementation depth, and demonstration quality for real stakeholders.</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="labs" class="section bg-alt motion-section" data-parallax-speed="0.07">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <span class="section-tag">Selected Labs</span>
+        <h2>Hands-on builds that turn concepts into <span class="gradient-text">engineering repetition</span></h2>
+        <p>The full 40+ lab breakdown is inquiry-driven. This prototype highlights representative labs across the stack.</p>
+      </div>
+
+      <div class="labs-grid">
+        <article class="lab-card animate-on-scroll animate-delay-1">
+          <strong>Foundation Labs</strong>
+          <h3>Prompting, tracing, and first orchestration</h3>
+          <ul>
+            <li>Groq hello-world with LangSmith tracing.</li>
+            <li>Prompt routing with LCEL and structured local development habits.</li>
+            <li>First traced LLM call with debugging checkpoints.</li>
+          </ul>
+        </article>
+
+        <article class="lab-card animate-on-scroll animate-delay-2">
+          <strong>Data Labs</strong>
+          <h3>Structured and vector-connected systems</h3>
+          <ul>
+            <li>Text-to-SQL agent connected to a real SQLite workflow.</li>
+            <li>End-to-end RAG pipeline using chunking, embeddings, and ChromaDB.</li>
+            <li>FAISS-backed retrieval experiments and grounding analysis.</li>
+          </ul>
+        </article>
+
+        <article class="lab-card animate-on-scroll animate-delay-3">
+          <strong>Agent and MCP Labs</strong>
+          <h3>Multi-step coordination with tools and protocol layers</h3>
+          <ul>
+            <li>First LangGraph agent and a multi-agent supervisor graph.</li>
+            <li>MCP server connected to a LangGraph agent.</li>
+            <li>Database and filesystem-aware tool orchestration.</li>
+          </ul>
+        </article>
+
+        <article class="lab-card animate-on-scroll animate-delay-4">
+          <strong>Safety and Delivery Labs</strong>
+          <h3>Secure, tuned, and deployable AI systems</h3>
+          <ul>
+            <li>Prompt injection defense and PII masking pipeline.</li>
+            <li>LoRA and QLoRA experimentation for local model adaptation.</li>
+            <li>FastAPI deployment with automated evaluation and tracing.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="labs-note animate-on-scroll">
+        <p>Need the full lab catalogue, schedules, or role-based guidance for your team? Contact SelectAI for the detailed breakdown.</p>
+        <a href="#enroll" class="btn btn-outline" data-enroll-intent="labs">Request Full Lab Details</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="outcomes" class="section motion-section" data-parallax-speed="0.05">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <span class="section-tag">Support and Outcomes</span>
+        <h2>Designed to produce <span class="gradient-text">build confidence and proof of work</span></h2>
+        <p>The program is meant to leave learners with implementation depth, project artifacts, and clear next steps into real-world delivery.</p>
+      </div>
+
+      <div class="support-grid">
+        <article class="support-card animate-on-scroll animate-delay-1">
+          <strong>Mentor Support</strong>
+          <h3>Guidance with room for independent execution</h3>
+          <ul>
+            <li>Guided labs at the start, challenge-led work as the path advances.</li>
+            <li>Implementation-focused help around architecture, debugging, and delivery tradeoffs.</li>
+          </ul>
+        </article>
+        <article class="support-card animate-on-scroll animate-delay-2">
+          <strong>Certification Path</strong>
+          <h3>Completion framed around demonstrable capability</h3>
+          <ul>
+            <li>Capstone completion, repository quality, and trace-backed workflows form the evidence base.</li>
+            <li>Useful for internal team credibility and external portfolio signaling.</li>
+          </ul>
+        </article>
+        <article class="support-card animate-on-scroll animate-delay-3">
+          <strong>Project Outcomes</strong>
+          <h3>Artifacts that map to live engineering work</h3>
+          <ul>
+            <li>Repositories, retrieval systems, agents, secure pipelines, APIs, and deployment flows.</li>
+            <li>Implementation references that are easier to discuss in live-project environments.</li>
+          </ul>
+        </article>
+        <article class="support-card animate-on-scroll animate-delay-4">
+          <strong>Flexible Enrollment</strong>
+          <h3>Inquiry-driven onboarding for individuals or teams</h3>
+          <ul>
+            <li>Schedule, depth, and pacing can be discussed based on learner background and goals.</li>
+            <li>Suitable for professionals balancing delivery work with structured upskilling.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="section-header animate-on-scroll" style="margin-top: 4rem; margin-bottom: 2rem;">
+        <span class="section-tag">Capstone Directions</span>
+        <h2>Four portfolio-ready <span class="gradient-text">delivery tracks</span></h2>
+      </div>
+
+      <div class="capstone-grid">
+        <article class="capstone-card animate-on-scroll animate-delay-1">
+          <strong>Capstone 01</strong>
+          <h3>Company knowledge base chatbot</h3>
+          <p>Build a grounded internal assistant with retrieval, evaluation, and access-aware response behavior.</p>
+        </article>
+        <article class="capstone-card animate-on-scroll animate-delay-2">
+          <strong>Capstone 02</strong>
+          <h3>Multi-agent research assistant</h3>
+          <p>Design a supervisor-led research workflow with tool invocation, checkpointing, and response synthesis.</p>
+        </article>
+        <article class="capstone-card animate-on-scroll animate-delay-3">
+          <strong>Capstone 03</strong>
+          <h3>Fine-tuned expert plus RAG hybrid</h3>
+          <p>Compare base and tuned behavior, then layer retrieval for stronger domain grounding and response control.</p>
+        </article>
+        <article class="capstone-card animate-on-scroll animate-delay-4">
+          <strong>Capstone 04</strong>
+          <h3>Secure MCP-powered agent system</h3>
+          <p>Combine tool whitelisting, source validation, and protocol-connected tools into a production-minded agent flow.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" class="section bg-alt motion-section" data-parallax-speed="0.06">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <span class="section-tag">FAQ</span>
+        <h2>Common enrollment and <span class="gradient-text">fit questions</span></h2>
+        <p>Inquiry-driven enrollment means the final guidance can be adapted, but these are the most likely questions from working professionals.</p>
+      </div>
+
+      <div class="faq-grid">
+        <details class="course-faq animate-on-scroll animate-delay-1">
+          <summary>Is this course beginner-friendly?</summary>
+          <p>It is better suited to learners who already have slight technical exposure and want to move into hands-on AI engineering. The path starts with setup and foundations, but it is designed to progress quickly into real implementation work.</p>
+        </details>
+        <details class="course-faq animate-on-scroll animate-delay-2">
+          <summary>Can working professionals follow the 20-week plan?</summary>
+          <p>Yes. The 20-week structure is suggested and flexible. The path is designed so professionals can pace the modules around existing delivery work while still following a clear progression.</p>
+        </details>
+        <details class="course-faq animate-on-scroll animate-delay-3">
+          <summary>Will I get detailed lab breakdowns and capstone guidance?</summary>
+          <p>Yes, but the full lab matrix and pathway details are shared through the inquiry process so the guidance can match your role, experience level, and intended project outcomes.</p>
+        </details>
+        <details class="course-faq animate-on-scroll animate-delay-4">
+          <summary>Is pricing shown publicly?</summary>
+          <p>No. This offering is inquiry-driven so SelectAI can recommend the right enrollment path, depth, and support model for individuals or teams.</p>
+        </details>
+        <details class="course-faq animate-on-scroll animate-delay-1">
+          <summary>What makes this different from generic AI tutorials?</summary>
+          <p>The emphasis is on local-first development, database-connected workflows, traceable systems, security, evaluation, and deployment. The learning path is shaped like engineering delivery, not just prompt experimentation.</p>
+        </details>
+        <details class="course-faq animate-on-scroll animate-delay-2">
+          <summary>What should I do if I need help choosing the right fit?</summary>
+          <p>Use the enrollment inquiry below. SelectAI can guide you on suitability, expected preparation, schedule flexibility, and whether the path is best for individual upskilling or team enablement.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section id="enroll" class="section motion-section" data-parallax-speed="0.05">
+    <div class="container">
+      <div class="connect-wrap course-enroll-wrap">
+        <div class="connect-text animate-on-scroll">
+          <span class="section-tag">Enroll by Inquiry</span>
+          <h2>Start your <span class="gradient-text">Practical AI/ML Engineering</span> path</h2>
+          <p>
+            Share your background, goals, and timeline. SelectAI will guide you on fit, learning depth, flexible pacing, and the full lab or capstone detail relevant to your needs.
+          </p>
+          <div class="contact-points">
+            <a href="mailto:selectaiinnovations@gmail.com">selectaiinnovations@gmail.com</a>
+          </div>
+          <div class="enroll-chip-row">
+            <span class="enroll-chip">Working professionals</span>
+            <span class="enroll-chip">Flexible schedule</span>
+            <span class="enroll-chip">Project-driven learning</span>
+            <span class="enroll-chip">Inquiry-based enrollment</span>
+          </div>
+
+          <article class="enroll-note">
+            <strong>What to include</strong>
+            <p>A short note about your current experience, preferred learning pace, and whether you want the full lab breakdown, capstone guidance, or team-oriented enablement details.</p>
+            <ul>
+              <li>Your current role or technical background.</li>
+              <li>The topics you most want hands-on depth in.</li>
+              <li>Whether you are exploring solo enrollment or team participation.</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="connect-visual animate-on-scroll animate-delay-2">
+          <form id="leadForm" class="lead-form" novalidate>
+            <label>
+              Name
+              <input type="text" id="leadName" name="name" required minlength="2" />
+            </label>
+            <label>
+              Email
+              <input type="email" id="leadEmail" name="email" required />
+            </label>
+            <label>
+              Phone
+              <input type="tel" id="leadPhone" name="phone" />
+            </label>
+            <label>
+              Company
+              <input type="text" id="leadCompany" name="company" required minlength="2" />
+            </label>
+            <label>
+              Message
+              <textarea id="leadMessage" name="message" rows="5" required minlength="10" placeholder="I am interested in the Practical AI/ML Engineering program and would like to know more about the schedule, labs, and enrollment process."></textarea>
+            </label>
+            <p class="course-helper">Need the full curriculum or role-based recommendations? Mention it in your message.</p>
+            <div class="lead-actions">
+              <button class="btn btn-primary" type="submit">Enroll Now</button>
+              <button class="btn btn-outline" id="copyLead" type="button">Copy Inquiry</button>
+            </div>
+            <p id="leadFeedback" class="lead-feedback" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="logo logo-img" aria-label="SelectAI home">
+            <img src="assets/images/logo-wordmark.png" alt="SelectAI" height="44" width="auto" />
+          </a>
+          <p>Premium, practical AI engineering learning designed to move professionals from exploration into delivery confidence.</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Course Sections</h4>
+          <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#journey">20-Week Path</a></li>
+            <li><a href="#phases">9 Phases</a></li>
+            <li><a href="#labs">Selected Labs</a></li>
+            <li><a href="#enroll">Enroll</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>SelectAI</h4>
+          <ul>
+            <li><a href="index.html#services">Services</a></li>
+            <li><a href="tools.html">AI Tools</a></li>
+            <li><a href="index.html#connect">Contact</a></li>
+            <li><a href="https://www.linkedin.com/in/selectai-innovations-8633363bb" target="_blank" rel="noopener noreferrer">Follow on LinkedIn</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>Full syllabus, lab breakdown, and enrollment path are available on inquiry. © 2026 SelectAI. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <a href="#pageTop" class="back-top" id="backTop" title="Back to top" aria-label="Back to top">
+    <img src="assets/images/logo-mark.png" alt="Back to top" width="28" height="28" />
+  </a>
+
+  <script src="js/api.js?v=20260609e"></script>
+  <script src="js/lead-form.js?v=20260609c"></script>
+  <script src="js/main.js?v=20260609c"></script>
+  <script>
+    const coursePills = document.querySelectorAll('.course-pill');
+    const courseSections = Array.from(coursePills)
+      .map(pill => document.querySelector(pill.getAttribute('href')))
+      .filter(Boolean);
+
+    const courseObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        coursePills.forEach(pill => pill.classList.remove('active'));
+        const activePill = document.querySelector(`.course-pill[href="#${entry.target.id}"]`);
+        if (activePill) activePill.classList.add('active');
+      });
+    }, { threshold: 0.28 });
+
+    courseSections.forEach(section => courseObserver.observe(section));
+
+    const enrollMessage = document.getElementById('leadMessage');
+    document.querySelectorAll('[data-enroll-intent]').forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        if (!enrollMessage || enrollMessage.value.trim()) return;
+        enrollMessage.value = 'I am interested in the Practical AI/ML Engineering program and would like to know more about the full lab breakdown, capstone details, and flexible schedule.';
+      });
+    });
+  </script>
+</body>
+</html>
