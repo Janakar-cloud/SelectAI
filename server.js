@@ -64,6 +64,7 @@ app.use('/api/otp',       require('./routes/otp'));
 app.use('/api/enquiries', require('./routes/enquiries'));
 app.use('/api/sessions',  require('./routes/sessions'));
 app.use('/api/admin',     require('./routes/admin'));
+app.use('/api/chat',      require('./routes/chat'));
 
 /* ── Health check ─────────────────────────────────────── */
 app.get('/api/health', (req, res) =>
