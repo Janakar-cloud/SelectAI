@@ -285,7 +285,7 @@ img         { max-width: 100%; display: block; }
 }
 .nav-links a {
   font-family: var(--ff-display);
-  font-size: .63rem;
+  font-size: .73rem;
   letter-spacing: .11em;
   line-height: 1;
   white-space: nowrap;
@@ -1378,8 +1378,8 @@ img         { max-width: 100%; display: block; }
   .footer-brand        { grid-column: 1 / -1; }
 
   .nav-links           { gap: 1.15rem; }
-  .nav-links a         { font-size: .56rem; letter-spacing: .09em; }
-  .nav-user-btn        { font-size: .54rem; padding: 0.26rem 0.55rem; }
+  .nav-links a         { font-size: .66rem; letter-spacing: .09em; }
+  .nav-user-btn        { font-size: .64rem; padding: 0.26rem 0.55rem; }
 }
 
 @media (max-width: 768px) {
@@ -1446,7 +1446,7 @@ img         { max-width: 100%; display: block; }
   padding: 0.28rem 0.6rem;
   color: var(--g100);
   font-family: var(--ff-display);
-  font-size: 0.58rem;
+  font-size: 0.68rem;
   letter-spacing: 0.09em;
   line-height: 1;
   cursor: pointer;
