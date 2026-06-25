@@ -80,6 +80,12 @@
         return;
       }
 
+      /* Unverified users may only use public pages until email OTP is complete */
+      if (!profile.verified && !_isPublicPage()) {
+        window.location.replace('login.html?verify=pending');
+        return;
+      }
+
       /* Ping active session (fire-and-forget) */
       _ping();
       setInterval(_ping, 2 * 60 * 1000);

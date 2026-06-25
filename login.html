@@ -683,7 +683,7 @@
         </div>
 
         <div class="otp-row" id="otpRow" role="group" aria-label="OTP code input">
-          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 1" data-index="0" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 1" data-index="0" autocomplete="one-time-code" />
           <input class="otp-input" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 2" data-index="1" />
           <input class="otp-input" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 3" data-index="2" />
           <input class="otp-input" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 4" data-index="3" />
@@ -757,7 +757,7 @@
 
 <!-- Scripts -->
 <script src="js/app-config.js?v=20260609e"></script>
-<script src="js/api.js?v=20260609e"></script>
+<script src="js/api.js?v=20260625a"></script>
 <script>
 /* =========================================================
    SelectAI — login.html  v20260609e
@@ -812,7 +812,18 @@ function clearMessages() {
 }
 function setLoading(on) {
   document.getElementById('authSpinner').classList.toggle('show', on);
-  document.querySelectorAll('.oauth-btn, .auth-btn').forEach(function (b) { b.disabled = on; });
+  document.querySelectorAll('.oauth-btn, .auth-btn').forEach(function (b) {
+    /* OTP verify state is managed by checkOtpComplete — don't blindly re-enable */
+    if (b.id === 'otpVerifyBtn') {
+      if (on) b.disabled = true;
+      return;
+    }
+    b.disabled = on;
+  });
+  if (!on) {
+    var otpInputs = document.querySelectorAll('.otp-input');
+    if (otpInputs.length) checkOtpComplete(otpInputs);
+  }
 }
 
 /* ── Sign In ───────────────────────────────────────────── */
@@ -829,6 +840,11 @@ window.handleSignIn = function () {
     })
     .catch(function (err) {
       setLoading(false);
+      if (err.needsVerification && err.user) {
+        showError(err.message || 'Please verify your email to continue.');
+        initiateOtp(err.user.uid, err.user.email);
+        return;
+      }
       showError(err.message || 'Sign in failed. Please try again.');
     });
 };
@@ -925,6 +941,7 @@ function initiateOtp(uid, email) {
 
       showPanel('panelOtp');
       _startOtpCountdown();
+      _refreshOtpVerifyState();
       var first = document.querySelector('.otp-input');
       if (first) setTimeout(function () { first.focus(); }, 100);
     })
@@ -991,9 +1008,18 @@ window.cancelOtp = function () {
 };
 
 function checkOtpComplete(inputs) {
-  var allFilled = Array.from(inputs).every(function (inp) { return inp.value !== ''; });
+  var allFilled = Array.from(inputs).every(function (inp) { return inp.value.trim() !== ''; });
   var btn = document.getElementById('otpVerifyBtn');
   if (btn) btn.disabled = !allFilled;
+}
+
+/** Re-check OTP inputs (SMS autofill may not fire input events) */
+function _refreshOtpVerifyState() {
+  var inputs = document.querySelectorAll('.otp-input');
+  if (!inputs.length) return;
+  checkOtpComplete(inputs);
+  setTimeout(function () { checkOtpComplete(inputs); }, 100);
+  setTimeout(function () { checkOtpComplete(inputs); }, 500);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1072,12 +1098,15 @@ document.addEventListener('DOMContentLoaded', function () {
   /* OTP input — auto-advance / backspace / paste */
   var inputs = document.querySelectorAll('.otp-input');
   inputs.forEach(function (inp, idx) {
-    inp.addEventListener('input', function () {
+    function onOtpInputChange() {
       inp.value = inp.value.replace(/\D/g, '').slice(-1);
       inp.classList.toggle('filled', inp.value !== '');
       if (inp.value && idx < inputs.length - 1) inputs[idx + 1].focus();
       checkOtpComplete(inputs);
-    });
+    }
+    inp.addEventListener('input', onOtpInputChange);
+    inp.addEventListener('change', onOtpInputChange);
+    inp.addEventListener('keyup', function () { checkOtpComplete(inputs); });
     inp.addEventListener('keydown', function (e) {
       if (e.key === 'Backspace' && !inp.value && idx > 0) {
         inputs[idx - 1].value = '';
@@ -1094,8 +1123,27 @@ document.addEventListener('DOMContentLoaded', function () {
       });
       checkOtpComplete(inputs);
       if (inputs[text.length]) inputs[text.length].focus();
+      else if (inputs[inputs.length - 1]) inputs[inputs.length - 1].focus();
     });
   });
+
+  /* Resume OTP if user registered but closed the tab before verifying */
+  if (params.get('verify') === 'pending') {
+    SelectAI_API.getMe()
+      .then(function (res) {
+        var user = (res && res.user) || {};
+        if (user.verified) {
+          window.location.replace('index.html');
+          return;
+        }
+        if (user.uid && user.email) {
+          showPanel('panelOtp');
+          document.querySelector('.auth-tabs').style.display = 'none';
+          initiateOtp(user.uid, user.email);
+        }
+      })
+      .catch(function () { /* stay on login */ });
+  }
 });
 
 /* ── Password strength meter ────────────────────────────── */

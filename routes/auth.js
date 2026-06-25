@@ -107,6 +107,23 @@ router.post('/login', async (req, res, next) => {
     if (!match)
       return res.status(401).json({ message: 'Invalid email or password.' });
 
+    if (!user.verified) {
+      const token = _signToken(user.uid, user.email, user.role);
+      return res.status(403).json({
+        message: 'Please verify your email before signing in. Check your inbox for the verification code.',
+        needsVerification: true,
+        token,
+        user: {
+          uid:       user.uid,
+          firstName: user.firstName,
+          lastName:  user.lastName,
+          email:     user.email,
+          role:      user.role,
+          verified:  false
+        }
+      });
+    }
+
     user.lastLogin = new Date();
     await user.save();
 

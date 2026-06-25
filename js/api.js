@@ -41,16 +41,22 @@
 
     return fetch(path, opts)
       .then(function (res) {
-        if (!res.ok) {
-          return res.json()
-            .catch(function () { return {}; })
-            .then(function (body) {
+        return res.json()
+          .catch(function () { return {}; })
+          .then(function (body) {
+            if (!res.ok) {
+              /* Allow login to store token when email verification is still pending */
+              if (res.status === 403 && body.needsVerification && body.token) {
+                _setToken(body.token);
+              }
               var err    = new Error(body.message || 'Request failed (' + res.status + ')');
               err.status = res.status;
+              err.needsVerification = !!body.needsVerification;
+              err.user   = body.user || null;
               throw err;
-            });
-        }
-        return res.json().catch(function () { return {}; });
+            }
+            return body;
+          });
       });
   }
 

@@ -152,11 +152,24 @@ describe('POST /api/auth/login', () => {
   });
 
   test('200 with valid credentials', async () => {
+    const hash = await bcrypt.hash(PASSWORD, 10);
+    User.findOne = jest.fn().mockResolvedValue({
+      ...REGULAR_USER, verified: true, passwordHash: hash, save: jest.fn().mockResolvedValue(true)
+    });
     const res = await request(app).post('/api/auth/login')
       .send({ email: 'alice@example.com', password: PASSWORD });
     expect(res.status).toBe(200);
     expect(res.body.token).toBeDefined();
     expect(res.body.user.email).toBe('alice@example.com');
+  });
+
+  test('403 when email not verified', async () => {
+    const res = await request(app).post('/api/auth/login')
+      .send({ email: 'alice@example.com', password: PASSWORD });
+    expect(res.status).toBe(403);
+    expect(res.body.needsVerification).toBe(true);
+    expect(res.body.token).toBeDefined();
+    expect(res.body.user.verified).toBe(false);
   });
 
   test('401 with wrong password', async () => {
