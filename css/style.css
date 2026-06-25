@@ -518,23 +518,24 @@ img         { max-width: 100%; display: block; }
    PARTNERS
    ========================================================= */
 .partners-row {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  max-width: 1120px;
+  margin: 0 auto;
 }
 
 .partner-card {
   position: relative;
   background: var(--bg-card);
   border: var(--border);
-  padding: 3rem 2.5rem;
-  max-width: 360px;
+  padding: 2.2rem 1.6rem 2rem;
   text-align: center;
   border-radius: var(--radius);
   transition: var(--ease);
   display: block;
   isolation: isolate;
+  height: 100%;
 }
 
 .partner-card::after,
@@ -573,11 +574,21 @@ img         { max-width: 100%; display: block; }
   align-items: center;
   justify-content: center;
   margin: 0 auto 1.3rem;
-  font-family: var(--ff-display);
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--white);
+  background: rgba(255,255,255,.96);
+  border: 1px solid rgba(0,229,255,.14);
+  padding: .55rem;
+  overflow: hidden;
   transition: width 0.4s ease, height 0.4s ease;
+}
+.partner-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.partner-logo--dark {
+  background: var(--bg-alt);
+  border-color: rgba(0,229,255,.22);
 }
 .grad-1 { background: var(--grad-1); }
 .grad-2 { background: var(--grad-2); }
@@ -588,11 +599,12 @@ img         { max-width: 100%; display: block; }
 
 .partner-card h3 {
   font-family: var(--ff-display);
-  font-size: 1.25rem;
+  font-size: 1rem;
   margin-bottom: .5rem;
   color: var(--white);
+  line-height: 1.35;
 }
-.partner-card p { font-size: .92rem; margin-bottom: 1.4rem; }
+.partner-card p { font-size: .85rem; margin-bottom: 1.2rem; line-height: 1.55; }
 .partner-cta {
   color: var(--cyan);
   font-family: var(--ff-display);
