@@ -285,3 +285,38 @@ describe('Admin role logic', () => {
     expect(safeRole('')).toBe('user');
   });
 });
+
+/* ══════════════════════════════════════════════════════
+   SUITE 11: mail — From address for Gmail SMTP
+   ══════════════════════════════════════════════════════ */
+describe('lib/mail getFromAddress()', () => {
+  const mail = require('../lib/mail');
+  const saved = {};
+
+  beforeEach(() => {
+    ['SMTP_USER', 'SMTP_FROM', 'SMTP_HOST'].forEach((k) => {
+      saved[k] = process.env[k];
+    });
+  });
+
+  afterEach(() => {
+    ['SMTP_USER', 'SMTP_FROM', 'SMTP_HOST'].forEach((k) => {
+      if (saved[k] === undefined) delete process.env[k];
+      else process.env[k] = saved[k];
+    });
+  });
+
+  test('uses SMTP_USER as From for Gmail when SMTP_FROM domain mismatches', () => {
+    process.env.SMTP_HOST = 'smtp.gmail.com';
+    process.env.SMTP_USER = 'selectaiinnovations@gmail.com';
+    process.env.SMTP_FROM = 'SelectAI <noreply@selectai.it.com>';
+    expect(mail.getFromAddress()).toBe('SelectAI <selectaiinnovations@gmail.com>');
+  });
+
+  test('keeps SMTP_FROM when it matches SMTP_USER on Gmail', () => {
+    process.env.SMTP_HOST = 'smtp.gmail.com';
+    process.env.SMTP_USER = 'selectaiinnovations@gmail.com';
+    process.env.SMTP_FROM = 'SelectAI <selectaiinnovations@gmail.com>';
+    expect(mail.getFromAddress()).toBe('SelectAI <selectaiinnovations@gmail.com>');
+  });
+});

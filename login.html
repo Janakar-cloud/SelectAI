@@ -990,6 +990,12 @@ window.cancelOtp = function () {
   showPanel('panelLogin');
 };
 
+function checkOtpComplete(inputs) {
+  var allFilled = Array.from(inputs).every(function (inp) { return inp.value !== ''; });
+  var btn = document.getElementById('otpVerifyBtn');
+  if (btn) btn.disabled = !allFilled;
+}
+
 /* ═══════════════════════════════════════════════════════════
    FORGOT PASSWORD
    ═══════════════════════════════════════════════════════════ */

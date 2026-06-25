@@ -3,8 +3,8 @@ const router     = require('express').Router();
 const crypto     = require('crypto');
 const bcrypt     = require('bcryptjs');
 const jwt        = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
 const { verifyToken } = require('../middleware/auth');
+const mail       = require('../lib/mail');
 const User = require('../models/User');
 
 const BCRYPT_ROUNDS = 12;
@@ -22,15 +22,6 @@ function _validatePassword(pw) {
   if (!/[A-Z]/.test(pw))     return 'Password must contain at least one uppercase letter.';
   if (!/[0-9]/.test(pw))     return 'Password must contain at least one number.';
   return '';
-}
-
-function _mailer() {
-  return nodemailer.createTransport({
-    host:   process.env.SMTP_HOST   || 'smtp.gmail.com',
-    port:   parseInt(process.env.SMTP_PORT || '587', 10),
-    secure: process.env.SMTP_SECURE === 'true',
-    auth:   { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
-  });
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -164,6 +155,7 @@ router.post('/forgot-password', async (req, res, next) => {
       return res.status(400).json({ message: 'Please enter a valid email address.' });
 
     const user = await User.findOne({ email: email.toLowerCase().trim() }).lean();
+    let devResetLink;
 
     /* Always return the same message — don't reveal account existence */
     if (user) {
@@ -175,25 +167,34 @@ router.post('/forgot-password', async (req, res, next) => {
       const base      = (process.env.FRONTEND_URL || 'https://www.selectai.it.com').replace(/\/$/, '');
       const resetLink = `${base}/login.html?reset=${encodeURIComponent(resetToken)}`;
 
-      if (process.env.SMTP_USER) {
+      if (mail.shouldSendViaSmtp()) {
         try {
-          await _mailer().sendMail({
-            from:    process.env.SMTP_FROM || 'SelectAI <noreply@selectai.it.com>',
+          await mail.send({
             to:      user.email,
             subject: 'Reset Your SelectAI Password',
             html:    _buildForgotEmail(user.firstName || 'User', resetLink)
           });
         } catch (smtpErr) {
-          console.error('[SelectAI] SMTP error (forgot-password):', smtpErr.message);
+          console.error(
+            '[SelectAI] SMTP error (forgot-password):',
+            smtpErr.message,
+            smtpErr.code || '',
+            'from=',
+            mail.getFromAddress()
+          );
           return res.status(502).json({ message: 'Failed to send reset email. Please try again later.' });
         }
       } else {
-        /* Dev mode: print link to console */
         console.log('[SelectAI] Password reset link for', user.email, '→', resetLink);
+        devResetLink = resetLink;
       }
     }
 
-    res.json({ ok: true, message: 'If an account exists for that email, a reset link has been sent.' });
+    res.json({
+      ok: true,
+      message: 'If an account exists for that email, a reset link has been sent.',
+      ...(devResetLink ? { devResetLink } : {})
+    });
   } catch (err) {
     next(err);
   }

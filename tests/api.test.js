@@ -797,45 +797,47 @@ describe('POST /api/otp/send — email guard', () => {
 
 /* ── SMTP failure → 502 ──────────────────────────────── */
 describe('SMTP failure handling → 502', () => {
-  test('POST /api/auth/forgot-password: 502 on SMTP error', async () => {
-    process.env.SMTP_USER = 'smtp-test@test.com'; /* enable SMTP path */
-    User.findOne = jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(REGULAR_USER) });
+  const mail = require('../lib/mail');
+  let prevNodeEnv;
 
-    /* Mock nodemailer createTransport to return a failing sendMail */
-    const nodemailer = require('nodemailer');
-    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
-      sendMail: jest.fn().mockRejectedValue(new Error('SMTP auth failed'))
-    });
+  beforeEach(() => {
+    prevNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV  = 'production';
+    process.env.SMTP_USER = 'smtp-test@test.com';
+    process.env.SMTP_PASS = 'test-pass';
+    mail._resetTransporter();
+  });
+
+  afterEach(() => {
+    process.env.NODE_ENV = prevNodeEnv;
+    delete process.env.SMTP_USER;
+    delete process.env.SMTP_PASS;
+    mail._resetTransporter();
+    jest.restoreAllMocks();
+  });
+
+  test('POST /api/auth/forgot-password: 502 on SMTP error', async () => {
+    User.findOne = jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(REGULAR_USER) });
+    jest.spyOn(mail, 'send').mockRejectedValue(new Error('SMTP auth failed'));
 
     const res = await request(app).post('/api/auth/forgot-password')
       .send({ email: 'alice@example.com' });
 
     expect(res.status).toBe(502);
     expect(res.body.message).toMatch(/failed to send/i);
-
-    jest.restoreAllMocks();
-    delete process.env.SMTP_USER;
   });
 
   test('POST /api/admin/users/:uid/reset-password: 502 on SMTP error', async () => {
-    process.env.SMTP_USER = 'smtp-test@test.com';
     User.findOne = jest.fn()
       .mockReturnValueOnce({ select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue({ role: 'admin' }) }) })
       .mockReturnValue({ lean: jest.fn().mockResolvedValue({ uid: 'user-uid-001', email: 'alice@example.com', firstName: 'Alice' }) });
-
-    const nodemailer = require('nodemailer');
-    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
-      sendMail: jest.fn().mockRejectedValue(new Error('Connection refused'))
-    });
+    jest.spyOn(mail, 'send').mockRejectedValue(new Error('Connection refused'));
 
     const res = await request(app).post('/api/admin/users/user-uid-001/reset-password')
       .set('Authorization', 'Bearer ' + makeAdminToken());
 
     expect(res.status).toBe(502);
     expect(res.body.message).toMatch(/failed to send/i);
-
-    jest.restoreAllMocks();
-    delete process.env.SMTP_USER;
   });
 });
 

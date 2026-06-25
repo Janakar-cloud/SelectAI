@@ -1,8 +1,8 @@
 'use strict';
 const router     = require('express').Router();
-const nodemailer = require('nodemailer');
 const rateLimit  = require('express-rate-limit');
 const { verifyToken } = require('../middleware/auth');
+const mail            = require('../lib/mail');
 const OtpVerification = require('../models/OtpVerification');
 const User            = require('../models/User');
 
@@ -13,22 +13,6 @@ const otpSendLimiter = rateLimit({
   statusCode: 429,
   message: { message: 'Too many OTP requests. Please wait before requesting another code.' }
 });
-
-/* Lazy-init mail transporter */
-let _transporter;
-function getTransporter() {
-  if (_transporter) return _transporter;
-  _transporter = nodemailer.createTransport({
-    host:   process.env.SMTP_HOST   || 'smtp.gmail.com',
-    port:   parseInt(process.env.SMTP_PORT || '587', 10),
-    secure: process.env.SMTP_SECURE === 'true',
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
-    }
-  });
-  return _transporter;
-}
 
 function generateCode() {
   return String(Math.floor(100000 + Math.random() * 900000));
@@ -57,21 +41,20 @@ router.post('/send', otpSendLimiter, verifyToken, async (req, res, next) => {
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 
-    const isDev = process.env.NODE_ENV !== 'production';
+    const isDev = mail.isDevMailMode();
 
     if (isDev) {
       /* In dev: log to console instead of sending email */
       console.log('[SelectAI OTP] Code for', email, '→', code);
     } else {
       try {
-        await getTransporter().sendMail({
-          from:    process.env.SMTP_FROM || 'SelectAI <noreply@selectai.it.com>',
+        await mail.send({
           to:      email,
           subject: 'Your SelectAI Verification Code — ' + code,
           html:    buildOtpEmail(code)
         });
       } catch (smtpErr) {
-        console.error('[SelectAI OTP] SMTP error:', smtpErr.message);
+        console.error('[SelectAI OTP] SMTP error:', smtpErr.message, smtpErr.code || '');
         return res.status(502).json({ message: 'Failed to send verification email. Please try again.' });
       }
     }
