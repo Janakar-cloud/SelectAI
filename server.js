@@ -23,6 +23,9 @@ const rateLimit = require('express-rate-limit');
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
+/* Behind nginx — required for rate-limit client IP and secure cookies */
+app.set('trust proxy', 1);
+
 /* ── Security ─────────────────────────────────────────── */
 /* CSP disabled — this is an API-only server; static HTML is served by nginx.
    All other helmet protections (HSTS, X-Frame-Options, etc.) remain active. */
