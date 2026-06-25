@@ -540,8 +540,8 @@ img         { max-width: 100%; display: block; }
 
 .partner-card::after,
 .team-card::after,
+.testimonial-card::after,
 .cap-card::after,
-.video-card::after,
 .cta-box::after {
   content: '';
   position: absolute;
@@ -555,8 +555,8 @@ img         { max-width: 100%; display: block; }
 
 .partner-card:hover::after,
 .team-card:hover::after,
+.testimonial-card:hover::after,
 .cap-card:hover::after,
-.video-card:hover::after,
 .cta-box:hover::after {
   opacity: .85;
 }
@@ -1047,70 +1047,82 @@ img         { max-width: 100%; display: block; }
 }
 
 /* =========================================================
-   FEEDBACK / VIDEOS
+   TESTIMONIALS
    ========================================================= */
-.video-grid {
+.testimonial-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
 }
 
-.video-card {
+.testimonial-card {
   position: relative;
+  margin: 0;
   background: var(--bg-card);
   border: var(--border);
   border-radius: var(--radius);
-  overflow: hidden;
+  padding: 1.8rem 1.6rem 1.5rem;
   transition: var(--ease);
   isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
-.video-card:hover {
+.testimonial-card:hover {
   transform: translateY(-5px);
   box-shadow: var(--glow-v);
   border-color: rgba(155,0,255,.55);
 }
 
-.video-thumb {
-  position: relative;
-  height: var(--thumb-h, 175px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  transition: height 0.4s ease;
+.testimonial-quote {
+  font-size: .88rem;
+  line-height: 1.65;
+  color: var(--g100);
+  margin: 0 0 1.4rem;
+  flex: 1;
 }
-.vt-1 { background: linear-gradient(135deg,#ff006e,#9b00ff); }
-.vt-2 { background: linear-gradient(135deg,#00e5ff,#0055ff); }
-.vt-3 { background: linear-gradient(135deg,#00ff88,#00e5ff); }
-
-.play-btn {
-  width: 58px; height: 58px;
-  background: rgba(255,255,255,.2);
-  border: 2px solid rgba(255,255,255,.45);
-  border-radius: 50%;
-  font-size: 1.4rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-  color: var(--white);
-  transition: var(--ease);
-}
-.video-card:hover .play-btn { background: rgba(255,255,255,.32); transform: scale(1.1); }
-
-.video-label {
-  position: absolute;
-  bottom: 10px; left: 14px;
+.testimonial-quote::before {
+  content: '\201C';
+  display: block;
   font-family: var(--ff-display);
-  font-size: .6rem;
-  letter-spacing: .15em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.85);
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--cyan);
+  margin-bottom: .5rem;
+  opacity: .7;
 }
 
-.video-body { padding: 1.4rem 1.4rem 1.8rem; }
-.video-body p { font-size: .9rem; }
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0,229,255,.1);
+}
+.testimonial-author img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: rgba(255,255,255,.96);
+  border: 1px solid rgba(0,229,255,.14);
+  padding: .25rem;
+  flex-shrink: 0;
+}
+.testimonial-author cite {
+  display: block;
+  font-family: var(--ff-display);
+  font-size: .72rem;
+  letter-spacing: .06em;
+  color: var(--white);
+  font-style: normal;
+  margin-bottom: .2rem;
+}
+.testimonial-author span {
+  display: block;
+  font-size: .75rem;
+  color: var(--g400);
+}
 
 /* =========================================================
    CONNECT
@@ -1474,7 +1486,7 @@ img         { max-width: 100%; display: block; }
   .hero-btns     { flex-direction: column; align-items: center; }
   .lead-actions  { flex-direction: column; }
   .cap-grid      { grid-template-columns: 1fr; }
-  .video-grid    { grid-template-columns: 1fr; }
+  .testimonial-grid { grid-template-columns: 1fr; }
   .services-grid { grid-template-columns: 1fr; }
   .kpi-grid      { grid-template-columns: 1fr; }
   .team-grid     { grid-template-columns: 1fr; max-width: 420px; }
