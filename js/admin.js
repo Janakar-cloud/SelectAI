@@ -13,7 +13,6 @@
   var usersFiltered = [];
   var enqFiltered   = [];
   var _pollTimer    = null;
-  var isDevMode     = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '3.7.130.187');
 
   /* ── Load all dashboard data via API ───────────────────── */
   function loadDashboard() {
@@ -107,14 +106,11 @@
   /* ── Admin: Send password reset email via backend ──────── */
   window.adminResetPassword = function (uid, btnEl) {
     if (!uid) { showToast('No user ID provided.', 'error'); return; }
-    if (isDevMode) {
-      showToast('Dev mode — would send reset email for UID: ' + uid, '');
-      return;
-    }
     if (btnEl) btnEl.disabled = true;
     SelectAI_API.resetUserPassword(uid)
       .then(function (data) {
         showToast(data.message || 'Reset email sent.', 'success');
+        if (btnEl) btnEl.disabled = false;
       })
       .catch(function (err) {
         showToast(err.message || 'Failed to send reset email.', 'error');
@@ -198,9 +194,30 @@
   };
 
   /* ── Render: Users table ───────────────────────────────── */
+  function handleUsersTableClick(e) {
+    var btn = e.target.closest('[data-admin-action]');
+    if (!btn) return;
+
+    var action = btn.getAttribute('data-admin-action');
+    var uid    = btn.getAttribute('data-uid') || '';
+    if (!uid) {
+      showToast('No user ID found for this row.', 'error');
+      return;
+    }
+
+    if (action === 'reset-pw') {
+      adminResetPassword(uid, btn);
+    } else if (action === 'toggle-role') {
+      adminToggleRole(uid, btn.getAttribute('data-role') || 'user', btn);
+    } else if (action === 'delete') {
+      adminDeleteUser(uid, btn.getAttribute('data-email') || '', btn);
+    }
+  }
+
   function renderUsersTable(rows, containerId) {
     var wrap = document.getElementById(containerId);
     if (!wrap) return;
+    wrap.removeEventListener('click', handleUsersTableClick);
     if (!rows.length) {
       wrap.innerHTML = '<table class="data-table"><tbody><tr class="empty-row"><td colspan="8">No users found.</td></tr></tbody></table>';
       return;
@@ -210,7 +227,7 @@
       + '<th>Name</th><th>Email</th><th>Country</th><th>City</th><th>Role</th><th>Provider</th><th>Joined</th><th>Actions</th>'
       + '</tr></thead><tbody>';
     rows.forEach(function (u) {
-      var safeUid   = esc(u.uid || u._id || '');
+      var uid       = u.uid || u._id || '';
       var safeEmail = esc(u.email || '');
       var role      = u.role || 'user';
       var toggleLabel = (role === 'admin') ? 'Make User' : 'Make Admin';
@@ -222,15 +239,16 @@
         + '<td><span class="role-badge role-' + role + '">' + role + '</span></td>'
         + '<td>' + esc(u.provider || '—') + '</td>'
         + '<td>' + fmtDate(u.createdAt) + '</td>'
-        + '<td style="display:flex;gap:0.4rem;flex-wrap:wrap">'
-        + '<button class="action-btn" onclick="adminResetPassword(' + JSON.stringify(u.uid || u._id || '') + ', this)" title="Send password reset email">Reset PW</button>'
-        + '<button class="action-btn" onclick="adminToggleRole(' + JSON.stringify(u.uid || '') + ',' + JSON.stringify(role) + ',this)" title="' + toggleLabel + '">' + toggleLabel + '</button>'
-        + '<button class="action-btn" style="border-color:rgba(255,0,110,0.4);color:#ff6b9d" onclick="adminDeleteUser(' + JSON.stringify(u.uid || '') + ',' + JSON.stringify(u.email || '') + ',this)" title="Delete user">Delete</button>'
+        + '<td class="actions-cell">'
+        + '<button type="button" class="action-btn" data-admin-action="reset-pw" data-uid="' + esc(uid) + '" title="Send password reset email">Reset PW</button>'
+        + '<button type="button" class="action-btn" data-admin-action="toggle-role" data-uid="' + esc(uid) + '" data-role="' + esc(role) + '" title="' + esc(toggleLabel) + '">' + esc(toggleLabel) + '</button>'
+        + '<button type="button" class="action-btn action-btn-danger" data-admin-action="delete" data-uid="' + esc(uid) + '" data-email="' + safeEmail + '" title="Delete user">Delete</button>'
         + '</td>'
         + '</tr>';
     });
     html += '</tbody></table></div>';
     wrap.innerHTML = html;
+    wrap.addEventListener('click', handleUsersTableClick);
   }
 
   function renderUsersPreview(rows) {

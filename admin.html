@@ -349,6 +349,20 @@
     }
     .action-btn:hover { background: rgba(0,229,255,0.1); border-color: var(--cyan); }
     .action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .actions-cell {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .action-btn-danger {
+      border-color: rgba(255,0,110,0.4);
+      color: #ff6b9d;
+    }
+    .action-btn-danger:hover {
+      background: rgba(255,0,110,0.1);
+      border-color: #ff6b9d;
+    }
 
     /* Admin toast notification */
     #adminToast {
@@ -755,6 +769,6 @@
 </div>
 
 <script src="js/api.js?v=20260612"></script>
-<script src="js/admin.js?v=20260612"></script>
+<script src="js/admin.js?v=20260625a"></script>
 </body>
 </html>
