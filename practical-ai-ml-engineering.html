@@ -874,6 +874,210 @@
         height: 38px;
       }
     }
+
+    /* ═══════════════════════════════════════════════════════
+       GRAPHICAL ANIMATION ENHANCEMENTS
+       ══════════════════════════════════════════════════════ */
+
+    /* ── Neural canvas background ─────────────────────── */
+    #course-bg-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
+    }
+    .course-hero > .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Drifting orbs (hero ::before ::after) ──────────── */
+    @keyframes orbDrift1 {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.48; }
+      33%  { transform: translate(28px, -22px) scale(1.09); opacity: 0.58; }
+      66%  { transform: translate(-16px, 16px) scale(0.93); opacity: 0.42; }
+    }
+    @keyframes orbDrift2 {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.48; }
+      33%  { transform: translate(-24px, 20px) scale(0.91); opacity: 0.38; }
+      66%  { transform: translate(18px, -28px) scale(1.07); opacity: 0.56; }
+    }
+    .course-hero::before { animation: orbDrift1 13s ease-in-out infinite; }
+    .course-hero::after  { animation: orbDrift2 17s ease-in-out infinite; }
+
+    /* ── Stat cards pulsing border ─────────────────────── */
+    @keyframes statBorderPulse {
+      0%, 100% { border-color: rgba(0, 229, 255, 0.16); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
+      50%  { border-color: rgba(0, 229, 255, 0.42); box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 0 22px rgba(0,229,255,.13); }
+    }
+    .course-stat {
+      animation: statBorderPulse 4s ease-in-out infinite;
+      transition: background 0.4s;
+    }
+    .course-stat:nth-child(1) { animation-delay: 0s;    }
+    .course-stat:nth-child(2) { animation-delay: 0.8s;  }
+    .course-stat:nth-child(3) { animation-delay: 1.6s;  }
+    .course-stat:nth-child(4) { animation-delay: 2.4s;  }
+
+    /* ── Stat counter glow on count-up ─────────────────── */
+    .course-stat-value { transition: color .4s, text-shadow .4s; }
+    .course-stat.sai-counted .course-stat-value {
+      color: var(--cyan);
+      text-shadow: 0 0 30px rgba(0, 229, 255, 0.6), 0 0 60px rgba(0, 229, 255, 0.2);
+    }
+
+    /* ── Gradient title underline pulse ────────────────── */
+    @keyframes underlinePulse {
+      0%, 100% { opacity: 0.7; transform: scaleX(1);   }
+      50%  { opacity: 1;   transform: scaleX(1.01); }
+    }
+    .course-title .gradient-text { position: relative; }
+    .course-title .gradient-text::after {
+      content: '';
+      position: absolute;
+      bottom: -5px; left: 0;
+      width: 100%; height: 3px;
+      background: var(--g-hero);
+      border-radius: 2px;
+      animation: underlinePulse 2.8s ease-in-out infinite;
+    }
+
+    /* ── Phase-stream items slide in ───────────────────── */
+    @keyframes streamIn {
+      from { opacity: 0; transform: translateX(-18px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .phase-stream-item {
+      opacity: 0;
+      animation: streamIn .55s cubic-bezier(.22, 1, .36, 1) both;
+    }
+    .phase-stream-item:nth-child(1) { animation-delay: .6s;  }
+    .phase-stream-item:nth-child(2) { animation-delay: .9s;  }
+    .phase-stream-item:nth-child(3) { animation-delay: 1.2s; }
+
+    /* ── Phase stream number glow pulse ────────────────── */
+    @keyframes streamNumGlow {
+      0%, 100% { background: linear-gradient(135deg, rgba(255,0,110,.28), rgba(0,229,255,.18)); box-shadow: none; }
+      50%  { background: linear-gradient(135deg, rgba(255,0,110,.55), rgba(0,229,255,.38)); box-shadow: 0 0 20px rgba(0,229,255,.22); }
+    }
+    .phase-stream-num { animation: streamNumGlow 3.5s ease-in-out infinite; }
+    .phase-stream-item:nth-child(1) .phase-stream-num { animation-delay: 0s;    }
+    .phase-stream-item:nth-child(2) .phase-stream-num { animation-delay: .85s;  }
+    .phase-stream-item:nth-child(3) .phase-stream-num { animation-delay: 1.7s;  }
+
+    /* ── Phase index badge ring pulse ─────────────────── */
+    @keyframes phaseIdxRing {
+      0%, 100% { box-shadow: 0 0 0 0   rgba(0,229,255,0); }
+      50%  { box-shadow: 0 0 0 6px rgba(0,229,255,.15), 0 0 22px rgba(0,229,255,.10); }
+    }
+    .phase-index { animation: phaseIdxRing 3.2s ease-in-out infinite; }
+
+    /* ── Phase card corner radial sweep on hover ────────── */
+    @keyframes cornerSweep {
+      0%   { opacity: 0;   transform: scale(.3) translate(35px,-35px); }
+      40%  { opacity: 1; }
+      100% { opacity: 0;   transform: scale(1.8) translate(-8px, 8px); }
+    }
+    .phase-card:hover::after {
+      animation: cornerSweep 1.6s ease-in-out infinite;
+    }
+
+    /* ── Kit card bar fill on scroll reveal ────────────── */
+    .kit-card::after {
+      transform-origin: left center;
+      transform: scaleX(0);
+      transition: transform .95s cubic-bezier(.22, 1, .36, 1);
+    }
+    .kit-card.sai-revealed::after { transform: scaleX(1); }
+
+    /* ── Kit card hover glow ────────────────────────────── */
+    .kit-card {
+      transition: transform .3s cubic-bezier(.22,1,.36,1),
+                  border-color .3s, box-shadow .3s;
+    }
+    .kit-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(0, 229, 255, 0.28);
+      box-shadow: 0 18px 44px rgba(0,0,0,.32), 0 0 20px rgba(0,229,255,.10);
+    }
+
+    /* ── Section header scan line ──────────────────────── */
+    @keyframes scanSlide {
+      0%   { left: -70%; }
+      100% { left: 130%; }
+    }
+    .section-header { position: relative; overflow: hidden; }
+    .section-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: -70%;
+      width: 55%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,229,255,.5), transparent);
+      animation: scanSlide 5s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    /* ── Capstone card shimmer on hover ────────────────── */
+    @keyframes shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position:  200% 0; }
+    }
+    .capstone-card:hover::before {
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(0,229,255,.06) 30%,
+        rgba(155,0,255,.06) 60%,
+        transparent 100%);
+      background-size: 200% 100%;
+      animation: shimmer 2s linear infinite;
+    }
+
+    /* ── Principle card icon accent pulse ──────────────── */
+    @keyframes accentPulse {
+      0%, 100% { opacity: .9; letter-spacing: .12em; }
+      50%  { opacity: 1;  letter-spacing: .16em; }
+    }
+    .principle-card strong { animation: accentPulse 3s ease-in-out infinite; }
+    .principle-card:nth-child(1) strong { animation-delay: 0s;    }
+    .principle-card:nth-child(2) strong { animation-delay: .5s;   }
+    .principle-card:nth-child(3) strong { animation-delay: 1s;    }
+    .principle-card:nth-child(4) strong { animation-delay: 1.5s;  }
+
+    /* ── FAQ open/close smooth ─────────────────────────── */
+    .course-faq summary { transition: background .2s; }
+    .course-faq[open] summary {
+      background: rgba(0,229,255,.05);
+      border-bottom: 1px solid rgba(0,229,255,.1);
+    }
+
+    /* ── Enroll chip float ─────────────────────────────── */
+    @keyframes chipFloat {
+      0%, 100% { transform: translateY(0); }
+      50%  { transform: translateY(-3px); }
+    }
+    .enroll-chip {
+      animation: chipFloat 3.5s ease-in-out infinite;
+    }
+    .enroll-chip:nth-child(1) { animation-delay: 0s;   }
+    .enroll-chip:nth-child(2) { animation-delay: .4s;  }
+    .enroll-chip:nth-child(3) { animation-delay: .8s;  }
+    .enroll-chip:nth-child(4) { animation-delay: 1.2s; }
+    .enroll-chip:nth-child(5) { animation-delay: 1.6s; }
+
+    /* ── Reduced motion overrides ──────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      .course-hero::before, .course-hero::after,
+      .course-stat, .phase-stream-item, .phase-stream-num,
+      .phase-index, .principle-card strong, .enroll-chip,
+      .section-header::after, .course-title .gradient-text::after {
+        animation: none !important;
+      }
+      .phase-stream-item { opacity: 1 !important; }
+      #course-bg-canvas  { display: none !important; }
+    }
   </style>
 </head>
 <body class="course-page">
@@ -900,6 +1104,7 @@
   </nav>
 
   <section id="pageTop" class="course-hero">
+    <canvas id="course-bg-canvas" aria-hidden="true"></canvas>
     <div class="container course-hero-grid">
       <div class="animate-on-scroll">
         <span class="course-kicker">SelectAI Course Prototype</span>
@@ -1574,6 +1779,173 @@
         enrollMessage.value = 'I am interested in the Practical AI/ML Engineering program and would like to know more about the full lab breakdown, capstone details, and flexible schedule.';
       });
     });
+  </script>
+
+  <!-- ── Graphical Animations ──────────────────────────── -->
+  <script>
+  (function () {
+    'use strict';
+
+    /* ── 1. Neural Network Canvas in Hero ─────────────── */
+    (function initNeuralCanvas() {
+      var canvas = document.getElementById('course-bg-canvas');
+      if (!canvas) return;
+      var ctx  = canvas.getContext('2d');
+      var hero = canvas.parentElement;
+      var W, H, nodes = [], RAF;
+      var NODE_COUNT = 48;
+      var MAX_DIST   = 155;
+      var PALETTE = [[0,229,255],[155,0,255],[255,0,110]];
+
+      function resize() {
+        W = canvas.width  = hero.offsetWidth;
+        H = canvas.height = hero.offsetHeight;
+      }
+
+      function Node() {
+        var c  = PALETTE[Math.floor(Math.random() * PALETTE.length)];
+        this.x = Math.random() * W;  this.y = Math.random() * H;
+        this.vx = (Math.random() - 0.5) * 0.38;
+        this.vy = (Math.random() - 0.5) * 0.38;
+        this.r  = 1.6 + Math.random() * 2;
+        this.cr = c[0]; this.cg = c[1]; this.cb = c[2];
+        this.phase = Math.random() * Math.PI * 2;
+      }
+
+      function init() { resize(); nodes = []; for (var i = 0; i < NODE_COUNT; i++) nodes.push(new Node()); }
+
+      function tick() {
+        ctx.clearRect(0, 0, W, H);
+        var t = Date.now() / 1000;
+
+        for (var i = 0; i < nodes.length; i++) {
+          for (var j = i + 1; j < nodes.length; j++) {
+            var dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
+            var d  = Math.sqrt(dx * dx + dy * dy);
+            if (d < MAX_DIST) {
+              var a = (1 - d / MAX_DIST) * 0.35;
+              ctx.beginPath();
+              ctx.moveTo(nodes[i].x, nodes[i].y);
+              ctx.lineTo(nodes[j].x, nodes[j].y);
+              ctx.strokeStyle = 'rgba(' + nodes[i].cr + ',' + nodes[i].cg + ',' + nodes[i].cb + ',' + a + ')';
+              ctx.lineWidth = 0.7; ctx.stroke();
+            }
+          }
+        }
+
+        for (var i = 0; i < nodes.length; i++) {
+          var n = nodes[i];
+          var pulse = 0.5 + 0.5 * Math.sin(t * 2.2 + n.phase);
+          var r = n.r * (0.82 + 0.36 * pulse), a = 0.45 + 0.5 * pulse;
+
+          var grd = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, r * 4.5);
+          grd.addColorStop(0, 'rgba(' + n.cr + ',' + n.cg + ',' + n.cb + ',' + (a * 0.45) + ')');
+          grd.addColorStop(1, 'rgba(' + n.cr + ',' + n.cg + ',' + n.cb + ',0)');
+          ctx.beginPath(); ctx.arc(n.x, n.y, r * 4.5, 0, Math.PI * 2);
+          ctx.fillStyle = grd; ctx.fill();
+
+          ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(' + n.cr + ',' + n.cg + ',' + n.cb + ',' + a + ')';
+          ctx.fill();
+
+          n.x += n.vx; n.y += n.vy;
+          if (n.x < 0 || n.x > W) n.vx *= -1;
+          if (n.y < 0 || n.y > H) n.vy *= -1;
+        }
+        RAF = requestAnimationFrame(tick);
+      }
+
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { canvas.style.display = 'none'; return; }
+      init(); tick();
+      window.addEventListener('resize', function () { cancelAnimationFrame(RAF); init(); tick(); });
+      document.addEventListener('visibilitychange', function () { if (document.hidden) cancelAnimationFrame(RAF); else tick(); });
+    }());
+
+    /* ── 2. Stat counter count-up ─────────────────────── */
+    (function initCounters() {
+      var stats    = document.querySelectorAll('.course-stat');
+      var targets  = [20, 9, 40, 4];
+      var suffixes = [' Weeks', ' Phases', '+ Labs', ' Capstones'];
+      if (!stats.length) return;
+
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          var idx = Array.prototype.indexOf.call(stats, entry.target);
+          if (idx < 0 || entry.target.dataset.counted) return;
+          entry.target.dataset.counted = '1';
+          obs.unobserve(entry.target);
+          var el = entry.target.querySelector('.course-stat-value');
+          var end = targets[idx], suffix = suffixes[idx], startTs = null;
+          function step(ts) {
+            if (!startTs) startTs = ts;
+            var p = Math.min((ts - startTs) / 1100, 1);
+            var e = 1 - Math.pow(1 - p, 3);
+            el.textContent = Math.floor(e * end) + suffix;
+            if (p < 1) requestAnimationFrame(step);
+            else { el.textContent = end + suffix; entry.target.classList.add('sai-counted'); }
+          }
+          requestAnimationFrame(step);
+        });
+      }, { threshold: 0.6 });
+      stats.forEach(function (s) { obs.observe(s); });
+    }());
+
+    /* ── 3. Kit card bar fill on scroll ──────────────── */
+    (function initKitBars() {
+      var cards = document.querySelectorAll('.kit-card');
+      if (!cards.length) return;
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('sai-revealed'); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.35 });
+      cards.forEach(function (c) { obs.observe(c); });
+    }());
+
+    /* ── 4. Phase cards staggered slide-in glow ─────── */
+    (function initPhaseGlow() {
+      var cards = document.querySelectorAll('.phase-card');
+      if (!cards.length) return;
+      cards.forEach(function (c) { c.style.opacity = '0'; c.style.transform = 'translateY(20px)'; });
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          var idx = Array.prototype.indexOf.call(cards, entry.target);
+          setTimeout(function () {
+            entry.target.style.transition = 'opacity .55s ease, transform .6s cubic-bezier(.22,1,.36,1), border-color .6s';
+            entry.target.style.opacity    = '1';
+            entry.target.style.transform  = 'translateY(0)';
+            entry.target.style.borderColor = 'rgba(0,229,255,.3)';
+            setTimeout(function () { entry.target.style.borderColor = ''; }, 900);
+          }, idx * 70);
+          obs.unobserve(entry.target);
+        });
+      }, { threshold: 0.18 });
+      cards.forEach(function (c) { obs.observe(c); });
+    }());
+
+    /* ── 5. Capstone cards staggered fade ────────────── */
+    (function initCapstoneAnim() {
+      var cards = document.querySelectorAll('.capstone-card');
+      if (!cards.length) return;
+      cards.forEach(function (c) { c.style.opacity = '0'; c.style.transform = 'scale(0.94)'; });
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          var idx = Array.prototype.indexOf.call(cards, entry.target);
+          setTimeout(function () {
+            entry.target.style.transition = 'opacity .5s ease, transform .55s cubic-bezier(.22,1,.36,1)';
+            entry.target.style.opacity   = '1';
+            entry.target.style.transform = 'scale(1)';
+          }, idx * 80);
+          obs.unobserve(entry.target);
+        });
+      }, { threshold: 0.2 });
+      cards.forEach(function (c) { obs.observe(c); });
+    }());
+
+  }());
   </script>
 </body>
 </html>

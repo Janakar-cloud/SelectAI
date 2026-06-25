@@ -262,7 +262,7 @@ img         { max-width: 100%; display: block; }
 .nav-links {
   display: flex;
   list-style: none;
-  gap: 1.7rem;
+  gap: 2.2rem;
   align-items: center;
 }
 .btn-icon {

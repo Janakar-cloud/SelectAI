@@ -14,7 +14,6 @@
     'index.html': true,
     'tools.html': true,
     'quotation.html': true,
-    'practical-ai-ml-engineering.html': true,
     'login.html': true
   };
 
