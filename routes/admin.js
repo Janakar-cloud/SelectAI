@@ -4,6 +4,12 @@ const jwt        = require('jsonwebtoken');
 const crypto     = require('crypto');
 const bcrypt     = require('bcryptjs');
 const mail       = require('../lib/mail');
+const {
+  normalizePhone,
+  validatePhone,
+  fullName,
+  findRegistrationConflict
+} = require('../lib/userHelpers');
 const { verifyToken, requireAdmin }         = require('../middleware/auth');
 const User          = require('../models/User');
 const Enquiry       = require('../models/Enquiry');
@@ -91,7 +97,7 @@ router.post('/users/:uid/reset-password', async (req, res, next) => {
         await mail.send({
           to:      user.email,
           subject: 'Reset Your SelectAI Password — Action Requested by Admin',
-          html:    buildResetEmail(user.firstName || 'User', resetLink)
+          html:    buildResetEmail(fullName(user.firstName, user.lastName) || 'User', resetLink)
         });
       } catch (smtpErr) {
         console.error('[SelectAI Admin] SMTP error (reset-password):', smtpErr.message, smtpErr.code || '');
@@ -126,10 +132,13 @@ router.post('/users', async (req, res, next) => {
 
     const safeRole = (role === 'admin') ? 'admin' : 'user';
     const emailLower = email.toLowerCase().trim();
+    const phoneNorm  = phone ? normalizePhone(phone) : '';
 
-    const existing = await User.findOne({ email: emailLower }).lean();
-    if (existing)
-      return res.status(409).json({ message: 'An account with this email already exists.' });
+    if (phone && !phoneNorm)
+      return res.status(400).json({ message: 'Please enter a valid mobile number.' });
+
+    const conflict = await findRegistrationConflict(emailLower, phoneNorm);
+    if (conflict) return res.status(409).json({ message: conflict.message });
 
     const passwordHash = await bcrypt.hash(password, 12);
     const uid          = crypto.randomUUID();
@@ -140,7 +149,7 @@ router.post('/users', async (req, res, next) => {
       lastName:  lastName.trim(),
       email:     emailLower,
       passwordHash,
-      phone:     (phone   || '').trim(),
+      phone:     phoneNorm,
       country:   (country || '').trim(),
       city:      (city    || '').trim(),
       role:      safeRole,
@@ -219,7 +228,7 @@ router.delete('/users/:uid', async (req, res, next) => {
 /* ─────────────────────────────────────────────────────────
    Password reset email HTML template
 ───────────────────────────────────────────────────────── */
-function buildResetEmail(firstName, resetLink) {
+function buildResetEmail(name, resetLink) {
   const year = new Date().getFullYear();
   return `<!DOCTYPE html>
 <html lang="en">
@@ -233,7 +242,7 @@ function buildResetEmail(firstName, resetLink) {
       </div>
     </div>
     <div style="padding:28px 36px 36px;">
-      <p style="color:#8890b5;font-size:14px;line-height:1.7;margin:0 0 20px;">Hi ${firstName},</p>
+      <p style="color:#8890b5;font-size:14px;line-height:1.7;margin:0 0 20px;">Hi ${name},</p>
       <p style="color:#8890b5;font-size:14px;line-height:1.7;margin:0 0 28px;">
         An administrator has requested a password reset for your account. Click the button below to set a new password. This link expires in <strong style="color:#e0e0f0;">1 hour</strong>.
       </p>

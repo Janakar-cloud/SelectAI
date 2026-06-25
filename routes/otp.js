@@ -3,6 +3,8 @@ const router     = require('express').Router();
 const rateLimit  = require('express-rate-limit');
 const { verifyToken } = require('../middleware/auth');
 const mail            = require('../lib/mail');
+const { issueOtp }    = require('../lib/otpService');
+const { findRegistrationConflict } = require('../lib/userHelpers');
 const OtpVerification = require('../models/OtpVerification');
 const User            = require('../models/User');
 
@@ -14,56 +16,42 @@ const otpSendLimiter = rateLimit({
   message: { message: 'Too many OTP requests. Please wait before requesting another code.' }
 });
 
-function generateCode() {
-  return String(Math.floor(100000 + Math.random() * 900000));
-}
-
 /* ─────────────────────────────────────────────────────────
    POST /api/otp/send
    Generate a 6-digit code, store in MongoDB, email to user.
 ───────────────────────────────────────────────────────── */
 router.post('/send', otpSendLimiter, verifyToken, async (req, res, next) => {
   try {
-    const uid       = req.uid;
-    const user      = await User.findOne({ uid }).select('email').lean();
-    const email     = ((user && user.email) || req.userEmail || '').trim().toLowerCase();
+    const uid    = req.uid;
+    const user   = await User.findOne({ uid }).select('email').lean();
+    const pending = await OtpVerification.findOne({ uid }).lean();
+    const email  = ((user && user.email) || (pending && pending.email) || req.userEmail || '').trim().toLowerCase();
 
-    if (!email || !email.trim())
+    if (!email)
       return res.status(400).json({ message: 'No email address associated with this account.' });
 
-    const code      = generateCode();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); /* 10 min */
-
-    /* Upsert OTP record (replace previous code if any) */
-    await OtpVerification.findOneAndUpdate(
-      { uid },
-      { uid, email, code, expiresAt, verified: false },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
-    );
+    const preserve = pending ? {
+      firstName:    pending.firstName,
+      lastName:     pending.lastName,
+      passwordHash: pending.passwordHash,
+      phone:        pending.phone,
+      country:      pending.country,
+      city:         pending.city
+    } : {};
 
     const isDev = mail.isDevMailMode();
-
-    if (isDev) {
-      /* In dev: log to console instead of sending email */
-      console.log('[SelectAI OTP] Code for', email, '→', code);
-    } else {
-      try {
-        await mail.send({
-          to:      email,
-          subject: 'Your SelectAI Verification Code — ' + code,
-          html:    buildOtpEmail(code)
-        });
-      } catch (smtpErr) {
-        console.error('[SelectAI OTP] SMTP error:', smtpErr.message, smtpErr.code || '');
-        return res.status(502).json({ message: 'Failed to send verification email. Please try again.' });
-      }
+    let otpResult;
+    try {
+      otpResult = await issueOtp(uid, email, preserve);
+    } catch (smtpErr) {
+      console.error('[SelectAI OTP] SMTP error:', smtpErr.message, smtpErr.code || '');
+      return res.status(502).json({ message: 'Failed to send verification email. Please try again.' });
     }
 
     res.json({
       ok:      true,
       message: 'Verification code sent to ' + email,
-      /* Only expose the code in non-production for testing */
-      ...(isDev ? { devCode: code } : {})
+      ...(otpResult.isDev ? { devCode: otpResult.code } : {})
     });
   } catch (err) {
     next(err);
@@ -84,9 +72,7 @@ router.post('/verify', verifyToken, async (req, res, next) => {
     if (!record) {
       const user = await User.findOne({ uid: req.uid }).select('email').lean();
       const email = ((user && user.email) || req.userEmail || '').trim().toLowerCase();
-      if (email) {
-        record = await OtpVerification.findOne({ email });
-      }
+      if (email) record = await OtpVerification.findOne({ email });
     }
 
     if (!record)
@@ -98,58 +84,39 @@ router.post('/verify', verifyToken, async (req, res, next) => {
     if (String(record.code).trim() !== enteredCode)
       return res.status(400).json({ message: 'Incorrect verification code. Please try again.' });
 
-    /* Mark verified in both OtpVerification and User collections */
-    await Promise.all([
-      OtpVerification.findOneAndUpdate({ uid: req.uid }, { verified: true }),
-      User.findOneAndUpdate({ uid: req.uid }, { verified: true })
-    ]);
+    if (record.passwordHash) {
+      const conflict = await findRegistrationConflict(record.email, record.phone, record.uid);
+      if (conflict) return res.status(409).json({ message: conflict.message });
+
+      const existingUser = await User.findOne({ uid: record.uid }).lean();
+      if (!existingUser) {
+        await User.create({
+          uid:          record.uid,
+          firstName:    record.firstName,
+          lastName:     record.lastName,
+          email:        record.email,
+          passwordHash: record.passwordHash,
+          phone:        record.phone,
+          country:      record.country,
+          city:         record.city,
+          provider:     'email',
+          role:         'user',
+          verified:     true,
+          lastLogin:    new Date()
+        });
+      } else {
+        await User.findOneAndUpdate({ uid: record.uid }, { verified: true });
+      }
+    } else {
+      await User.findOneAndUpdate({ uid: req.uid }, { verified: true });
+    }
+
+    await OtpVerification.findOneAndUpdate({ uid: record.uid }, { verified: true });
 
     res.json({ ok: true, message: 'Email verified successfully.' });
   } catch (err) {
     next(err);
   }
 });
-
-/* ─────────────────────────────────────────────────────────
-   Branded HTML OTP email template
-───────────────────────────────────────────────────────── */
-function buildOtpEmail(code) {
-  const year = new Date().getFullYear();
-  return `<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Verify your SelectAI account</title></head>
-<body style="margin:0;padding:0;background:#060612;font-family:'Helvetica Neue',Arial,sans-serif;">
-  <div style="max-width:520px;margin:40px auto;background:#0e0e24;border:1px solid rgba(0,229,255,0.18);border-radius:12px;overflow:hidden;">
-    <div style="background:linear-gradient(135deg,#ff006e 0%,#9b00ff 100%);padding:3px 0 0;border-radius:12px 12px 0 0;">
-      <div style="background:#0e0e24;padding:32px 36px 0;border-radius:9px 9px 0 0;">
-        <p style="margin:0;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:#00e5ff;font-weight:700;">SelectAI Innovations</p>
-        <h1 style="margin:10px 0 28px;font-size:22px;color:#e0e0f0;font-weight:700;line-height:1.2;">Verify Your Email Address</h1>
-      </div>
-    </div>
-    <div style="padding:28px 36px 36px;">
-      <p style="color:#8890b5;font-size:14px;line-height:1.7;margin:0 0 24px;">
-        Welcome to SelectAI! Use the code below to complete your account verification.
-        This code is valid for <strong style="color:#e0e0f0;">10 minutes</strong>.
-      </p>
-      <div style="background:rgba(0,229,255,0.06);border:1px solid rgba(0,229,255,0.22);border-radius:10px;padding:24px;text-align:center;margin:0 0 28px;">
-        <p style="margin:0 0 6px;font-size:11px;color:#8890b5;letter-spacing:0.15em;text-transform:uppercase;">Your verification code</p>
-        <span style="font-size:40px;font-weight:900;letter-spacing:0.45em;color:#00e5ff;font-family:'Courier New',monospace;display:inline-block;padding:4px 0;">${code}</span>
-      </div>
-      <p style="color:#8890b5;font-size:13px;line-height:1.6;margin:0 0 8px;">
-        Enter this code in the SelectAI verification screen to activate your account.
-      </p>
-      <p style="color:#4a4a6a;font-size:12px;line-height:1.6;margin:0;">
-        If you didn't create a SelectAI account, you can safely ignore this email.
-      </p>
-      <hr style="border:none;border-top:1px solid rgba(0,229,255,0.08);margin:28px 0 20px;">
-      <p style="color:#4a4a6a;font-size:11px;margin:0;">
-        © ${year} SelectAI Innovations &nbsp;·&nbsp;
-        <a href="https://www.selectai.it.com" style="color:#00e5ff;text-decoration:none;">www.selectai.it.com</a>
-      </p>
-    </div>
-  </div>
-</body></html>`;
-}
 
 module.exports = router;

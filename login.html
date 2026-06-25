@@ -570,7 +570,7 @@
 
           <div class="form-field">
             <label for="spPhone">Mobile Number</label>
-            <input type="tel" id="spPhone" name="phone" placeholder="+91 98765 43210" autocomplete="tel" />
+            <input type="tel" id="spPhone" name="phone" placeholder="+91 98765 43210" autocomplete="tel" required />
           </div>
 
           <div class="form-field">
@@ -864,6 +864,8 @@ window.handleSignUp = function () {
   if (data.firstName.length < 2)                        { showError('First name must be at least 2 characters.'); return; }
   if (data.lastName.length  < 2)                        { showError('Last name must be at least 2 characters.'); return; }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))  { showError('Please enter a valid email address.'); return; }
+  var phoneDigits = data.phone.replace(/\D/g, '');
+  if (phoneDigits.length < 8)                           { showError('Please enter a valid mobile number (at least 8 digits).'); return; }
   if (!data.country)                                    { showError('Please select your country.'); return; }
   if (data.city.length < 2)                             { showError('Please enter your city.'); return; }
   if (data.password.length < 8)                         { showError('Password must be at least 8 characters.'); return; }
@@ -875,7 +877,11 @@ window.handleSignUp = function () {
   SelectAI_API.register(data)
     .then(function (res) {
       setLoading(false);
-      initiateOtp(res.user.uid, res.user.email);
+      if (res.otpSent) {
+        openOtpPanel(res.user.email, res.devCode || null);
+      } else {
+        initiateOtp(res.user.uid, res.user.email);
+      }
     })
     .catch(function (err) {
       setLoading(false);
@@ -908,42 +914,44 @@ function _startOtpCountdown() {
   }, 1000);
 }
 
-/** Kick off OTP verification after register */
+/** Show OTP panel (optionally with dev code from register response) */
+function openOtpPanel(email, devCode) {
+  var devBox = document.getElementById('otpDevCode');
+  var devVal = document.getElementById('otpDevValue');
+  if (devCode) {
+    _otpCode = devCode;
+    if (devBox) devBox.style.display = 'block';
+    if (devVal) devVal.textContent = devCode;
+  } else {
+    if (devBox) devBox.style.display = 'none';
+    _otpCode = null;
+  }
+
+  document.getElementById('otpSubText').textContent =
+    'We sent a 6-digit code to ' + (email || 'your email') + '. Enter it below to verify your account.';
+
+  document.querySelectorAll('.otp-input').forEach(function (inp) {
+    inp.value = ''; inp.classList.remove('filled');
+  });
+  document.getElementById('otpVerifyBtn').disabled = true;
+  document.getElementById('otpResendBtn').disabled = false;
+
+  showPanel('panelOtp');
+  _startOtpCountdown();
+  _refreshOtpVerifyState();
+  var first = document.querySelector('.otp-input');
+  if (first) setTimeout(function () { first.focus(); }, 100);
+}
+
+/** Kick off OTP verification (resend / resume pending signup) */
 function initiateOtp(uid, email) {
   _otpUid = uid;
 
-  /* Backend sends email. In dev mode, devCode is returned in the response. */
   setLoading(true);
   SelectAI_API.sendOtp()
     .then(function (res) {
       setLoading(false);
-      /* Dev mode: backend returns devCode, show on screen */
-      var devBox = document.getElementById('otpDevCode');
-      var devVal = document.getElementById('otpDevValue');
-      if (res.devCode) {
-        _otpCode = res.devCode;
-        devBox.style.display = 'block';
-        devVal.textContent   = res.devCode;
-      } else {
-        devBox.style.display = 'none';
-        _otpCode = null;
-      }
-
-      document.getElementById('otpSubText').textContent =
-        'We sent a 6-digit code to ' + (email || 'your email') + '. Enter it below to verify your account.';
-
-      /* Clear OTP inputs */
-      document.querySelectorAll('.otp-input').forEach(function (inp) {
-        inp.value = ''; inp.classList.remove('filled');
-      });
-      document.getElementById('otpVerifyBtn').disabled = true;
-      document.getElementById('otpResendBtn').disabled = false;
-
-      showPanel('panelOtp');
-      _startOtpCountdown();
-      _refreshOtpVerifyState();
-      var first = document.querySelector('.otp-input');
-      if (first) setTimeout(function () { first.focus(); }, 100);
+      openOtpPanel(email, res.devCode || null);
     })
     .catch(function (err) {
       setLoading(false);

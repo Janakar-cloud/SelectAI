@@ -42,6 +42,11 @@
     return;
   }
 
+  function _fullName(u) {
+    var name = ((u.firstName || '') + ' ' + (u.lastName || '')).trim();
+    return name || u.displayName || u.email || '';
+  }
+
   /* ── Fetch user profile from API ─────────────────────── */
   fetch('/api/auth/me', {
     headers: {
@@ -65,7 +70,7 @@
 
       window.SELECTAI_USER = {
         uid:         profile.uid         || '',
-        displayName: ((profile.firstName || '') + ' ' + (profile.lastName || '')).trim(),
+        displayName: _fullName(profile),
         firstName:   profile.firstName   || '',
         lastName:    profile.lastName    || '',
         email:       profile.email       || '',
@@ -120,7 +125,7 @@
     fetch('/api/sessions/ping', {
       method:  'POST',
       headers: { 'Authorization': 'Bearer ' + t, 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ displayName: (window.SELECTAI_USER || {}).displayName || '' })
+      body:    JSON.stringify({ displayName: _fullName(window.SELECTAI_USER || {}) })
     }).catch(function () {});
   }
 
@@ -130,7 +135,7 @@
     if (adminLink) adminLink.style.display = (u.role === 'admin') ? '' : 'none';
 
     var nameEl = document.getElementById('navUserName');
-    if (nameEl) nameEl.textContent = u.firstName || u.displayName || u.email;
+    if (nameEl) nameEl.textContent = _fullName(u);
 
     var avatarEl = document.getElementById('navUserAvatar');
     if (avatarEl && u.photoURL) {

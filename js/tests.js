@@ -80,6 +80,7 @@
     if (!d || d.firstName.length < 2)                       return 'Please enter a valid first name (min 2 characters).';
     if (d.lastName.length < 2)                              return 'Please enter a valid last name (min 2 characters).';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email))       return 'Please enter a valid email address.';
+    if (!d.phone || String(d.phone).replace(/\D/g, '').length < 8) return 'Please enter a valid mobile number.';
     if (!d.country)                                         return 'Please select your country.';
     if (d.city.length < 2)                                  return 'Please enter your city.';
     return '';
@@ -164,12 +165,16 @@
       var r = validateSignup({ firstName: 'Alice', lastName: 'Smith', email: 'a@b.com', country: 'India', city: 'X' });
       expect(r).toContain('city');
     });
+    it('rejects short mobile number', function () {
+      var r = validateSignup({ firstName: 'Alice', lastName: 'Smith', email: 'a@b.com', phone: '123', country: 'India', city: 'Mumbai' });
+      expect(r).toContain('mobile');
+    });
     it('passes valid data', function () {
-      var r = validateSignup({ firstName: 'Alice', lastName: 'Smith', email: 'alice@example.com', country: 'India', city: 'Mumbai' });
+      var r = validateSignup({ firstName: 'Alice', lastName: 'Smith', email: 'alice@example.com', phone: '9876543210', country: 'India', city: 'Mumbai' });
       expect(r).toBe('');
     });
     it('passes with hyphenated last name', function () {
-      var r = validateSignup({ firstName: 'Mary', lastName: 'Jane-Doe', email: 'm@d.io', country: 'UK', city: 'London' });
+      var r = validateSignup({ firstName: 'Mary', lastName: 'Jane-Doe', email: 'm@d.io', phone: '9876543210', country: 'UK', city: 'London' });
       expect(r).toBe('');
     });
   });

@@ -60,21 +60,31 @@ describe('GET /api/health', () => {
 describe('POST /api/auth/register', () => {
   const VALID = {
     firstName: 'Alice', lastName: 'Smith', email: 'alice@example.com',
-    password: 'Password1', country: 'India', city: 'Mumbai'
+    phone: '9876543210', password: 'Password1', country: 'India', city: 'Mumbai'
   };
 
   beforeEach(() => {
-    User.findOne  = jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
-    User.create   = jest.fn().mockResolvedValue({
-      ...REGULAR_USER, uid: 'new-uid', role: 'user', verified: false
-    });
+    User.findOne = jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
+    OtpVerification.findOne = jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
+    OtpVerification.findOneAndUpdate = jest.fn().mockResolvedValue({});
+    OtpVerification.deleteOne = jest.fn().mockResolvedValue({});
+    User.create = jest.fn();
   });
 
-  test('201 on valid data', async () => {
+  test('201 on valid data — pending until OTP, no User.create', async () => {
     const res = await request(app).post('/api/auth/register').send(VALID);
     expect(res.status).toBe(201);
     expect(res.body.token).toBeDefined();
+    expect(res.body.otpSent).toBe(true);
     expect(res.body.user.email).toBe('alice@example.com');
+    expect(User.create).not.toHaveBeenCalled();
+    expect(OtpVerification.findOneAndUpdate).toHaveBeenCalled();
+  });
+
+  test('400 when phone missing or too short', async () => {
+    const res = await request(app).post('/api/auth/register').send({ ...VALID, phone: '123' });
+    expect(res.status).toBe(400);
+    expect(res.body.message).toMatch(/mobile/i);
   });
 
   test('400 when firstName too short', async () => {
@@ -126,10 +136,12 @@ describe('POST /api/auth/register', () => {
   });
 
   test('409 when email already taken', async () => {
-    User.findOne = jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(REGULAR_USER) });
+    User.findOne = jest.fn().mockImplementation((query) => ({
+      lean: jest.fn().mockResolvedValue(query.email ? REGULAR_USER : null)
+    }));
     const res = await request(app).post('/api/auth/register').send(VALID);
     expect(res.status).toBe(409);
-    expect(res.body.message).toMatch(/already exists/i);
+    expect(res.body.message).toMatch(/email/i);
   });
 
   test('returned token decodes correctly', async () => {
@@ -233,8 +245,36 @@ describe('GET /api/auth/me', () => {
     expect(res.body.user.email).toBe('alice@example.com');
   });
 
+  test('200 returns pending profile when User not created yet', async () => {
+    const pending = {
+      uid: 'user-uid-001',
+      firstName: 'Alice',
+      lastName: 'Smith',
+      email: 'alice@example.com',
+      phone: '9876543210',
+      country: 'UK',
+      city: 'London',
+      verified: false
+    };
+    User.findOne = jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) })
+    });
+    OtpVerification.findOne = jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(pending) })
+    });
+    const res = await request(app).get('/api/auth/me')
+      .set('Authorization', 'Bearer ' + makeUserToken());
+    expect(res.status).toBe(200);
+    expect(res.body.user.pending).toBe(true);
+    expect(res.body.user.firstName).toBe('Alice');
+    expect(res.body.user.lastName).toBe('Smith');
+  });
+
   test('404 when user not in DB', async () => {
     User.findOne = jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) })
+    });
+    OtpVerification.findOne = jest.fn().mockReturnValue({
       select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) })
     });
     const res = await request(app).get('/api/auth/me')
@@ -463,6 +503,7 @@ describe('POST /api/otp/verify', () => {
     OtpVerification.findOneAndUpdate = jest.fn().mockResolvedValue({});
     User.findOneAndUpdate = jest.fn().mockResolvedValue({});
     OtpVerification.findOne = jest.fn().mockResolvedValue({
+      uid: 'user-uid-001',
       code: '123456', expiresAt: new Date(Date.now() + 600000), verified: false
     });
     const res = await request(app).post('/api/otp/verify')
@@ -470,6 +511,43 @@ describe('POST /api/otp/verify', () => {
       .send({ code: '123456' });
     expect(res.status).toBe(200);
     expect(res.body.ok).toBe(true);
+    expect(User.findOneAndUpdate).toHaveBeenCalled();
+  });
+
+  test('200 creates User when pending registration is verified', async () => {
+    const pending = {
+      uid: 'user-uid-001',
+      email: 'alice@example.com',
+      phone: '9876543210',
+      code: '123456',
+      expiresAt: new Date(Date.now() + 600000),
+      verified: false,
+      passwordHash: 'hashed-pw',
+      firstName: 'Alice',
+      lastName: 'Smith',
+      country: 'UK',
+      city: 'London'
+    };
+    OtpVerification.findOne = jest.fn().mockImplementation((query) => {
+      if (query.uid === 'user-uid-001') return Promise.resolve(pending);
+      return { lean: jest.fn().mockResolvedValue(null) };
+    });
+    User.findOne = jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
+    OtpVerification.findOneAndUpdate = jest.fn().mockResolvedValue({});
+    User.create = jest.fn().mockResolvedValue({ ...REGULAR_USER, verified: true });
+
+    const res = await request(app).post('/api/otp/verify')
+      .set('Authorization', 'Bearer ' + makeUserToken())
+      .send({ code: '123456' });
+
+    expect(res.status).toBe(200);
+    expect(User.create).toHaveBeenCalledWith(expect.objectContaining({
+      uid: 'user-uid-001',
+      email: 'alice@example.com',
+      verified: true,
+      firstName: 'Alice',
+      lastName: 'Smith'
+    }));
   });
 
   test('200 (already verified)', async () => {
@@ -571,6 +649,7 @@ describe('POST /api/admin/users', () => {
     User.findOne = jest.fn()
       .mockReturnValueOnce({ select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue({ role: 'admin' }) }) })
       .mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
+    OtpVerification.findOne = jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
     User.create  = jest.fn().mockResolvedValue({ ...REGULAR_USER, uid: 'new-uid', email: 'bob@example.com' });
   });
 
@@ -578,6 +657,7 @@ describe('POST /api/admin/users', () => {
     User.findOne = jest.fn()
       .mockReturnValueOnce({ select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue({ role: 'admin' }) }) })
       .mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
+    OtpVerification.findOne = jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
 
     const res = await request(app).post('/api/admin/users')
       .set('Authorization', 'Bearer ' + makeAdminToken())
@@ -773,6 +853,9 @@ describe('Missing body guard (no Content-Type)', () => {
 describe('POST /api/otp/send — email guard', () => {
   beforeEach(() => {
     OtpVerification.findOneAndUpdate = jest.fn().mockResolvedValue({});
+    OtpVerification.findOne = jest.fn().mockReturnValue({
+      lean: jest.fn().mockResolvedValue(null)
+    });
     User.findOne = jest.fn().mockReturnValue({
       select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) })
     });
@@ -873,6 +956,7 @@ describe('POST /api/otp/send — SMTP failure note', () => {
 describe('POST /api/admin/users — edge cases', () => {
   beforeEach(() => {
     User.findOne = jest.fn().mockReturnValue({ select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue({ role: 'admin' }) }) });
+    OtpVerification.findOne = jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
   });
 
   test('400 when lastName missing entirely', async () => {
@@ -894,6 +978,7 @@ describe('POST /api/admin/users — edge cases', () => {
     User.findOne = jest.fn()
       .mockReturnValueOnce({ select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue({ role: 'admin' }) }) })
       .mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
+    OtpVerification.findOne = jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
     User.create = jest.fn().mockImplementation(async (data) => ({ ...data, createdAt: new Date() }));
 
     const res = await request(app).post('/api/admin/users')

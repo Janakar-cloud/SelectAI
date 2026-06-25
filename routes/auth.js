@@ -5,7 +5,15 @@ const bcrypt     = require('bcryptjs');
 const jwt        = require('jsonwebtoken');
 const { verifyToken } = require('../middleware/auth');
 const mail       = require('../lib/mail');
+const { issueOtp } = require('../lib/otpService');
+const {
+  normalizePhone,
+  validatePhone,
+  fullName,
+  findRegistrationConflict
+} = require('../lib/userHelpers');
 const User = require('../models/User');
+const OtpVerification = require('../models/OtpVerification');
 
 const BCRYPT_ROUNDS = 12;
 
@@ -46,40 +54,46 @@ router.post('/register', async (req, res, next) => {
     const pwError = _validatePassword(password);
     if (pwError) return res.status(400).json({ message: pwError });
 
+    const phoneError = validatePhone(phone);
+    if (phoneError) return res.status(400).json({ message: phoneError });
+
     const emailLower = email.toLowerCase().trim();
-    const existing   = await User.findOne({ email: emailLower }).lean();
-    if (existing)
-      return res.status(409).json({ message: 'An account with this email already exists.' });
+    const phoneNorm  = normalizePhone(phone);
+    const conflict   = await findRegistrationConflict(emailLower, phoneNorm);
+    if (conflict) return res.status(409).json({ message: conflict.message });
 
     const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
     const uid          = crypto.randomUUID();
 
-    const user = await User.create({
-      uid,
-      firstName:    firstName.trim(),
-      lastName:     lastName.trim(),
-      email:        emailLower,
-      passwordHash,
-      phone:        (phone   || '').trim(),
-      country:      (country || '').trim(),
-      city:         (city    || '').trim(),
-      provider:     'email',
-      role:         'user',
-      verified:     false,
-      lastLogin:    new Date()
-    });
+    let otpResult;
+    try {
+      otpResult = await issueOtp(uid, emailLower, {
+        firstName:    firstName.trim(),
+        lastName:     lastName.trim(),
+        passwordHash,
+        phone:        phoneNorm,
+        country:      (country || '').trim(),
+        city:         (city    || '').trim()
+      });
+    } catch (smtpErr) {
+      await OtpVerification.deleteOne({ uid });
+      console.error('[SelectAI] SMTP error (register):', smtpErr.message, smtpErr.code || '');
+      return res.status(502).json({ message: 'Failed to send verification email. Please try again.' });
+    }
 
-    const token = _signToken(uid, user.email, user.role);
+    const token = _signToken(uid, emailLower, 'user');
     res.status(201).json({
       token,
+      otpSent: true,
       user: {
-        uid:       user.uid,
-        firstName: user.firstName,
-        lastName:  user.lastName,
-        email:     user.email,
-        role:      user.role,
-        verified:  user.verified
-      }
+        uid,
+        firstName: firstName.trim(),
+        lastName:  lastName.trim(),
+        email:     emailLower,
+        role:      'user',
+        verified:  false
+      },
+      ...(otpResult.isDev ? { devCode: otpResult.code } : {})
     });
   } catch (err) {
     next(err);
@@ -154,8 +168,32 @@ router.get('/me', verifyToken, async (req, res, next) => {
     const user = await User.findOne({ uid: req.uid })
       .select('-__v -passwordHash')
       .lean();
-    if (!user) return res.status(404).json({ message: 'User not found. Please sign in again.' });
-    res.json({ user });
+    if (user) return res.json({ user });
+
+    const pending = await OtpVerification.findOne({
+      uid: req.uid,
+      passwordHash: { $nin: ['', null] }
+    })
+      .select('-passwordHash -code -__v')
+      .lean();
+    if (pending) {
+      return res.json({
+        user: {
+          uid:       pending.uid,
+          firstName: pending.firstName,
+          lastName:  pending.lastName,
+          email:     pending.email,
+          phone:     pending.phone,
+          country:   pending.country,
+          city:      pending.city,
+          role:      'user',
+          verified:  false,
+          pending:   true
+        }
+      });
+    }
+
+    return res.status(404).json({ message: 'User not found. Please sign in again.' });
   } catch (err) {
     next(err);
   }
@@ -189,7 +227,7 @@ router.post('/forgot-password', async (req, res, next) => {
           await mail.send({
             to:      user.email,
             subject: 'Reset Your SelectAI Password',
-            html:    _buildForgotEmail(user.firstName || 'User', resetLink)
+            html:    _buildForgotEmail(fullName(user.firstName, user.lastName) || 'User', resetLink)
           });
         } catch (smtpErr) {
           console.error(
@@ -257,7 +295,7 @@ router.post('/reset-password', async (req, res, next) => {
 /* ─────────────────────────────────────────────────────────
    Email template — forgot password
 ───────────────────────────────────────────────────────── */
-function _buildForgotEmail(firstName, resetLink) {
+function _buildForgotEmail(name, resetLink) {
   const year = new Date().getFullYear();
   return `<!DOCTYPE html>
 <html lang="en">
@@ -271,7 +309,7 @@ function _buildForgotEmail(firstName, resetLink) {
       </div>
     </div>
     <div style="padding:28px 36px 36px;">
-      <p style="color:#8890b5;font-size:14px;line-height:1.7;margin:0 0 20px;">Hi ${firstName},</p>
+      <p style="color:#8890b5;font-size:14px;line-height:1.7;margin:0 0 20px;">Hi ${name},</p>
       <p style="color:#8890b5;font-size:14px;line-height:1.7;margin:0 0 28px;">
         We received a request to reset your password. Click below to choose a new one. This link expires in <strong style="color:#e0e0f0;">1 hour</strong>.
       </p>

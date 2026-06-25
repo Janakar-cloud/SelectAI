@@ -320,3 +320,20 @@ describe('lib/mail getFromAddress()', () => {
     expect(mail.getFromAddress()).toBe('SelectAI <selectaiinnovations@gmail.com>');
   });
 });
+
+/* ─── userHelpers ─────────────────────────────────────── */
+describe('userHelpers', () => {
+  const { normalizePhone, validatePhone, fullName } = require('../lib/userHelpers');
+
+  test('normalizePhone strips non-digits', () => {
+    expect(normalizePhone('+91 98765 43210')).toBe('919876543210');
+  });
+
+  test('validatePhone rejects too short', () => {
+    expect(validatePhone('123')).toMatch(/mobile/i);
+  });
+
+  test('fullName joins first and last', () => {
+    expect(fullName('Alice', 'Smith')).toBe('Alice Smith');
+  });
+});

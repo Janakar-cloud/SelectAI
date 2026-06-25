@@ -52,6 +52,12 @@
     });
   }
 
+  function _fullName(u) {
+    if (!u) return '';
+    var name = ((u.firstName || '') + ' ' + (u.lastName || '')).trim();
+    return name || u.displayName || u.email || '';
+  }
+
   function _setText(id, val) {
     var el = document.getElementById(id);
     if (el) el.textContent = val;
@@ -63,7 +69,7 @@
     var u = window.SELECTAI_USER;
     if (u) {
       var nameEl = document.getElementById('adminName');
-      if (nameEl) nameEl.textContent = u.firstName || u.displayName || u.email || '';
+      if (nameEl) nameEl.textContent = _fullName(u);
     }
 
     /* Initial load */
@@ -156,6 +162,8 @@
   window.openCreateUserModal = function () {
     var form = document.getElementById('createUserForm');
     if (form) form.reset();
+    var btn = document.getElementById('cuSubmitBtn');
+    if (btn) btn.disabled = false;
     var modal = document.getElementById('createUserModal');
     if (modal) modal.classList.add('open');
   };
@@ -163,6 +171,8 @@
   window.closeCreateUserModal = function () {
     var modal = document.getElementById('createUserModal');
     if (modal) modal.classList.remove('open');
+    var btn = document.getElementById('cuSubmitBtn');
+    if (btn) btn.disabled = false;
   };
 
   window.submitCreateUser = function (e) {
@@ -186,6 +196,7 @@
         closeCreateUserModal();
         showToast(res.message || 'User created.', 'success');
         loadDashboard();
+        if (btn) btn.disabled = false;
       })
       .catch(function (err) {
         showToast(err.message || 'Failed to create user.', 'error');
