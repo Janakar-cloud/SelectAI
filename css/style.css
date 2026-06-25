@@ -278,8 +278,8 @@ img         { max-width: 100%; display: block; }
 }
 .nav-links a {
   font-family: var(--ff-display);
-  font-size: .65rem;
-  letter-spacing: .15em;
+  font-size: .55rem;
+  letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--g100);
   transition: var(--ease);
@@ -1431,8 +1431,8 @@ img         { max-width: 100%; display: block; }
   padding: 0.32rem 0.7rem;
   color: var(--g100);
   font-family: var(--ff-display);
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
+  font-size: 0.52rem;
+  letter-spacing: 0.08em;
   cursor: pointer;
   transition: var(--ease);
   white-space: nowrap;
