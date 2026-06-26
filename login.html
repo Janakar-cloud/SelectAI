@@ -523,6 +523,26 @@
       line-height: 1.6;
       margin-top: 1.25rem;
     }
+    .launch-gate-signin {
+      display: inline-block;
+      margin-top: 1.35rem;
+      padding: 0.72rem 1.35rem;
+      background: transparent;
+      border: 1px solid rgba(0,229,255,0.45);
+      border-radius: 4px;
+      color: var(--cyan);
+      font-family: var(--ff-display);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--ease);
+    }
+    .launch-gate-signin:hover {
+      background: rgba(0,229,255,0.1);
+      border-color: var(--cyan);
+      color: var(--white);
+    }
     .launch-gate-live {
       font-family: var(--ff-display);
       font-size: clamp(1.4rem, 5vw, 2.2rem);
@@ -560,7 +580,10 @@
       <div><span id="cdMinutes">00</span><small>Minutes</small></div>
       <div><span id="cdSeconds">00</span><small>Seconds</small></div>
     </div>
-    <p class="launch-gate-note">SelectAI Innovations launches soon. Sign-in opens when we go live.</p>
+    <p class="launch-gate-note">SelectAI Innovations launches soon. The public site opens at go-live.</p>
+    <button type="button" class="launch-gate-signin" id="launchSignInBtn" onclick="openLaunchSignIn()">
+      Already registered? Sign in
+    </button>
     <p class="launch-gate-live" id="launchLiveMsg" hidden>We Are Live!</p>
   </div>
 </div>
@@ -1307,6 +1330,6 @@ window.togglePw = function (id, btn) {
   btn.setAttribute('aria-pressed', inp.type === 'text');
 };
 </script>
-<script src="js/launch-login.js?v=20260626c"></script>
+<script src="js/launch-login.js?v=20260626d"></script>
 </body>
 </html>
