@@ -94,12 +94,14 @@
     hamburger.classList.remove('open');
     navLinks.classList.remove('open');
     document.body.style.overflow = '';
+    document.body.classList.remove('nav-open');
   }
 
   hamburger.addEventListener('click', function () {
     var isOpen = hamburger.classList.toggle('open');
     navLinks.classList.toggle('open');
     document.body.style.overflow = isOpen ? 'hidden' : '';
+    document.body.classList.toggle('nav-open', isOpen);
   });
 
   // Close menu when clicking outside

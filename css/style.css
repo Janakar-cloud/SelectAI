@@ -683,6 +683,22 @@ img         { max-width: 100%; display: block; }
   text-align: center;
 }
 
+/* Cloud IT Services — multi-item list */
+.service-card--cloud ul {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .4rem .85rem;
+}
+
+.service-card--cloud li {
+  font-size: .82rem;
+}
+
+@media (max-width: 520px) {
+  .service-card--cloud ul {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* =========================================================
    TEAM
    ========================================================= */
@@ -1466,22 +1482,74 @@ img         { max-width: 100%; display: block; }
 
   .section { padding: 70px 0; }
 
-  /* Mobile nav */
+  /* Mobile nav — full-screen overlay so page text cannot bleed through */
+  .navbar { z-index: 2000; }
+
   .nav-links {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(6,6,18,.97);
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: var(--bg);
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2.5rem;
-    backdrop-filter: blur(24px);
-    z-index: 1000;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 0;
+    padding: calc(var(--nav-height) + 0.75rem) 1.25rem 2rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: 2000;
+    isolation: isolate;
   }
-  .nav-links.open  { display: flex; }
-  .nav-links a     { font-size: .9rem; }
-  .hamburger       { display: flex; }
+
+  .nav-links.open { display: flex; }
+
+  .nav-links li {
+    width: 100%;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+  }
+
+  .nav-links a {
+    font-size: .82rem;
+    letter-spacing: .14em;
+    width: 100%;
+    padding: 1.05rem 0.5rem;
+    justify-content: center;
+    color: var(--white);
+    -webkit-text-fill-color: var(--white);
+    background: none;
+    text-shadow: none;
+  }
+
+  .nav-links a::after { display: none; }
+
+  .nav-links .nav-cta {
+    background: var(--grad-1) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+  }
+
+  .nav-user-btn {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+
+  .hamburger {
+    display: flex;
+    position: relative;
+    z-index: 2001;
+  }
+
+  body.nav-open {
+    overflow: hidden;
+    touch-action: none;
+  }
 
   .hero-btns     { flex-direction: column; align-items: center; }
   .lead-actions  { flex-direction: column; }
