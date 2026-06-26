@@ -12,12 +12,13 @@ process.env.MONGODB_URI  = process.env.MONGODB_URI  || 'mongodb://127.0.0.1:2701
 process.env.FRONTEND_URL = process.env.FRONTEND_URL || 'https://www.selectai.it.com';
 process.env.NODE_ENV     = 'test';
 
-const express   = require('express');
-const helmet    = require('helmet');
-const cors      = require('cors');
-const rateLimit = require('express-rate-limit');
+const express = require('express');
+const helmet  = require('helmet');
+const cors    = require('cors');
+const { configureTrustProxy, createLimiter } = require('../lib/rateLimit');
 
 const app = express();
+configureTrustProxy(app);
 
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors({ origin: '*', credentials: true }));
@@ -26,7 +27,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use((req, res, next) => { req.body = req.body || {}; next(); });
 
 /* Relax rate limit in test */
-app.use('/api/', rateLimit({ windowMs: 60000, max: 10000 }));
+app.use('/api/', createLimiter({ windowMs: 60000, max: 10000 }));
 
 app.use('/api/auth',      require('../routes/auth'));
 app.use('/api/otp',       require('../routes/otp'));

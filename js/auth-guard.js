@@ -122,13 +122,13 @@
     })
     .catch(function (err) {
       console.error('[SelectAI] Auth guard error:', err.message);
-      /* Public pages stay viewable even if auth validation cannot complete.
-         Private pages still require a valid authenticated session. */
-      try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
       if (_isPublicPage()) {
         _runWhenDomReady(_hideUserNav);
         _revealPage();
-      } else if (PAGE !== 'login.html') {
+        return;
+      }
+      try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+      if (PAGE !== 'login.html') {
         window.location.replace('login.html');
       } else {
         _revealPage();

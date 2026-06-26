@@ -1,10 +1,10 @@
 'use strict';
 const router    = require('express').Router();
-const rateLimit = require('express-rate-limit');
+const { createLimiter } = require('../lib/rateLimit');
 const Enquiry   = require('../models/Enquiry');
 
 /* 5 submissions per hour per IP (unlimited in test env) */
-const enqLimiter = rateLimit({
+const enqLimiter = createLimiter({
   windowMs: 60 * 60 * 1000,
   max: process.env.NODE_ENV === 'test' ? 100000 : 5,
   statusCode: 429,

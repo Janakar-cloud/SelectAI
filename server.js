@@ -14,17 +14,16 @@ if (process.env.JWT_SECRET.length < 32) {
   process.exit(1);
 }
 
-const express   = require('express');
-const mongoose  = require('mongoose');
-const helmet    = require('helmet');
-const cors      = require('cors');
-const rateLimit = require('express-rate-limit');
+const express = require('express');
+const mongoose = require('mongoose');
+const helmet   = require('helmet');
+const cors     = require('cors');
+const { configureTrustProxy, createLimiter } = require('./lib/rateLimit');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
-/* Behind nginx — required for rate-limit client IP and secure cookies */
-app.set('trust proxy', 1);
+configureTrustProxy(app);
 
 /* ── Security ─────────────────────────────────────────── */
 /* CSP disabled — this is an API-only server; static HTML is served by nginx.
@@ -52,12 +51,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use((req, res, next) => { req.body = req.body || {}; next(); });
 
 /* ── Global API rate limit ────────────────────────────── */
-app.use('/api/', rateLimit({
+app.use('/api/', createLimiter({
   windowMs: 15 * 60 * 1000,
   max: 300,
   statusCode: 429,
-  standardHeaders: true,
-  legacyHeaders: false,
   message: { message: 'Too many requests. Please try again later.' }
 }));
 

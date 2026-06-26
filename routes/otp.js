@@ -1,6 +1,6 @@
 'use strict';
 const router     = require('express').Router();
-const rateLimit  = require('express-rate-limit');
+const { createLimiter } = require('../lib/rateLimit');
 const { verifyToken } = require('../middleware/auth');
 const mail            = require('../lib/mail');
 const { issueOtp }    = require('../lib/otpService');
@@ -9,7 +9,7 @@ const OtpVerification = require('../models/OtpVerification');
 const User            = require('../models/User');
 
 /* Strict rate limit: max 3 OTP sends per 10 min per IP (unlimited in test env) */
-const otpSendLimiter = rateLimit({
+const otpSendLimiter = createLimiter({
   windowMs: 10 * 60 * 1000,
   max: process.env.NODE_ENV === 'test' ? 100000 : 3,
   statusCode: 429,

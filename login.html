@@ -993,6 +993,7 @@ window.handleSignIn = function () {
   SelectAI_API.login(email, password)
     .then(function () {
       setLoading(false);
+      try { sessionStorage.setItem('selectai_signin_access', '1'); } catch (e) {}
       window.location.replace('index.html');
     })
     .catch(function (err) {

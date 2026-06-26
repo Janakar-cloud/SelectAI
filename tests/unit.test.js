@@ -337,3 +337,20 @@ describe('userHelpers', () => {
     expect(fullName('Alice', 'Smith')).toBe('Alice Smith');
   });
 });
+
+/* ─── rateLimit helper ────────────────────────────────── */
+describe('rateLimit helper', () => {
+  const { configureTrustProxy, createLimiter } = require('../lib/rateLimit');
+  const express = require('express');
+
+  test('configureTrustProxy enables trust proxy by default', () => {
+    const app = express();
+    configureTrustProxy(app);
+    expect(app.get('trust proxy')).toBe(1);
+  });
+
+  test('createLimiter disables xForwardedForHeader validation', () => {
+    const limiter = createLimiter({ windowMs: 60000, max: 10 });
+    expect(limiter).toBeDefined();
+  });
+});

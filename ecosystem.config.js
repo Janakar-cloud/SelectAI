@@ -18,8 +18,9 @@ module.exports = {
       /* Load .env automatically so PM2 does not need system-level vars */
       env_file:     '.env',
       env_production: {
-        NODE_ENV: 'production',
-        PORT:     3000
+        NODE_ENV:     'production',
+        PORT:         3000,
+        TRUST_PROXY:  '1'
       },
       error_file:       'logs/err.log',
       out_file:         'logs/out.log',
