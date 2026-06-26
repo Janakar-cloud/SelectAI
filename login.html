@@ -443,9 +443,128 @@
     @media (max-width: 500px) {
       .form-row      { grid-template-columns: 1fr; }
     }
+
+    /* ─── GO-LIVE COUNTDOWN ──────────────────────────────── */
+    .launch-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at 50% 30%, rgba(155,0,255,0.18) 0%, transparent 55%),
+                  radial-gradient(ellipse at 80% 80%, rgba(0,229,255,0.12) 0%, transparent 50%),
+                  var(--bg);
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+    .launch-gate--hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .launch-gate--live { background: var(--bg); }
+    .launch-gate-inner {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      max-width: 520px;
+    }
+    .launch-gate-logo {
+      width: min(280px, 72vw);
+      height: auto;
+      margin: 0 auto 1.75rem;
+      filter: drop-shadow(0 0 24px rgba(0,229,255,0.35));
+      animation: launchLogoPulse 2.4s ease-in-out infinite;
+    }
+    @keyframes launchLogoPulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(0,229,255,0.3)); }
+      50%      { transform: scale(1.03); filter: drop-shadow(0 0 36px rgba(255,0,110,0.45)); }
+    }
+    .launch-gate-kicker {
+      font-family: var(--ff-display);
+      font-size: 0.62rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 1.75rem;
+    }
+    .launch-countdown {
+      display: flex;
+      justify-content: center;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .launch-countdown div {
+      min-width: 72px;
+      padding: 0.85rem 0.5rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(0,229,255,0.22);
+      border-radius: 6px;
+    }
+    .launch-countdown span {
+      display: block;
+      font-family: var(--ff-display);
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.1;
+    }
+    .launch-countdown small {
+      display: block;
+      margin-top: 0.35rem;
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--g400);
+    }
+    .launch-gate-note {
+      font-size: 0.88rem;
+      color: var(--g400);
+      line-height: 1.6;
+      margin-top: 1.25rem;
+    }
+    .launch-gate-live {
+      font-family: var(--ff-display);
+      font-size: clamp(1.4rem, 5vw, 2.2rem);
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #ff006e, #9b00ff, #00e5ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 0;
+      transform: scale(0.85);
+      transition: opacity 0.6s ease, transform 0.6s cubic-bezier(.22,1,.36,1);
+    }
+    .launch-gate-live.launch-live-show {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .auth-layout--gated {
+      visibility: hidden;
+      pointer-events: none;
+    }
   </style>
+  <script src="js/launch.js?v=20260626c"></script>
 </head>
 <body>
+
+<div id="launchGate" class="launch-gate" role="dialog" aria-label="Site launch countdown">
+  <div class="launch-gate-inner">
+    <img src="assets/images/logo-full.png" alt="SelectAI Innovations" class="launch-gate-logo" width="280" height="auto" />
+    <p class="launch-gate-kicker">Going Live · 26 Jun 2026 · 6:30 PM IST</p>
+    <div class="launch-countdown" id="launchCountdown">
+      <div><span id="cdDays">00</span><small>Days</small></div>
+      <div><span id="cdHours">00</span><small>Hours</small></div>
+      <div><span id="cdMinutes">00</span><small>Minutes</small></div>
+      <div><span id="cdSeconds">00</span><small>Seconds</small></div>
+    </div>
+    <p class="launch-gate-note">SelectAI Innovations launches soon. Sign-in opens when we go live.</p>
+    <p class="launch-gate-live" id="launchLiveMsg" hidden>We Are Live!</p>
+  </div>
+</div>
+
 <div class="auth-layout">
 
   <!-- ─── LEFT PANEL ─────────────────────────────────────── -->
@@ -1188,5 +1307,6 @@ window.togglePw = function (id, btn) {
   btn.setAttribute('aria-pressed', inp.type === 'text');
 };
 </script>
+<script src="js/launch-login.js?v=20260626c"></script>
 </body>
 </html>

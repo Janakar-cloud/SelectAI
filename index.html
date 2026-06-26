@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="js/launch.js?v=20260626c"></script>
+  <script>
+    (function () {
+      var t = new Date('2026-06-26T18:30:00+05:30').getTime();
+      if (Date.now() < t && !/(?:\?|&)preview=1(?:&|$)/.test(location.search)) {
+        location.replace('login.html');
+      }
+    })();
+  </script>
   <style>html { visibility: hidden; }</style>
   <script src="js/app-config.js?v=20260609e"></script>
   <script src="js/auth-guard.js?v=20260626a"></script>
@@ -18,7 +27,7 @@
   <meta name="twitter:title" content="SelectAI Innovations - AI Solutions and SaaS" />
   <meta name="twitter:description" content="AI-powered IT services, SaaS, and training solutions." />
   <link rel="icon" type="image/png" href="assets/images/logo-mark-black.png" />
-  <link rel="stylesheet" href="css/style.css?v=20260626a" />
+  <link rel="stylesheet" href="css/style.css?v=20260626c" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -41,6 +50,11 @@
   </script>
 </head>
 <body>
+
+  <!-- Go-live reveal overlay -->
+  <div id="homeLaunchReveal" class="home-launch-reveal" aria-hidden="true">
+    <img src="assets/images/logo-full.png" alt="" class="home-launch-logo" width="320" height="auto" />
+  </div>
 
   <div class="scroll-progress" aria-hidden="true"></div>
 
@@ -95,23 +109,19 @@
       <div class="grid-overlay"></div>
     </div>
 
-    <div class="hero-content animate-on-scroll">
+    <div class="hero-content animate-on-scroll hero-content--launch">
       <div class="hero-eyebrow">
         <span class="eyebrow-line"></span>
         <span>SelectAI Innovations</span>
         <span class="eyebrow-line"></span>
       </div>
 
-
-
-      <h1 class="hero-title">
-        <span class="ht-sub">Transforming Ideas</span>
-        <span class="ht-main">Into Intelligent</span>
-        <span class="ht-accent gradient-text">AI</span>
+      <h1 class="hero-title hero-title--launch">
+        <span class="ht-main ht-main--launch">Welcome to SelectAI Innovations</span>
       </h1>
 
-      <p class="hero-subtitle">
-        From AI-driven products to enterprise solutions and training, we help businesses scale smarter.
+      <p class="hero-subtitle hero-subtitle--launch">
+        Engineering the Future with AI, Cloud &amp; Innovation
       </p>
 
       <div class="hero-btns">
@@ -693,6 +703,7 @@
     <img src="assets/images/logo-mark.png" alt="Back to top" width="28" height="28" />
   </a>
 
+  <script src="js/launch-home.js?v=20260626c"></script>
   <script src="js/api.js?v=20260609e"></script>
   <script src="js/kpi.js?v=20260609c"></script>
   <script src="js/lead-form.js?v=20260609c"></script>
