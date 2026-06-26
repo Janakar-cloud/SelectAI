@@ -88,6 +88,7 @@
         firstName:   profile.firstName   || '',
         lastName:    profile.lastName    || '',
         email:       profile.email       || '',
+        phone:       profile.phone       || '',
         photoURL:    profile.photoURL    || '',
         role:        role,
         verified:    profile.verified    || false

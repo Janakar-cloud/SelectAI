@@ -284,6 +284,56 @@ describe('GET /api/auth/me', () => {
 });
 
 /* ════════════════════════════════════════════════════════
+   AUTH — PATCH /profile
+   ════════════════════════════════════════════════════════ */
+describe('PATCH /api/auth/profile', () => {
+  test('401 without token', async () => {
+    const res = await request(app).patch('/api/auth/profile')
+      .send({ firstName: 'Alice', lastName: 'Smith' });
+    expect(res.status).toBe(401);
+  });
+
+  test('400 when firstName too short', async () => {
+    const res = await request(app).patch('/api/auth/profile')
+      .set('Authorization', 'Bearer ' + makeUserToken())
+      .send({ firstName: 'A', lastName: 'Smith' });
+    expect(res.status).toBe(400);
+  });
+
+  test('200 updates user name', async () => {
+    const save = jest.fn().mockResolvedValue(undefined);
+    User.findOne = jest.fn().mockResolvedValue({
+      uid: 'user-uid-001',
+      firstName: 'Alice',
+      lastName: 'Smith',
+      email: 'alice@example.com',
+      phone: '9876543210',
+      role: 'user',
+      verified: true,
+      photoURL: '',
+      save
+    });
+    const res = await request(app).patch('/api/auth/profile')
+      .set('Authorization', 'Bearer ' + makeUserToken())
+      .send({ firstName: 'Alicia', lastName: 'Jones' });
+    expect(res.status).toBe(200);
+    expect(save).toHaveBeenCalled();
+    expect(res.body.user.firstName).toBe('Alicia');
+    expect(res.body.user.lastName).toBe('Jones');
+    expect(res.body.user.email).toBe('alice@example.com');
+  });
+
+  test('404 when user not found', async () => {
+    User.findOne = jest.fn().mockResolvedValue(null);
+    OtpVerification.findOne = jest.fn().mockResolvedValue(null);
+    const res = await request(app).patch('/api/auth/profile')
+      .set('Authorization', 'Bearer ' + makeUserToken())
+      .send({ firstName: 'Alice', lastName: 'Smith' });
+    expect(res.status).toBe(404);
+  });
+});
+
+/* ════════════════════════════════════════════════════════
    AUTH — FORGOT PASSWORD
    ════════════════════════════════════════════════════════ */
 describe('POST /api/auth/forgot-password', () => {

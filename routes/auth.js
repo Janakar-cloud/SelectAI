@@ -200,6 +200,73 @@ router.get('/me', verifyToken, async (req, res, next) => {
 });
 
 /* ─────────────────────────────────────────────────────────
+   PATCH /api/auth/profile
+   Update first and last name (email and phone are read-only).
+───────────────────────────────────────────────────────── */
+router.patch('/profile', verifyToken, async (req, res, next) => {
+  try {
+    const { firstName, lastName } = req.body;
+
+    if (!firstName || firstName.trim().length < 2)
+      return res.status(400).json({ message: 'First name must be at least 2 characters.' });
+    if (!lastName || lastName.trim().length < 2)
+      return res.status(400).json({ message: 'Last name must be at least 2 characters.' });
+
+    const first = firstName.trim();
+    const last  = lastName.trim();
+
+    const user = await User.findOne({ uid: req.uid });
+    if (user) {
+      user.firstName = first;
+      user.lastName  = last;
+      await user.save();
+      return res.json({
+        ok: true,
+        message: 'Profile updated.',
+        user: {
+          uid:       user.uid,
+          firstName: user.firstName,
+          lastName:  user.lastName,
+          email:     user.email,
+          phone:     user.phone || '',
+          role:      user.role,
+          verified:  user.verified,
+          photoURL:  user.photoURL || ''
+        }
+      });
+    }
+
+    const pending = await OtpVerification.findOne({
+      uid: req.uid,
+      passwordHash: { $nin: ['', null] }
+    });
+    if (!pending)
+      return res.status(404).json({ message: 'User not found. Please sign in again.' });
+
+    pending.firstName = first;
+    pending.lastName  = last;
+    await pending.save();
+
+    res.json({
+      ok: true,
+      message: 'Profile updated.',
+      user: {
+        uid:       pending.uid,
+        firstName: pending.firstName,
+        lastName:  pending.lastName,
+        email:     pending.email,
+        phone:     pending.phone || '',
+        role:      'user',
+        verified:  false,
+        pending:   true
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/* ─────────────────────────────────────────────────────────
    POST /api/auth/forgot-password
    Generate a password-reset link and email it.
 ───────────────────────────────────────────────────────── */

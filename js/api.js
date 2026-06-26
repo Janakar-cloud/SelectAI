@@ -81,6 +81,12 @@
     getMe: function () {
       return request('/api/auth/me');
     },
+    updateProfile: function (data) {
+      return request('/api/auth/profile', {
+        method: 'PATCH',
+        body:   JSON.stringify(data)
+      });
+    },
     forgotPassword: function (email) {
       return request('/api/auth/forgot-password', {
         method: 'POST',
