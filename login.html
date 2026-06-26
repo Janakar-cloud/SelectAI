@@ -1103,6 +1103,11 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('.auth-tabs').style.display = 'none';
   }
 
+  if (params.get('forgot') === '1') {
+    showForgotPanel();
+    document.querySelector('.auth-tabs').style.display = 'none';
+  }
+
   /* OTP input — auto-advance / backspace / paste */
   var inputs = document.querySelectorAll('.otp-input');
   inputs.forEach(function (inp, idx) {

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>html { visibility: hidden; }</style>
+  <script src="js/app-config.js?v=20260609e"></script>
+  <script src="js/auth-guard.js?v=20260626a"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Profile — SelectAI</title>
+  <link rel="icon" type="image/png" href="assets/images/logo-mark-black.png" />
+  <link rel="stylesheet" href="css/style.css?v=20260626a" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html#hero" class="logo logo-img" aria-label="SelectAI home">
+        <img src="assets/images/logo-full.png" alt="SelectAI" height="42" width="auto" />
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html#services">Services</a></li>
+        <li><a href="index.html#partners">Partners</a></li>
+        <li><a href="index.html#team">Team</a></li>
+        <li><a href="index.html#capabilities">Why Us</a></li>
+        <li><a href="index.html#live-metrics">Live KPI</a></li>
+        <li><a href="index.html#feedback">Stories</a></li>
+        <li><a href="tools.html">AI Tools</a></li>
+        <li id="adminNavItem" style="display:none;"><a href="admin.html">Admin</a></li>
+        <li><a href="index.html#connect" class="nav-cta">Connect</a></li>
+        <li class="nav-user-item">
+          <button class="nav-user-btn" id="navUserBtn" onclick="toggleUserMenu()" aria-label="User menu">
+            <span class="nav-user-avatar-wrap">
+              <img id="navUserAvatar" src="" alt="" class="nav-user-photo" style="display:none;" />
+              <svg id="navUserIcon" class="nav-user-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </span>
+            <svg class="nav-user-chevron" width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><path d="M0 3l5 5 5-5z"/></svg>
+          </button>
+          <div class="nav-user-dropdown" id="navUserDropdown">
+            <p class="nav-user-dropdown-hd" id="navUserDropdownName"></p>
+            <a href="profile.html" aria-current="page">Profile</a>
+            <a href="login.html?forgot=1">Password Reset</a>
+            <hr class="nav-user-dropdown-divider" />
+            <a href="#" onclick="signOutUser(); return false;">Sign Out</a>
+          </div>
+        </li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <section class="section" style="padding-top: 120px;">
+    <div class="container" style="max-width: 560px;">
+      <div class="section-header animate-on-scroll" style="text-align: left; margin-bottom: 2rem;">
+        <span class="section-tag">Account</span>
+        <h2>My <span class="gradient-text">Profile</span></h2>
+      </div>
+
+      <div class="profile-card animate-on-scroll">
+        <div class="profile-card-avatar" id="profileAvatarWrap">
+          <img id="profileAvatar" src="" alt="" style="display:none;" />
+          <svg id="profileAvatarIcon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <dl class="profile-dl">
+          <div><dt>Name</dt><dd id="profileName">—</dd></div>
+          <div><dt>Email</dt><dd id="profileEmail">—</dd></div>
+          <div><dt>Role</dt><dd id="profileRole">—</dd></div>
+          <div><dt>Status</dt><dd id="profileVerified">—</dd></div>
+        </dl>
+        <div class="profile-card-actions">
+          <a href="login.html?forgot=1" class="btn btn-outline">Reset Password</a>
+          <a href="index.html" class="btn btn-primary">Back to Home</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="js/main.js?v=20260625a"></script>
+  <script src="js/nav-user.js?v=20260626a"></script>
+  <script>
+    function fillProfile() {
+      var u = window.SELECTAI_USER || {};
+      var name = ((u.firstName || '') + ' ' + (u.lastName || '')).trim() || u.displayName || u.email || '—';
+      document.getElementById('profileName').textContent = name;
+      document.getElementById('profileEmail').textContent = u.email || '—';
+      document.getElementById('profileRole').textContent = u.role === 'admin' ? 'Administrator' : 'User';
+      document.getElementById('profileVerified').textContent = u.verified ? 'Verified' : 'Pending verification';
+      if (u.photoURL) {
+        var img = document.getElementById('profileAvatar');
+        img.src = u.photoURL;
+        img.style.display = 'block';
+        document.getElementById('profileAvatarIcon').style.display = 'none';
+      }
+    }
+    if (window.SELECTAI_USER) fillProfile();
+    else document.addEventListener('DOMContentLoaded', function () { setTimeout(fillProfile, 300); });
+  </script>
+</body>
+</html>
