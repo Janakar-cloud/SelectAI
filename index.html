@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="js/launch.js?v=20260626c"></script>
+  <script src="js/launch.js?v=20260626e"></script>
   <script>
     (function () {
-      var t = new Date('2026-06-26T18:30:00+05:30').getTime();
-      if (Date.now() < t && !/(?:\?|&)preview=1(?:&|$)/.test(location.search)) {
+      var L = window.SelectAI_Launch;
+      if (!L) return;
+      if (L.isLaunchDay() && !L.isLive() && !L.isPreview()) {
         location.replace('login.html');
       }
     })();
@@ -703,7 +704,7 @@
     <img src="assets/images/logo-mark.png" alt="Back to top" width="28" height="28" />
   </a>
 
-  <script src="js/launch-home.js?v=20260626c"></script>
+  <script src="js/launch-home.js?v=20260626e"></script>
   <script src="js/api.js?v=20260609e"></script>
   <script src="js/kpi.js?v=20260609c"></script>
   <script src="js/lead-form.js?v=20260609c"></script>

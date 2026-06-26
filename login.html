@@ -517,6 +517,20 @@
       text-transform: uppercase;
       color: var(--g400);
     }
+    .launch-gate-title {
+      font-family: var(--ff-display);
+      font-size: clamp(1.1rem, 4.2vw, 1.8rem);
+      color: var(--white);
+      margin-top: 1.2rem;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+    }
+    .launch-gate-subtitle {
+      color: var(--g100);
+      font-size: 0.98rem;
+      margin-top: 0.55rem;
+      line-height: 1.6;
+    }
     .launch-gate-note {
       font-size: 0.88rem;
       color: var(--g400);
@@ -566,7 +580,7 @@
       pointer-events: none;
     }
   </style>
-  <script src="js/launch.js?v=20260626c"></script>
+  <script src="js/launch.js?v=20260626e"></script>
 </head>
 <body>
 
@@ -574,6 +588,8 @@
   <div class="launch-gate-inner">
     <img src="assets/images/logo-full.png" alt="SelectAI Innovations" class="launch-gate-logo" width="280" height="auto" />
     <p class="launch-gate-kicker">Going Live · 26 Jun 2026 · 6:30 PM IST</p>
+    <h1 class="launch-gate-title">Welcome to SelectAI Innovations</h1>
+    <p class="launch-gate-subtitle">Engineering the Future with AI, Cloud &amp; Innovation.</p>
     <div class="launch-countdown" id="launchCountdown">
       <div><span id="cdDays">00</span><small>Days</small></div>
       <div><span id="cdHours">00</span><small>Hours</small></div>
@@ -1330,6 +1346,6 @@ window.togglePw = function (id, btn) {
   btn.setAttribute('aria-pressed', inp.type === 'text');
 };
 </script>
-<script src="js/launch-login.js?v=20260626d"></script>
+<script src="js/launch-login.js?v=20260626e"></script>
 </body>
 </html>

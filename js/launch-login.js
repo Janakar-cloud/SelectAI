@@ -78,7 +78,7 @@
     }, 2400);
   }
 
-  if (L.isLive() || L.isPreview()) {
+  if (!L.isLaunchDay() || L.isLive() || L.isPreview()) {
     showAuth();
     return;
   }
