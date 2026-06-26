@@ -924,10 +924,9 @@
    ========================================================= */
 'use strict';
 
-/* ── If already logged in, skip to the site ───────────── */
-if (localStorage.getItem('selectai_token')) {
-  window.location.replace('index.html');
-}
+/* Do not auto-redirect from login:
+   token validity is handled by auth-guard on target pages.
+   This avoids index/login redirect flicker during launch gating. */
 
 /* ── Panel management ──────────────────────────────────── */
 var PANELS = ['panelLogin','panelSignup','panelOtp','panelForgot','panelReset'];
