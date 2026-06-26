@@ -1,7 +1,7 @@
 /* =========================================================
    SelectAI — launch-login.js
    Countdown on login.html → We Are Live! → homepage
-   Registered users can bypass the gate and sign in early.
+   Registered users can sign in early via the gate button.
    ========================================================= */
 'use strict';
 
@@ -33,15 +33,33 @@
     if (el) el.textContent = L.pad(val);
   }
 
+  /* Reveal the sign-in / sign-up forms, hide the countdown gate. */
   function showAuth() {
     authOpen = true;
     if (gate) gate.classList.add('launch-gate--hidden');
     if (layout) layout.classList.remove('auth-layout--gated');
-    try { sessionStorage.setItem(SIGNIN_KEY, '1'); } catch (e) {}
+  }
+
+  /* Show the launch countdown gate (the launch page). */
+  function showGate(signedIn) {
+    authOpen = false;
+    if (layout) layout.classList.add('auth-layout--gated');
+    if (gate) gate.classList.remove('launch-gate--hidden');
+
+    var btn  = document.getElementById('launchSignInBtn');
+    var note = document.getElementById('launchGateNote');
+    if (signedIn) {
+      if (btn) btn.style.display = 'none';
+      if (note) note.textContent = "You're signed in. The site goes live on 26 Jun 2026 at 6:30 PM IST.";
+    }
   }
 
   window.openLaunchSignIn = function () {
     showAuth();
+  };
+
+  window.showLaunchGate = function (signedIn) {
+    showGate(signedIn);
   };
 
   function tick() {
@@ -58,7 +76,7 @@
   }
 
   function onLive() {
-    /* User is signing in — don't pull them away to the homepage */
+    /* User is filling the sign-in form — let them finish, don't redirect. */
     if (authOpen) {
       if (gate) gate.classList.add('launch-gate--hidden');
       return;
@@ -78,20 +96,21 @@
     }, 2400);
   }
 
+  /* Already live (or after launch day, or preview) → straight to auth forms. */
   if (!L.isLaunchDay() || L.isLive() || L.isPreview()) {
     showAuth();
     return;
   }
 
-  /* Returning / registered users — show sign-in immediately */
-  if (hasToken() || wantsSignIn()) {
-    showAuth();
-    tick();
-    timer = setInterval(tick, 1000);
-    return;
+  /* Launch day, before go-live: show the launch page (countdown). */
+  if (hasToken()) {
+    showGate(true);            /* already signed in — confirmation gate */
+  } else if (wantsSignIn()) {
+    showAuth();                /* explicit sign-in request */
+  } else {
+    showGate(false);           /* default launch countdown */
   }
 
-  if (layout) layout.classList.add('auth-layout--gated');
   tick();
   timer = setInterval(tick, 1000);
 })();

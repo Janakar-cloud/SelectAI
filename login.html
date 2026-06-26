@@ -580,7 +580,7 @@
       pointer-events: none;
     }
   </style>
-  <script src="js/launch.js?v=20260626e"></script>
+  <script src="js/launch.js?v=20260627a"></script>
 </head>
 <body>
 
@@ -596,7 +596,7 @@
       <div><span id="cdMinutes">00</span><small>Minutes</small></div>
       <div><span id="cdSeconds">00</span><small>Seconds</small></div>
     </div>
-    <p class="launch-gate-note">SelectAI Innovations launches soon. The public site opens at go-live.</p>
+    <p class="launch-gate-note" id="launchGateNote">SelectAI Innovations launches soon. The public site opens at go-live.</p>
     <button type="button" class="launch-gate-signin" id="launchSignInBtn" onclick="openLaunchSignIn()">
       Already registered? Sign in
     </button>
@@ -993,6 +993,13 @@ window.handleSignIn = function () {
   SelectAI_API.login(email, password)
     .then(function () {
       setLoading(false);
+      var L = window.SelectAI_Launch;
+      /* Before go-live, don't bounce to the homepage (it just redirects back here).
+         Show the launch countdown with a signed-in confirmation instead. */
+      if (L && L.isLaunchDay() && !L.isLive() && !L.isPreview()) {
+        if (typeof window.showLaunchGate === 'function') window.showLaunchGate(true);
+        return;
+      }
       try { sessionStorage.setItem('selectai_signin_access', '1'); } catch (e) {}
       window.location.replace('index.html');
     })
@@ -1346,6 +1353,6 @@ window.togglePw = function (id, btn) {
   btn.setAttribute('aria-pressed', inp.type === 'text');
 };
 </script>
-<script src="js/launch-login.js?v=20260626e"></script>
+<script src="js/launch-login.js?v=20260627a"></script>
 </body>
 </html>

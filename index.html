@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="js/launch.js?v=20260626e"></script>
+  <script src="js/launch.js?v=20260627a"></script>
   <script>
     (function () {
       var L = window.SelectAI_Launch;
       if (!L) return;
-      var hasToken = false;
-      try { hasToken = !!localStorage.getItem('selectai_token'); } catch (e) {}
-      /* During launch-day countdown, allow authenticated users to access home. */
-      if (!hasToken && L.isLaunchDay() && !L.isLive() && !L.isPreview()) {
+      /* Before go-live on launch day, always show the launch page. */
+      if (L.isLaunchDay() && !L.isLive() && !L.isPreview()) {
         location.replace('login.html');
       }
     })();
