@@ -13,7 +13,7 @@ A modern, retro-futuristic single-page website showcasing SelectAI's AI solution
 ### Homepage Sections
 1. **Hero** - Dynamic gradient background with brand presence
 2. **Services** - AI & IT Solutions, SaaS Development, Training, R&D Consultancy
-3. **Partners** - hey.coach partnership highlight
+3. **Partners** - Collaborations with technology and consulting companies
 4. **Live KPI Dashboard** - Real-time metrics with auto-refresh
 5. **Team** - Two co-founders (Women-led innovation)
 6. **Capabilities** - 4 key differentiators with animated metrics
@@ -29,7 +29,7 @@ Logo files are organized in `1_logo_png/`:\n- `1_main_logo_png/` - White logos f
 
  
 
-Partnered companies(Who we work with): https://hey.coach/
+Partnered companies (Who we work with): DarwinX, TC Consulting, Learnify, ThinkMoveIT, and others listed on the site.
  
 
 
