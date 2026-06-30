@@ -1,17 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="js/launch.js?v=20260627a"></script>
-  <script>
-    (function () {
-      var L = window.SelectAI_Launch;
-      if (!L) return;
-      /* Before go-live on launch day, always show the launch page. */
-      if (L.isLaunchDay() && !L.isLive() && !L.isPreview()) {
-        location.replace('login.html');
-      }
-    })();
-  </script>
   <style>html { visibility: hidden; }</style>
   <script src="js/app-config.js?v=20260609e"></script>
   <script src="js/auth-guard.js?v=20260627a"></script>
@@ -52,11 +41,6 @@
   </script>
 </head>
 <body>
-
-  <!-- Go-live reveal overlay -->
-  <div id="homeLaunchReveal" class="home-launch-reveal" aria-hidden="true">
-    <img src="assets/images/logo-full.png" alt="" class="home-launch-logo" width="320" height="auto" />
-  </div>
 
   <div class="scroll-progress" aria-hidden="true"></div>
 
@@ -111,18 +95,18 @@
       <div class="grid-overlay"></div>
     </div>
 
-    <div class="hero-content animate-on-scroll hero-content--launch">
+    <div class="hero-content animate-on-scroll">
       <div class="hero-eyebrow">
         <span class="eyebrow-line"></span>
         <span>SelectAI Innovations</span>
         <span class="eyebrow-line"></span>
       </div>
 
-      <h1 class="hero-title hero-title--launch">
-        <span class="ht-main ht-main--launch">Welcome to SelectAI Innovations</span>
+      <h1 class="hero-title">
+        <span class="ht-main ht-main--welcome">Welcome to SelectAI Innovations</span>
       </h1>
 
-      <p class="hero-subtitle hero-subtitle--launch">
+      <p class="hero-subtitle hero-subtitle--welcome">
         Engineering the Future with AI, Cloud &amp; Innovation
       </p>
 
@@ -690,7 +674,6 @@
     <img src="assets/images/logo-mark.png" alt="Back to top" width="28" height="28" />
   </a>
 
-  <script src="js/launch-home.js?v=20260626e"></script>
   <script src="js/api.js?v=20260609e"></script>
   <script src="js/kpi.js?v=20260609c"></script>
   <script src="js/lead-form.js?v=20260609c"></script>

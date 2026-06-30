@@ -5,8 +5,8 @@ const crypto     = require('crypto');
 const bcrypt     = require('bcryptjs');
 const mail       = require('../lib/mail');
 const {
-  normalizePhone,
   validatePhone,
+  phoneForCountry,
   fullName,
   findRegistrationConflict
 } = require('../lib/userHelpers');
@@ -119,7 +119,7 @@ router.post('/users/:uid/reset-password', async (req, res, next) => {
 ───────────────────────────────────────────────────────── */
 router.post('/users', async (req, res, next) => {
   try {
-    const { firstName, lastName, email, password, phone, country, city, role } = req.body;
+    const { firstName, lastName, email, password, phone, country, role } = req.body;
 
     if (!firstName || firstName.trim().length < 2)
       return res.status(400).json({ message: 'First name must be at least 2 characters.' });
@@ -132,12 +132,12 @@ router.post('/users', async (req, res, next) => {
 
     const safeRole = (role === 'admin') ? 'admin' : 'user';
     const emailLower = email.toLowerCase().trim();
-    const phoneNorm  = phone ? normalizePhone(phone) : '';
+    const countryVal = (country || '').trim();
+    const phoneError = validatePhone(phone, countryVal);
+    if (phoneError) return res.status(400).json({ message: phoneError });
+    const phoneNorm  = phoneForCountry(phone, countryVal);
 
-    if (phone && !phoneNorm)
-      return res.status(400).json({ message: 'Please enter a valid mobile number.' });
-
-    const conflict = await findRegistrationConflict(emailLower, phoneNorm);
+    const conflict = await findRegistrationConflict(emailLower);
     if (conflict) return res.status(409).json({ message: conflict.message });
 
     const passwordHash = await bcrypt.hash(password, 12);
@@ -150,8 +150,7 @@ router.post('/users', async (req, res, next) => {
       email:     emailLower,
       passwordHash,
       phone:     phoneNorm,
-      country:   (country || '').trim(),
-      city:      (city    || '').trim(),
+      country:   countryVal,
       role:      safeRole,
       provider:  'email',
       verified:  true,

@@ -1766,107 +1766,14 @@ img         { max-width: 100%; display: block; }
   .profile-form-row { grid-template-columns: 1fr; }
 }
 
-/* =========================================================
-   GO-LIVE — Homepage reveal (index.html)
-   ========================================================= */
-.home-launch-reveal {
-  position: fixed;
-  inset: 0;
-  z-index: 5000;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg);
-  pointer-events: none;
-}
-
-body.home-launch-pending .home-launch-reveal {
-  display: flex;
-  pointer-events: auto;
-}
-
-.home-launch-logo {
-  width: min(340px, 82vw);
-  height: auto;
-  opacity: 0;
-  transform: scale(0.55);
-  filter: drop-shadow(0 0 0 transparent);
-  animation: homeLogoReveal 1.15s cubic-bezier(.22,1,.36,1) 0.15s forwards;
-}
-
-@keyframes homeLogoReveal {
-  to {
-    opacity: 1;
-    transform: scale(1);
-    filter: drop-shadow(0 0 42px rgba(0,229,255,0.45));
-  }
-}
-
-.home-launch-reveal--out {
-  opacity: 0;
-  transition: opacity 0.85s ease;
-}
-
-body.home-launch-pending .navbar,
-body.home-launch-pending .scroll-progress,
-body.home-launch-pending section:not(#hero),
-body.home-launch-pending footer,
-body.home-launch-pending .back-top {
-  opacity: 0;
-  visibility: hidden;
-}
-
-body.home-launch-pending #hero .hero-content {
-  opacity: 0;
-  transform: translateY(32px);
-}
-
-body.home-launch-pending #hero .scroll-hint {
-  opacity: 0;
-}
-
-body.home-launch-active #hero.hero--revealed .hero-content,
-body.home-launch-active #hero.hero--revealed .scroll-hint {
-  animation: heroLaunchFade 1.15s cubic-bezier(.22,1,.36,1) 0.55s forwards;
-}
-
-@keyframes heroLaunchFade {
-  from { opacity: 0; transform: translateY(32px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-body.home-launch-active .navbar {
-  animation: heroLaunchFade 0.85s ease 1s forwards;
-  opacity: 0;
-  visibility: visible;
-}
-
-body.home-launch-active section:not(#hero),
-body.home-launch-active footer,
-body.home-launch-active .back-top,
-body.home-launch-active .scroll-progress {
-  animation: heroLaunchFade 0.9s ease 1.15s forwards;
-  opacity: 0;
-  visibility: visible;
-}
-
-body.home-launch-done .navbar,
-body.home-launch-done section,
-body.home-launch-done footer,
-body.home-launch-done .back-top,
-body.home-launch-done .scroll-progress {
-  opacity: 1;
-  visibility: visible;
-  transform: none;
-}
-
-.ht-main--launch {
+/* Homepage welcome hero (index.html) */
+.ht-main--welcome {
   font-size: clamp(1.65rem, 5vw, 3.6rem);
   letter-spacing: 0.05em;
   line-height: 1.18;
 }
 
-.hero-subtitle--launch {
+.hero-subtitle--welcome {
   font-size: clamp(1.02rem, 2.4vw, 1.4rem);
   max-width: 680px;
   margin-left: auto;

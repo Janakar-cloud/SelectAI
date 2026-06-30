@@ -78,10 +78,14 @@
       z-index: 2;
       display: flex;
       flex-direction: column;
+      flex: 1;
+      min-height: 0;
       height: 100%;
+      overflow-y: auto;
+      padding-right: 0.25rem;
     }
 
-    .al-logo { margin-bottom: 3rem; }
+    .al-logo { margin-bottom: 2rem; }
     .al-logo img { height: 36px; width: auto; }
 
     .al-tagline {
@@ -146,6 +150,43 @@
     }
     .al-stat-lbl { font-size: 0.68rem; color: var(--g400); margin-top: 0.2rem; letter-spacing: 0.05em; }
 
+    .al-services {
+      margin-bottom: 1.2rem;
+    }
+    .al-services-label {
+      font-family: var(--ff-display);
+      font-size: 0.57rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.85rem;
+    }
+    .al-services-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+    }
+    .al-service-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(0,229,255,0.12);
+      border-radius: 6px;
+      padding: 0.75rem 0.85rem;
+    }
+    .al-service-item h3 {
+      font-family: var(--ff-display);
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 0.35rem;
+    }
+    .al-service-item p {
+      font-size: 0.72rem;
+      color: var(--g100);
+      line-height: 1.5;
+      opacity: 0.82;
+    }
+
     /* ─── RIGHT PANEL ────────────────────────────────────── */
     .auth-right {
       width: 58%;
@@ -158,10 +199,74 @@
       overflow-y: auto;
     }
 
-    .auth-card {
+    .auth-right-inner {
       width: 100%;
       max-width: 460px;
     }
+
+    .auth-welcome {
+      text-align: center;
+      animation: authFadeIn 0.45s ease;
+    }
+    .auth-welcome.is-hidden { display: none; }
+    .auth-welcome-kicker {
+      font-family: var(--ff-display);
+      font-size: 0.6rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.75rem;
+    }
+    .auth-welcome-title {
+      font-family: var(--ff-display);
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      background: linear-gradient(135deg, #fff 0%, #d8daf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .auth-welcome-sub {
+      font-size: 0.92rem;
+      color: var(--g100);
+      opacity: 0.85;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+      max-width: 340px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .auth-welcome-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    @keyframes authFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-card {
+      width: 100%;
+      animation: authFadeIn 0.35s ease;
+    }
+    .auth-card.is-hidden { display: none; }
+
+    .auth-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: none;
+      border: none;
+      color: var(--cyan);
+      font-size: 0.82rem;
+      cursor: pointer;
+      padding: 0;
+      margin-bottom: 1.25rem;
+      transition: var(--ease);
+    }
+    .auth-back-link:hover { color: var(--white); }
 
     /* Tabs */
     .auth-tabs {
@@ -286,6 +391,13 @@
       width: 100%;
     }
     .form-field input::placeholder { color: var(--g400); opacity: 0.6; }
+    .form-field[hidden] { display: none; }
+    .form-hint {
+      font-size: 0.72rem;
+      color: var(--g400);
+      margin-top: 0.35rem;
+      line-height: 1.45;
+    }
     .form-field input:focus,
     .form-field select:focus {
       border-color: var(--cyan);
@@ -407,6 +519,17 @@
     }
     .auth-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 0 28px rgba(255,0,110,0.5); }
     .auth-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .auth-btn--outline {
+      background: transparent;
+      border: 1px solid rgba(0,229,255,0.35);
+      box-shadow: none;
+    }
+    .auth-btn--outline:hover:not(:disabled) {
+      background: rgba(0,229,255,0.08);
+      border-color: var(--cyan);
+      box-shadow: none;
+      transform: translateY(-2px);
+    }
 
     .auth-link-btn {
       background: none;
@@ -434,175 +557,20 @@
     /* ─── RESPONSIVE ─────────────────────────────────────── */
     @media (max-width: 900px) {
       .auth-layout   { flex-direction: column; }
-      .auth-left     { width: 100%; padding: 2rem 1.5rem; }
+      .auth-left     { width: 100%; padding: 2rem 1.5rem; max-height: none; }
+      .al-content    { overflow-y: visible; }
       .al-stats      { display: none; }
       .al-tagline    { font-size: 1.4rem; margin-bottom: 1.2rem; }
       .vm-card       { padding: 1rem 1rem 1rem 1.3rem; }
+      .al-services-grid { grid-template-columns: 1fr; }
       .auth-right    { width: 100%; padding: 2rem 1.5rem; }
     }
     @media (max-width: 500px) {
       .form-row      { grid-template-columns: 1fr; }
     }
-
-    /* ─── GO-LIVE COUNTDOWN ──────────────────────────────── */
-    .launch-gate {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(ellipse at 50% 30%, rgba(155,0,255,0.18) 0%, transparent 55%),
-                  radial-gradient(ellipse at 80% 80%, rgba(0,229,255,0.12) 0%, transparent 50%),
-                  var(--bg);
-      transition: opacity 0.8s ease, visibility 0.8s ease;
-    }
-    .launch-gate--hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-    .launch-gate--live { background: var(--bg); }
-    .launch-gate-inner {
-      text-align: center;
-      padding: 2rem 1.5rem;
-      max-width: 520px;
-    }
-    .launch-gate-logo {
-      width: min(280px, 72vw);
-      height: auto;
-      margin: 0 auto 1.75rem;
-      filter: drop-shadow(0 0 24px rgba(0,229,255,0.35));
-      animation: launchLogoPulse 2.4s ease-in-out infinite;
-    }
-    @keyframes launchLogoPulse {
-      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(0,229,255,0.3)); }
-      50%      { transform: scale(1.03); filter: drop-shadow(0 0 36px rgba(255,0,110,0.45)); }
-    }
-    .launch-gate-kicker {
-      font-family: var(--ff-display);
-      font-size: 0.62rem;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: var(--cyan);
-      margin-bottom: 1.75rem;
-    }
-    .launch-countdown {
-      display: flex;
-      justify-content: center;
-      gap: 0.85rem;
-      flex-wrap: wrap;
-      margin-bottom: 1rem;
-    }
-    .launch-countdown div {
-      min-width: 72px;
-      padding: 0.85rem 0.5rem;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(0,229,255,0.22);
-      border-radius: 6px;
-    }
-    .launch-countdown span {
-      display: block;
-      font-family: var(--ff-display);
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: var(--white);
-      line-height: 1.1;
-    }
-    .launch-countdown small {
-      display: block;
-      margin-top: 0.35rem;
-      font-size: 0.58rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--g400);
-    }
-    .launch-gate-title {
-      font-family: var(--ff-display);
-      font-size: clamp(1.1rem, 4.2vw, 1.8rem);
-      color: var(--white);
-      margin-top: 1.2rem;
-      letter-spacing: 0.03em;
-      line-height: 1.35;
-    }
-    .launch-gate-subtitle {
-      color: var(--g100);
-      font-size: 0.98rem;
-      margin-top: 0.55rem;
-      line-height: 1.6;
-    }
-    .launch-gate-note {
-      font-size: 0.88rem;
-      color: var(--g400);
-      line-height: 1.6;
-      margin-top: 1.25rem;
-    }
-    .launch-gate-signin {
-      display: inline-block;
-      margin-top: 1.35rem;
-      padding: 0.72rem 1.35rem;
-      background: transparent;
-      border: 1px solid rgba(0,229,255,0.45);
-      border-radius: 4px;
-      color: var(--cyan);
-      font-family: var(--ff-display);
-      font-size: 0.68rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: var(--ease);
-    }
-    .launch-gate-signin:hover {
-      background: rgba(0,229,255,0.1);
-      border-color: var(--cyan);
-      color: var(--white);
-    }
-    .launch-gate-live {
-      font-family: var(--ff-display);
-      font-size: clamp(1.4rem, 5vw, 2.2rem);
-      font-weight: 900;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      background: linear-gradient(135deg, #ff006e, #9b00ff, #00e5ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      opacity: 0;
-      transform: scale(0.85);
-      transition: opacity 0.6s ease, transform 0.6s cubic-bezier(.22,1,.36,1);
-    }
-    .launch-gate-live.launch-live-show {
-      opacity: 1;
-      transform: scale(1);
-    }
-    .auth-layout--gated {
-      visibility: hidden;
-      pointer-events: none;
-    }
   </style>
-  <script src="js/launch.js?v=20260627a"></script>
 </head>
 <body>
-
-<div id="launchGate" class="launch-gate" role="dialog" aria-label="Site launch countdown">
-  <div class="launch-gate-inner">
-    <img src="assets/images/logo-full.png" alt="SelectAI Innovations" class="launch-gate-logo" width="280" height="auto" />
-    <p class="launch-gate-kicker">Going Live · 26 Jun 2026 · 6:30 PM IST</p>
-    <h1 class="launch-gate-title">Welcome to SelectAI Innovations</h1>
-    <p class="launch-gate-subtitle">Engineering the Future with AI, Cloud &amp; Innovation.</p>
-    <div class="launch-countdown" id="launchCountdown">
-      <div><span id="cdDays">00</span><small>Days</small></div>
-      <div><span id="cdHours">00</span><small>Hours</small></div>
-      <div><span id="cdMinutes">00</span><small>Minutes</small></div>
-      <div><span id="cdSeconds">00</span><small>Seconds</small></div>
-    </div>
-    <p class="launch-gate-note" id="launchGateNote">SelectAI Innovations launches soon. The public site opens at go-live.</p>
-    <button type="button" class="launch-gate-signin" id="launchSignInBtn" onclick="openLaunchSignIn()">
-      Already registered? Sign in
-    </button>
-    <p class="launch-gate-live" id="launchLiveMsg" hidden>We Are Live!</p>
-  </div>
-</div>
 
 <div class="auth-layout">
 
@@ -640,6 +608,28 @@
         </p>
       </div>
 
+      <div class="al-services">
+        <p class="al-services-label">What We Do</p>
+        <div class="al-services-grid">
+          <div class="al-service-item">
+            <h3>IT Services</h3>
+            <p>Cloud migration, DevOps, Gen AI &amp; triple-cloud operations across AWS, Azure, and GCP.</p>
+          </div>
+          <div class="al-service-item">
+            <h3>SaaS Solutions</h3>
+            <p>Secure, scalable multi-tenant products with analytics and rapid feature iteration.</p>
+          </div>
+          <div class="al-service-item">
+            <h3>AI Training</h3>
+            <p>Hands-on learning paths with role-based curriculum and practical capstone tracks.</p>
+          </div>
+          <div class="al-service-item">
+            <h3>R&amp;D Consultancy</h3>
+            <p>Use-case discovery, MVP acceleration, and ROI-guided AI roadmaps.</p>
+          </div>
+        </div>
+      </div>
+
       <div class="al-stats">
         <div>
           <div class="al-stat-num">47+</div>
@@ -659,7 +649,24 @@
 
   <!-- ─── RIGHT PANEL ──────────────────────────────────────  -->
   <main class="auth-right">
-    <div class="auth-card">
+    <div class="auth-right-inner">
+
+      <div class="auth-welcome" id="authWelcome">
+        <p class="auth-welcome-kicker">SelectAI Innovations</p>
+        <h1 class="auth-welcome-title">Welcome</h1>
+        <p class="auth-welcome-sub">
+          Engineering the Future with AI, Cloud &amp; Innovation.<br>
+          Sign in or create an account to access the platform.
+        </p>
+        <div class="auth-welcome-btns">
+          <button type="button" class="auth-btn" onclick="openAuthForms('login')">Sign In</button>
+          <button type="button" class="auth-btn auth-btn--outline" onclick="openAuthForms('signup')">Create Account</button>
+        </div>
+      </div>
+
+    <div class="auth-card is-hidden" id="authCard">
+
+      <button type="button" class="auth-back-link" onclick="showAuthWelcome()">← Back</button>
 
       <div class="auth-tabs">
         <button class="auth-tab active" id="tabLogin"  onclick="switchTab('login')">Sign In</button>
@@ -683,13 +690,13 @@
         <form id="loginForm" onsubmit="return false;" novalidate>
           <div class="form-field">
             <label for="liEmail">Email Address</label>
-            <input type="email" id="liEmail" name="email" placeholder="jane@example.com" autocomplete="email" />
+            <input type="email" id="liEmail" name="email" autocomplete="email" />
           </div>
 
           <div class="form-field">
             <label for="liPassword">Password</label>
             <div class="pw-wrap">
-              <input type="password" id="liPassword" name="password" placeholder="Your password" autocomplete="current-password" />
+              <input type="password" id="liPassword" name="password" autocomplete="current-password" />
               <button type="button" class="pw-eye" aria-label="Toggle password visibility" onclick="togglePw('liPassword',this)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
@@ -718,28 +725,22 @@
           <div class="form-row">
             <div class="form-field">
               <label for="spFirstName">First Name</label>
-              <input type="text" id="spFirstName" name="firstName" placeholder="Jane" autocomplete="given-name" />
+              <input type="text" id="spFirstName" name="firstName" autocomplete="given-name" />
             </div>
             <div class="form-field">
               <label for="spLastName">Last Name</label>
-              <input type="text" id="spLastName" name="lastName" placeholder="Smith" autocomplete="family-name" />
+              <input type="text" id="spLastName" name="lastName" autocomplete="family-name" />
             </div>
-          </div>
-
-          <div class="form-field">
-            <label for="spPhone">Mobile Number</label>
-            <input type="tel" id="spPhone" name="phone" placeholder="+91 98765 43210" autocomplete="tel" required />
           </div>
 
           <div class="form-field">
             <label for="spEmail">Email Address</label>
-            <input type="email" id="spEmail" name="email" placeholder="jane@example.com" autocomplete="email" />
+            <input type="email" id="spEmail" name="email" autocomplete="email" />
           </div>
 
-          <div class="form-row">
-            <div class="form-field">
-              <label for="spCountry">Country</label>
-              <select id="spCountry" name="country">
+          <div class="form-field">
+            <label for="spCountry">Country</label>
+            <select id="spCountry" name="country" onchange="toggleSignupPhone()">
                 <option value="">Select country</option>
                 <option value="AU">Australia</option>
                 <option value="BD">Bangladesh</option>
@@ -789,17 +790,18 @@
                 <option value="VN">Vietnam</option>
                 <option value="OT">Other</option>
               </select>
-            </div>
-            <div class="form-field">
-              <label for="spCity">City</label>
-              <input type="text" id="spCity" name="city" placeholder="Mumbai" autocomplete="address-level2" />
-            </div>
+          </div>
+
+          <div class="form-field" id="spPhoneField" hidden>
+            <label for="spPhone">Mobile Number</label>
+            <input type="tel" id="spPhone" name="phone" autocomplete="tel" />
+            <p class="form-hint">Required for India-based accounts.</p>
           </div>
 
           <div class="form-field">
             <label for="spPassword">Password</label>
             <div class="pw-wrap">
-              <input type="password" id="spPassword" name="password" placeholder="Min 8 chars, 1 uppercase, 1 number" autocomplete="new-password" oninput="updatePwStrength(this.value)" />
+              <input type="password" id="spPassword" name="password" autocomplete="new-password" oninput="updatePwStrength(this.value)" />
               <button type="button" class="pw-eye" aria-label="Toggle password visibility" onclick="togglePw('spPassword',this)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
@@ -811,7 +813,7 @@
           <div class="form-field">
             <label for="spConfirm">Confirm Password</label>
             <div class="pw-wrap">
-              <input type="password" id="spConfirm" name="confirmPassword" placeholder="Repeat your password" autocomplete="new-password" />
+              <input type="password" id="spConfirm" name="confirmPassword" autocomplete="new-password" />
               <button type="button" class="pw-eye" aria-label="Toggle confirm password visibility" onclick="togglePw('spConfirm',this)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
@@ -849,7 +851,7 @@
           <input class="otp-input" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 6" data-index="5" />
         </div>
 
-        <p class="otp-timer">Code expires in <span id="otpCountdown">10:00</span></p>
+        <p class="otp-timer">Code expires in <span id="otpCountdown">05:00</span></p>
 
         <button class="auth-btn" id="otpVerifyBtn" onclick="verifyOtp()" disabled>Verify &amp; Continue</button>
 
@@ -869,7 +871,7 @@
 
         <div class="form-field">
           <label for="forgotEmail">Email Address</label>
-          <input type="email" id="forgotEmail" name="forgotEmail" placeholder="jane@example.com" autocomplete="email" />
+          <input type="email" id="forgotEmail" name="forgotEmail" autocomplete="email" />
         </div>
 
         <button class="auth-btn" id="forgotBtn" onclick="handleForgotPassword()">Send Reset Link</button>
@@ -887,7 +889,7 @@
         <div class="form-field">
           <label for="resetPassword">New Password</label>
           <div class="pw-wrap">
-            <input type="password" id="resetPassword" name="resetPassword" placeholder="Min 8 chars, 1 uppercase, 1 number" autocomplete="new-password" oninput="updatePwStrength(this.value,'reset')" />
+            <input type="password" id="resetPassword" name="resetPassword" autocomplete="new-password" oninput="updatePwStrength(this.value,'reset')" />
             <button type="button" class="pw-eye" aria-label="Toggle password visibility" onclick="togglePw('resetPassword',this)">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
@@ -899,7 +901,7 @@
         <div class="form-field">
           <label for="resetConfirm">Confirm New Password</label>
           <div class="pw-wrap">
-            <input type="password" id="resetConfirm" name="resetConfirm" placeholder="Repeat your new password" autocomplete="new-password" />
+            <input type="password" id="resetConfirm" name="resetConfirm" autocomplete="new-password" />
             <button type="button" class="pw-eye" aria-label="Toggle confirm visibility" onclick="togglePw('resetConfirm',this)">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
@@ -909,6 +911,7 @@
         <button class="auth-btn" id="resetBtn" onclick="handleSetNewPassword()">Set New Password</button>
       </div>
 
+    </div>
     </div>
   </main>
 </div>
@@ -925,8 +928,26 @@
 'use strict';
 
 /* Do not auto-redirect from login:
-   token validity is handled by auth-guard on target pages.
-   This avoids index/login redirect flicker during launch gating. */
+   token validity is handled by auth-guard on target pages. */
+
+/* ── Welcome CTA → auth forms ───────────────────────────── */
+window.openAuthForms = function (tab) {
+  var welcome = document.getElementById('authWelcome');
+  var card    = document.getElementById('authCard');
+  if (welcome) welcome.classList.add('is-hidden');
+  if (card)    card.classList.remove('is-hidden');
+  if (tab === 'signup') switchTab('signup');
+  else if (tab === 'login') switchTab('login');
+};
+
+window.showAuthWelcome = function () {
+  var welcome = document.getElementById('authWelcome');
+  var card    = document.getElementById('authCard');
+  if (welcome) welcome.classList.remove('is-hidden');
+  if (card)    card.classList.add('is-hidden');
+  switchTab('login');
+  clearMessages();
+};
 
 /* ── Panel management ──────────────────────────────────── */
 var PANELS = ['panelLogin','panelSignup','panelOtp','panelForgot','panelReset'];
@@ -950,7 +971,21 @@ function switchTab(tab) {
   document.getElementById('tabLogin').classList.toggle('active',  isLogin);
   document.getElementById('tabSignup').classList.toggle('active', !isLogin);
   showPanel(isLogin ? 'panelLogin' : 'panelSignup');
+  if (!isLogin) toggleSignupPhone();
 }
+
+/** Show mobile field only when India is selected */
+window.toggleSignupPhone = function () {
+  var country = (document.getElementById('spCountry').value || '').trim();
+  var isIndia = country === 'IN';
+  var wrap    = document.getElementById('spPhoneField');
+  var phone   = document.getElementById('spPhone');
+  if (wrap) wrap.hidden = !isIndia;
+  if (phone) {
+    phone.required = isIndia;
+    if (!isIndia) phone.value = '';
+  }
+};
 
 /* ── Feedback helpers ──────────────────────────────────── */
 function showError(msg) {
@@ -993,14 +1028,6 @@ window.handleSignIn = function () {
   SelectAI_API.login(email, password)
     .then(function () {
       setLoading(false);
-      var L = window.SelectAI_Launch;
-      /* Before go-live, don't bounce to the homepage (it just redirects back here).
-         Show the launch countdown with a signed-in confirmation instead. */
-      if (L && L.isLaunchDay() && !L.isLive() && !L.isPreview()) {
-        if (typeof window.showLaunchGate === 'function') window.showLaunchGate(true);
-        return;
-      }
-      try { sessionStorage.setItem('selectai_signin_access', '1'); } catch (e) {}
       window.location.replace('index.html');
     })
     .catch(function (err) {
@@ -1022,17 +1049,19 @@ window.handleSignUp = function () {
     phone:     (document.getElementById('spPhone').value     || '').trim(),
     email:     (document.getElementById('spEmail').value     || '').trim(),
     country:   (document.getElementById('spCountry').value   || '').trim(),
-    city:      (document.getElementById('spCity').value      || '').trim(),
     password:  (document.getElementById('spPassword').value  || ''),
     confirm:   (document.getElementById('spConfirm').value   || '')
   };
   if (data.firstName.length < 2)                        { showError('First name must be at least 2 characters.'); return; }
   if (data.lastName.length  < 2)                        { showError('Last name must be at least 2 characters.'); return; }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))  { showError('Please enter a valid email address.'); return; }
-  var phoneDigits = data.phone.replace(/\D/g, '');
-  if (phoneDigits.length < 8)                           { showError('Please enter a valid mobile number (at least 8 digits).'); return; }
   if (!data.country)                                    { showError('Please select your country.'); return; }
-  if (data.city.length < 2)                             { showError('Please enter your city.'); return; }
+  if (data.country === 'IN') {
+    var phoneDigits = data.phone.replace(/\D/g, '');
+    if (phoneDigits.length < 8)                         { showError('Please enter a valid mobile number (at least 8 digits).'); return; }
+  } else {
+    data.phone = '';
+  }
   if (data.password.length < 8)                         { showError('Password must be at least 8 characters.'); return; }
   if (!/[A-Z]/.test(data.password))                     { showError('Password must contain at least one uppercase letter.'); return; }
   if (!/[0-9]/.test(data.password))                     { showError('Password must contain at least one number.'); return; }
@@ -1043,7 +1072,7 @@ window.handleSignUp = function () {
     .then(function (res) {
       setLoading(false);
       if (res.otpSent) {
-        openOtpPanel(res.user.email, res.devCode || null);
+        openOtpPanel(res.user.email, res.devCode || null, res.user.uid);
       } else {
         initiateOtp(res.user.uid, res.user.email);
       }
@@ -1060,10 +1089,10 @@ window.handleSignUp = function () {
 var _otpUid     = null;
 var _otpCode    = null;
 var _otpTimer   = null;
-var _otpSeconds = 600; /* 10 min */
+var _otpSeconds = 300; /* 5 min */
 
 function _startOtpCountdown() {
-  _otpSeconds = 600;
+  _otpSeconds = 300;
   clearInterval(_otpTimer);
   _otpTimer = setInterval(function () {
     _otpSeconds -= 1;
@@ -1080,7 +1109,9 @@ function _startOtpCountdown() {
 }
 
 /** Show OTP panel (optionally with dev code from register response) */
-function openOtpPanel(email, devCode) {
+function openOtpPanel(email, devCode, uid) {
+  if (uid) _otpUid = uid;
+
   var devBox = document.getElementById('otpDevCode');
   var devVal = document.getElementById('otpDevValue');
   if (devCode) {
@@ -1148,29 +1179,42 @@ window.verifyOtp = function () {
 
 /** Resend OTP */
 window.resendOtp = function () {
-  if (!_otpUid) return;
+  var hasToken = false;
+  try { hasToken = !!localStorage.getItem('selectai_token'); } catch (e) {}
+  if (!hasToken) {
+    showError('Session expired. Please register or sign in again.');
+    return;
+  }
+
   clearMessages();
   setLoading(true);
+  var resendBtn = document.getElementById('otpResendBtn');
+  if (resendBtn) resendBtn.disabled = true;
+
   SelectAI_API.sendOtp()
     .then(function (res) {
       setLoading(false);
       if (res.devCode) {
         _otpCode = res.devCode;
+        var devBox = document.getElementById('otpDevCode');
         var devVal = document.getElementById('otpDevValue');
+        if (devBox) devBox.style.display = 'block';
         if (devVal) devVal.textContent = res.devCode;
       }
       _startOtpCountdown();
       showSuccess('New code sent. Check your email.');
       document.getElementById('otpVerifyBtn').disabled = true;
       document.querySelectorAll('.otp-input').forEach(function (i) { i.value = ''; i.classList.remove('filled'); });
+      _refreshOtpVerifyState();
       var first = document.querySelector('.otp-input');
       if (first) first.focus();
-      var btn = document.getElementById('otpResendBtn');
-      btn.disabled = true;
-      setTimeout(function () { btn.disabled = false; }, 30000);
+      setTimeout(function () {
+        if (resendBtn) resendBtn.disabled = false;
+      }, 30000);
     })
     .catch(function (err) {
       setLoading(false);
+      if (resendBtn) resendBtn.disabled = false;
       showError(err.message || 'Failed to resend OTP.');
     });
 };
@@ -1262,13 +1306,20 @@ window.handleSetNewPassword = function () {
 /* ── On page load: check for ?reset= token ─────────────── */
 document.addEventListener('DOMContentLoaded', function () {
   var params = new URLSearchParams(window.location.search);
+
+  if (/(?:\?|&)(?:signin|login)=1(?:&|$)/.test(window.location.search)) {
+    openAuthForms('login');
+  }
+
   if (params.get('reset')) {
+    openAuthForms();
     /* Remove token from URL without page reload */
     showPanel('panelReset');
     document.querySelector('.auth-tabs').style.display = 'none';
   }
 
   if (params.get('forgot') === '1') {
+    openAuthForms();
     showForgotPanel();
     document.querySelector('.auth-tabs').style.display = 'none';
   }
@@ -1307,6 +1358,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* Resume OTP if user registered but closed the tab before verifying */
   if (params.get('verify') === 'pending') {
+    openAuthForms();
     SelectAI_API.getMe()
       .then(function (res) {
         var user = (res && res.user) || {};
@@ -1353,6 +1405,5 @@ window.togglePw = function (id, btn) {
   btn.setAttribute('aria-pressed', inp.type === 'text');
 };
 </script>
-<script src="js/launch-login.js?v=20260627a"></script>
 </body>
 </html>

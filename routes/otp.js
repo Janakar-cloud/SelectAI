@@ -35,8 +35,7 @@ router.post('/send', otpSendLimiter, verifyToken, async (req, res, next) => {
       lastName:     pending.lastName,
       passwordHash: pending.passwordHash,
       phone:        pending.phone,
-      country:      pending.country,
-      city:         pending.city
+      country:      pending.country
     } : {};
 
     const isDev = mail.isDevMailMode();
@@ -85,7 +84,7 @@ router.post('/verify', verifyToken, async (req, res, next) => {
       return res.status(400).json({ message: 'Incorrect verification code. Please try again.' });
 
     if (record.passwordHash) {
-      const conflict = await findRegistrationConflict(record.email, record.phone, record.uid);
+      const conflict = await findRegistrationConflict(record.email, record.uid);
       if (conflict) return res.status(409).json({ message: conflict.message });
 
       const existingUser = await User.findOne({ uid: record.uid }).lean();
@@ -98,7 +97,6 @@ router.post('/verify', verifyToken, async (req, res, next) => {
           passwordHash: record.passwordHash,
           phone:        record.phone,
           country:      record.country,
-          city:         record.city,
           provider:     'email',
           role:         'user',
           verified:     true,

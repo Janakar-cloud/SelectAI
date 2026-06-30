@@ -21,8 +21,7 @@ const ADMIN_EMAIL     = 'janakar.ganesan@gmail.com';
 const ADMIN_FIRST     = 'Janakar';
 const ADMIN_LAST      = 'Ganesan';
 const ADMIN_PHONE     = '+91-9999999999';
-const ADMIN_COUNTRY   = 'India';
-const ADMIN_CITY      = 'Chennai';
+const ADMIN_COUNTRY   = 'IN';
 const TEMP_PASSWORD   = 'SelectAI@2026';   // change after first login
 
 async function seed() {
@@ -59,7 +58,6 @@ async function seed() {
     if (!existing.verified)            updates.verified  = true;
     if (!existing.phone && ADMIN_PHONE)   updates.phone  = ADMIN_PHONE;
     if (!existing.country)             updates.country  = ADMIN_COUNTRY;
-    if (!existing.city)                updates.city     = ADMIN_CITY;
 
     if (Object.keys(updates).length) {
       await User.updateOne({ email: ADMIN_EMAIL }, { $set: updates });
@@ -76,9 +74,8 @@ async function seed() {
       lastName:     ADMIN_LAST,
       email:        ADMIN_EMAIL,
       passwordHash,
-      phone:        ADMIN_PHONE,
+      phone:        ADMIN_PHONE.replace(/\D/g, ''),
       country:      ADMIN_COUNTRY,
-      city:         ADMIN_CITY,
       role:         'admin',
       provider:     'email',
       verified:     true,

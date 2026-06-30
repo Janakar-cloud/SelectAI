@@ -187,7 +187,6 @@
       password:  document.getElementById('cu_password').value,
       phone:     document.getElementById('cu_phone').value.trim(),
       country:   document.getElementById('cu_country').value.trim(),
-      city:      document.getElementById('cu_city').value.trim(),
       role:      document.getElementById('cu_role').value
     };
 
@@ -235,7 +234,7 @@
     }
     var html = '<div style="overflow-x:auto"><table class="data-table">'
       + '<thead><tr>'
-      + '<th>Name</th><th>Email</th><th>Country</th><th>City</th><th>Role</th><th>Provider</th><th>Joined</th><th>Actions</th>'
+      + '<th>Name</th><th>Email</th><th>Country</th><th>Role</th><th>Provider</th><th>Joined</th><th>Actions</th>'
       + '</tr></thead><tbody>';
     rows.forEach(function (u) {
       var uid       = u.uid || u._id || '';
@@ -246,7 +245,6 @@
         + '<td>' + esc((u.firstName || '') + ' ' + (u.lastName || '')) + '</td>'
         + '<td><span class="truncate">' + safeEmail + '</span></td>'
         + '<td>' + esc(u.country || '—') + '</td>'
-        + '<td>' + esc(u.city    || '—') + '</td>'
         + '<td><span class="role-badge role-' + role + '">' + role + '</span></td>'
         + '<td>' + esc(u.provider || '—') + '</td>'
         + '<td>' + fmtDate(u.createdAt) + '</td>'
@@ -300,7 +298,7 @@
   window.filterUsers = function (query) {
     var q = query.toLowerCase();
     usersFiltered = allUsers.filter(function (u) {
-      return (u.firstName + ' ' + u.lastName + ' ' + u.email + ' ' + u.country + ' ' + u.city)
+      return (u.firstName + ' ' + u.lastName + ' ' + u.email + ' ' + u.country)
         .toLowerCase().includes(q);
     });
     renderUsersTable(usersFiltered, 'usersTableWrap');
@@ -328,7 +326,6 @@
         'Email':       u.email     || '',
         'Phone':       u.phone     || '',
         'Country':     u.country   || '',
-        'City':        u.city      || '',
         'Role':        u.role      || 'user',
         'Provider':    u.provider  || '',
         'Joined':      fmtDate(u.createdAt),

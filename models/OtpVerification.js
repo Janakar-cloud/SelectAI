@@ -17,9 +17,8 @@ const otpSchema = new mongoose.Schema(
     firstName:    { type: String, default: '' },
     lastName:     { type: String, default: '' },
     passwordHash: { type: String, default: '' },
-    phone:        { type: String, default: '', index: true },
-    country:      { type: String, default: '' },
-    city:         { type: String, default: '' }
+    phone:        { type: String, default: '' },
+    country:      { type: String, default: '' }
   },
   {
     timestamps: true

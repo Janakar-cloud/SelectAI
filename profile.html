@@ -91,7 +91,7 @@
             <label for="profileEmail">Email</label>
             <input type="email" id="profileEmail" readonly disabled aria-readonly="true" />
           </div>
-          <div class="profile-field">
+          <div class="profile-field" id="profilePhoneField">
             <label for="profilePhone">Mobile Number</label>
             <input type="tel" id="profilePhone" readonly disabled aria-readonly="true" />
           </div>
@@ -119,6 +119,11 @@
       return digits.replace(/(\d{3,5})(?=\d)/g, '$1 ').trim();
     }
 
+    function isIndiaCountry(country) {
+      var c = String(country || '').trim().toUpperCase();
+      return c === 'IN' || c === 'INDIA';
+    }
+
     function applyProfile(u) {
       window.SELECTAI_USER = Object.assign({}, window.SELECTAI_USER || {}, u);
       document.getElementById('profileFirstName').value = u.firstName || '';
@@ -126,6 +131,11 @@
       document.getElementById('profileEmail').value     = u.email     || '—';
       document.getElementById('profilePhone').value     = formatPhone(u.phone || '');
       document.getElementById('profileVerified').value  = u.verified ? 'Verified' : 'Pending verification';
+
+      var phoneWrap = document.getElementById('profilePhoneField');
+      if (phoneWrap) {
+        phoneWrap.hidden = !isIndiaCountry(u.country) && !(u.phone || '').trim();
+      }
 
       var nameEl = document.getElementById('navUserDropdownName');
       if (nameEl) {

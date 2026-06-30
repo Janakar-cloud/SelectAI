@@ -35,12 +35,12 @@ const SECRET = process.env.JWT_SECRET;
 const ADMIN_USER = {
   uid: 'admin-uid-001', firstName: 'Janakar', lastName: 'Ganesan',
   email: 'janakar.ganesan@gmail.com', role: 'admin', verified: true,
-  passwordHash: '', photoURL: '', phone: '', country: 'India', city: ''
+  passwordHash: '', photoURL: '', phone: '', country: 'IN'
 };
 const REGULAR_USER = {
   uid: 'user-uid-001', firstName: 'Alice', lastName: 'Smith',
   email: 'alice@example.com', role: 'user', verified: false,
-  passwordHash: '', photoURL: '', phone: '', country: 'UK', city: 'London'
+  passwordHash: '', photoURL: '', phone: '', country: 'GB'
 };
 
 /* ════════════════════════════════════════════════════════
@@ -60,7 +60,7 @@ describe('GET /api/health', () => {
 describe('POST /api/auth/register', () => {
   const VALID = {
     firstName: 'Alice', lastName: 'Smith', email: 'alice@example.com',
-    phone: '9876543210', password: 'Password1', country: 'India', city: 'Mumbai'
+    phone: '9876543210', password: 'Password1', country: 'IN'
   };
 
   beforeEach(() => {
@@ -81,10 +81,18 @@ describe('POST /api/auth/register', () => {
     expect(OtpVerification.findOneAndUpdate).toHaveBeenCalled();
   });
 
-  test('400 when phone missing or too short', async () => {
+  test('400 when India phone missing or too short', async () => {
     const res = await request(app).post('/api/auth/register').send({ ...VALID, phone: '123' });
     expect(res.status).toBe(400);
     expect(res.body.message).toMatch(/mobile/i);
+  });
+
+  test('201 when non-India register has no phone', async () => {
+    const res = await request(app).post('/api/auth/register').send({
+      ...VALID, country: 'GB', phone: ''
+    });
+    expect(res.status).toBe(201);
+    expect(res.body.otpSent).toBe(true);
   });
 
   test('400 when firstName too short', async () => {
@@ -109,12 +117,6 @@ describe('POST /api/auth/register', () => {
     const res = await request(app).post('/api/auth/register').send({ ...VALID, country: '' });
     expect(res.status).toBe(400);
     expect(res.body.message).toMatch(/country/i);
-  });
-
-  test('400 when city too short', async () => {
-    const res = await request(app).post('/api/auth/register').send({ ...VALID, city: 'X' });
-    expect(res.status).toBe(400);
-    expect(res.body.message).toMatch(/city/i);
   });
 
   test('400 when password too short', async () => {
@@ -252,8 +254,7 @@ describe('GET /api/auth/me', () => {
       lastName: 'Smith',
       email: 'alice@example.com',
       phone: '9876543210',
-      country: 'UK',
-      city: 'London',
+      country: 'GB',
       verified: false
     };
     User.findOne = jest.fn().mockReturnValue({
@@ -575,8 +576,7 @@ describe('POST /api/otp/verify', () => {
       passwordHash: 'hashed-pw',
       firstName: 'Alice',
       lastName: 'Smith',
-      country: 'UK',
-      city: 'London'
+      country: 'GB'
     };
     OtpVerification.findOne = jest.fn().mockImplementation((query) => {
       if (query.uid === 'user-uid-001') return Promise.resolve(pending);
@@ -692,7 +692,7 @@ describe('GET /api/admin/users', () => {
 describe('POST /api/admin/users', () => {
   const VALID_NEW_USER = {
     firstName: 'Bob', lastName: 'Jones', email: 'bob@example.com',
-    password: 'Password1', country: 'India', city: 'Delhi', role: 'user'
+    password: 'Password1', country: 'GB', role: 'user'
   };
 
   beforeEach(() => {
@@ -938,6 +938,44 @@ describe('POST /api/otp/send — email guard', () => {
   test('401 without token', async () => {
     const res = await request(app).post('/api/otp/send');
     expect(res.status).toBe(401);
+  });
+
+  test('resend preserves pending registration fields', async () => {
+    const pending = {
+      uid: 'user-uid-001',
+      email: 'user@test.com',
+      firstName: 'Alice',
+      lastName: 'Smith',
+      passwordHash: 'hashed-pw',
+      phone: '9876543210',
+      country: 'IN'
+    };
+    OtpVerification.findOne = jest.fn().mockReturnValue({
+      lean: jest.fn().mockResolvedValue(pending)
+    });
+    User.findOne = jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) })
+    });
+    OtpVerification.findOneAndUpdate = jest.fn().mockResolvedValue({});
+
+    const res = await request(app).post('/api/otp/send')
+      .set('Authorization', 'Bearer ' + makeUserToken());
+
+    expect(res.status).toBe(200);
+    expect(res.body.ok).toBe(true);
+    expect(OtpVerification.findOneAndUpdate).toHaveBeenCalledWith(
+      { uid: 'user-uid-001' },
+      expect.objectContaining({
+        email: 'user@test.com',
+        firstName: 'Alice',
+        lastName: 'Smith',
+        passwordHash: 'hashed-pw',
+        phone: '9876543210',
+        country: 'IN',
+        verified: false
+      }),
+      expect.objectContaining({ upsert: true })
+    );
   });
 });
 

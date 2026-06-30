@@ -7,8 +7,8 @@ const { verifyToken } = require('../middleware/auth');
 const mail       = require('../lib/mail');
 const { issueOtp } = require('../lib/otpService');
 const {
-  normalizePhone,
   validatePhone,
+  phoneForCountry,
   fullName,
   findRegistrationConflict
 } = require('../lib/userHelpers');
@@ -38,7 +38,7 @@ function _validatePassword(pw) {
 ───────────────────────────────────────────────────────── */
 router.post('/register', async (req, res, next) => {
   try {
-    const { firstName, lastName, email, password, phone, country, city } = req.body;
+    const { firstName, lastName, email, password, phone, country } = req.body;
 
     if (!firstName || firstName.trim().length < 2)
       return res.status(400).json({ message: 'First name must be at least 2 characters.' });
@@ -48,18 +48,17 @@ router.post('/register', async (req, res, next) => {
       return res.status(400).json({ message: 'Please enter a valid email address.' });
     if (!country)
       return res.status(400).json({ message: 'Please select your country.' });
-    if (!city || city.trim().length < 2)
-      return res.status(400).json({ message: 'Please enter your city (min 2 characters).' });
 
     const pwError = _validatePassword(password);
     if (pwError) return res.status(400).json({ message: pwError });
 
-    const phoneError = validatePhone(phone);
+    const countryVal = (country || '').trim();
+    const phoneError = validatePhone(phone, countryVal);
     if (phoneError) return res.status(400).json({ message: phoneError });
 
     const emailLower = email.toLowerCase().trim();
-    const phoneNorm  = normalizePhone(phone);
-    const conflict   = await findRegistrationConflict(emailLower, phoneNorm);
+    const phoneNorm  = phoneForCountry(phone, countryVal);
+    const conflict   = await findRegistrationConflict(emailLower);
     if (conflict) return res.status(409).json({ message: conflict.message });
 
     const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
@@ -72,8 +71,7 @@ router.post('/register', async (req, res, next) => {
         lastName:     lastName.trim(),
         passwordHash,
         phone:        phoneNorm,
-        country:      (country || '').trim(),
-        city:         (city    || '').trim()
+        country:      countryVal
       });
     } catch (smtpErr) {
       await OtpVerification.deleteOne({ uid });
@@ -185,7 +183,6 @@ router.get('/me', verifyToken, async (req, res, next) => {
           email:     pending.email,
           phone:     pending.phone,
           country:   pending.country,
-          city:      pending.city,
           role:      'user',
           verified:  false,
           pending:   true

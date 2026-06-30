@@ -80,9 +80,9 @@
     if (!d || d.firstName.length < 2)                       return 'Please enter a valid first name (min 2 characters).';
     if (d.lastName.length < 2)                              return 'Please enter a valid last name (min 2 characters).';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email))       return 'Please enter a valid email address.';
-    if (!d.phone || String(d.phone).replace(/\D/g, '').length < 8) return 'Please enter a valid mobile number.';
     if (!d.country)                                         return 'Please select your country.';
-    if (d.city.length < 2)                                  return 'Please enter your city.';
+    var isIndia = d.country === 'IN' || String(d.country).toUpperCase() === 'INDIA';
+    if (isIndia && (!d.phone || String(d.phone).replace(/\D/g, '').length < 8)) return 'Please enter a valid mobile number.';
     return '';
   }
 
@@ -142,39 +142,35 @@
 
   describe('validateSignup()', function () {
     it('rejects short first name', function () {
-      var r = validateSignup({ firstName: 'A', lastName: 'Smith', email: 'a@b.com', country: 'India', city: 'Mumbai' });
+      var r = validateSignup({ firstName: 'A', lastName: 'Smith', email: 'a@b.com', country: 'IN' });
       expect(r).toContain('first name');
     });
     it('rejects short last name', function () {
-      var r = validateSignup({ firstName: 'Alice', lastName: 'S', email: 'a@b.com', country: 'India', city: 'Mumbai' });
+      var r = validateSignup({ firstName: 'Alice', lastName: 'S', email: 'a@b.com', country: 'IN' });
       expect(r).toContain('last name');
     });
     it('rejects invalid email', function () {
-      var r = validateSignup({ firstName: 'Alice', lastName: 'Smith', email: 'notanemail', country: 'India', city: 'Mumbai' });
+      var r = validateSignup({ firstName: 'Alice', lastName: 'Smith', email: 'notanemail', country: 'IN' });
       expect(r).toContain('email');
     });
     it('rejects missing email @', function () {
-      var r = validateSignup({ firstName: 'Alice', lastName: 'Smith', email: 'a.b.com', country: 'India', city: 'Mumbai' });
+      var r = validateSignup({ firstName: 'Alice', lastName: 'Smith', email: 'a.b.com', country: 'IN' });
       expect(r).toContain('email');
     });
     it('rejects empty country', function () {
-      var r = validateSignup({ firstName: 'Alice', lastName: 'Smith', email: 'a@b.com', country: '', city: 'Mumbai' });
+      var r = validateSignup({ firstName: 'Alice', lastName: 'Smith', email: 'a@b.com', country: '' });
       expect(r).toContain('country');
     });
-    it('rejects short city', function () {
-      var r = validateSignup({ firstName: 'Alice', lastName: 'Smith', email: 'a@b.com', country: 'India', city: 'X' });
-      expect(r).toContain('city');
-    });
-    it('rejects short mobile number', function () {
-      var r = validateSignup({ firstName: 'Alice', lastName: 'Smith', email: 'a@b.com', phone: '123', country: 'India', city: 'Mumbai' });
+    it('rejects short mobile number for India', function () {
+      var r = validateSignup({ firstName: 'Alice', lastName: 'Smith', email: 'a@b.com', phone: '123', country: 'IN' });
       expect(r).toContain('mobile');
     });
-    it('passes valid data', function () {
-      var r = validateSignup({ firstName: 'Alice', lastName: 'Smith', email: 'alice@example.com', phone: '9876543210', country: 'India', city: 'Mumbai' });
+    it('passes valid India data', function () {
+      var r = validateSignup({ firstName: 'Alice', lastName: 'Smith', email: 'alice@example.com', phone: '9876543210', country: 'IN' });
       expect(r).toBe('');
     });
-    it('passes with hyphenated last name', function () {
-      var r = validateSignup({ firstName: 'Mary', lastName: 'Jane-Doe', email: 'm@d.io', phone: '9876543210', country: 'UK', city: 'London' });
+    it('passes non-India without phone', function () {
+      var r = validateSignup({ firstName: 'Mary', lastName: 'Jane-Doe', email: 'm@d.io', country: 'GB' });
       expect(r).toBe('');
     });
   });

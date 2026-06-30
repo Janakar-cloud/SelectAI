@@ -323,14 +323,24 @@ describe('lib/mail getFromAddress()', () => {
 
 /* ─── userHelpers ─────────────────────────────────────── */
 describe('userHelpers', () => {
-  const { normalizePhone, validatePhone, fullName } = require('../lib/userHelpers');
+  const { normalizePhone, validatePhone, fullName, isIndiaCountry } = require('../lib/userHelpers');
 
   test('normalizePhone strips non-digits', () => {
     expect(normalizePhone('+91 98765 43210')).toBe('919876543210');
   });
 
-  test('validatePhone rejects too short', () => {
-    expect(validatePhone('123')).toMatch(/mobile/i);
+  test('validatePhone rejects too short for India', () => {
+    expect(validatePhone('123', 'IN')).toMatch(/mobile/i);
+  });
+
+  test('validatePhone allows empty for non-India', () => {
+    expect(validatePhone('', 'GB')).toBe('');
+  });
+
+  test('isIndiaCountry accepts IN and India', () => {
+    expect(isIndiaCountry('IN')).toBe(true);
+    expect(isIndiaCountry('India')).toBe(true);
+    expect(isIndiaCountry('GB')).toBe(false);
   });
 
   test('fullName joins first and last', () => {

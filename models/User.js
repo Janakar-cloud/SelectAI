@@ -10,7 +10,6 @@ const userSchema = new mongoose.Schema(
     passwordHash: { type: String, default: '' },
     phone:        { type: String, default: '', trim: true },
     country:      { type: String, default: '',     trim: true },
-    city:         { type: String, default: '',     trim: true },
     role:         { type: String, enum: ['user', 'admin'], default: 'user' },
     provider:     { type: String, enum: ['google', 'apple', 'email'], default: 'email' },
     photoURL:     { type: String, default: '' },
@@ -24,7 +23,5 @@ const userSchema = new mongoose.Schema(
 
 /* Compound text index for admin search */
 userSchema.index({ firstName: 'text', lastName: 'text', email: 'text' });
-/* Unique mobile when provided */
-userSchema.index({ phone: 1 }, { unique: true, sparse: true });
 
 module.exports = mongoose.model('User', userSchema);
