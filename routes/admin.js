@@ -89,7 +89,7 @@ router.post('/users/:uid/reset-password', async (req, res, next) => {
       { expiresIn: '1h' }
     );
     const base      = (process.env.FRONTEND_URL || 'https://www.selectai.it.com').replace(/\/$/, '');
-    const resetLink = `${base}/login.html?reset=${encodeURIComponent(resetToken)}`;
+    const resetLink = `${base}/signin.html?reset=${encodeURIComponent(resetToken)}`;
 
     /* Send reset email via SMTP */
     if (mail.shouldSendViaSmtp()) {

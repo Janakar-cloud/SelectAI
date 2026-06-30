@@ -14,8 +14,13 @@
     'index.html': true,
     'tools.html': true,
     'quotation.html': true,
-    'login.html': true
+    'login.html': true,
+    'signin.html': true
   };
+
+  function _isAuthPage() {
+    return PAGE === 'login.html' || PAGE === 'signin.html';
+  }
 
   function _isPublicPage() {
     return !!PUBLIC_PAGES[PAGE];
@@ -48,7 +53,7 @@
     if (_isPublicPage()) {
       _runWhenDomReady(_hideUserNav);
       _revealPage();
-    } else if (PAGE !== 'login.html') {
+    } else if (!_isAuthPage()) {
       window.location.replace('login.html');
     } else {
       _revealPage();
@@ -72,7 +77,7 @@
       if (res.status === 401 || res.status === 403) {
         /* Token expired or invalid — clear and go to login */
         try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
-        window.location.replace('login.html');
+        window.location.replace('signin.html');
         return null;
       }
       return res.json();
@@ -102,7 +107,7 @@
 
       /* Unverified users may only use public pages until email OTP is complete */
       if (!profile.verified && !_isPublicPage()) {
-        window.location.replace('login.html?verify=pending');
+        window.location.replace('signin.html?verify=pending');
         return;
       }
 
@@ -128,8 +133,8 @@
         return;
       }
       try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
-      if (PAGE !== 'login.html') {
-        window.location.replace('login.html');
+      if (!_isAuthPage()) {
+        window.location.replace('signin.html');
       } else {
         _revealPage();
       }

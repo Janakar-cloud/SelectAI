@@ -284,7 +284,7 @@ router.post('/forgot-password', async (req, res, next) => {
         { expiresIn: '1h' }
       );
       const base      = (process.env.FRONTEND_URL || 'https://www.selectai.it.com').replace(/\/$/, '');
-      const resetLink = `${base}/login.html?reset=${encodeURIComponent(resetToken)}`;
+      const resetLink = `${base}/signin.html?reset=${encodeURIComponent(resetToken)}`;
 
       if (mail.shouldSendViaSmtp()) {
         try {
