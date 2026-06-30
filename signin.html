@@ -18,7 +18,14 @@
       --ease: all 0.3s ease;
     }
     body { font-family: var(--ff-body); background: var(--bg); color: var(--white); min-height: 100vh; overflow-x: hidden; }
-    .signin-layout { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1.5rem; overflow: hidden; }
+    .signin-layout {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: clamp(2rem, 6vh, 3.5rem) 1.5rem 3rem;
+    }
     .al-orb { position: fixed; border-radius: 50%; filter: blur(100px); opacity: 0.5; pointer-events: none; z-index: 0; }
     .al-orb-1 { width: 520px; height: 520px; background: radial-gradient(circle, #9b00ff 0%, transparent 70%); top: -220px; left: -200px; animation: orbDrift1 16s ease-in-out infinite; }
     .al-orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, #ff006e 0%, transparent 70%); bottom: -160px; right: -120px; animation: orbDrift2 20s ease-in-out infinite; }
@@ -30,7 +37,7 @@
     .signin-shell { position: relative; z-index: 2; width: 100%; max-width: 460px; animation: authFadeIn 0.45s ease; }
     .signin-logo { text-align: center; margin-bottom: 1.5rem; }
     .signin-logo img { height: 48px; width: auto; }
-    .auth-card { width: 100%; max-height: min(88vh, 720px); overflow-y: auto; padding-bottom: 0.5rem; }
+    .auth-card { width: 100%; padding-bottom: 0.5rem; }
     @keyframes authFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .auth-back-link {
       display: inline-flex;
@@ -346,7 +353,7 @@
   <div class="al-grid"></div>
   <div class="signin-shell">
     <div class="signin-logo"><img src="assets/images/logo-full.png" alt="SelectAI Innovations" /></div>
-<div class="auth-card is-hidden" id="authCard">
+<div class="auth-card" id="authCard">
 
       <a href="login.html" class="auth-back-link">← Back</a>
 
