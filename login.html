@@ -35,30 +35,21 @@
       overflow-x: hidden;
     }
 
-    /* ─── TWO-PANEL LAYOUT ───────────────────────────────── */
+    /* ─── SINGLE-PANEL LAYOUT ────────────────────────────── */
     .auth-layout {
-      display: flex;
+      position: relative;
       min-height: 100vh;
-    }
-
-    /* ─── LEFT PANEL ─────────────────────────────────────── */
-    .auth-left {
-      width: 42%;
-      background: var(--bg);
-      padding: 3rem 3rem 3rem 3.5rem;
       display: flex;
       flex-direction: column;
-      position: relative;
       overflow: hidden;
-      min-height: 100vh;
-      height: 100vh;
     }
     .al-orb {
-      position: absolute;
+      position: fixed;
       border-radius: 50%;
       filter: blur(100px);
       opacity: 0.5;
       pointer-events: none;
+      z-index: 0;
     }
     .al-orb-1 { width: 520px; height: 520px; background: radial-gradient(circle, #9b00ff 0%, transparent 70%); top: -220px; left: -200px; animation: orbDrift1 16s ease-in-out infinite; }
     .al-orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, #ff006e 0%, transparent 70%); bottom: -160px; right: -120px; animation: orbDrift2 20s ease-in-out infinite; }
@@ -68,24 +59,35 @@
     @keyframes orbDrift3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(40px,-50px)} }
 
     .al-grid {
-      position: absolute; inset: 0;
+      position: fixed; inset: 0;
       background-image: linear-gradient(rgba(0,229,255,.03) 1px, transparent 1px),
                         linear-gradient(90deg, rgba(0,229,255,.03) 1px, transparent 1px);
       background-size: 48px 48px;
       pointer-events: none;
+      z-index: 0;
+    }
+
+    .auth-shell {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      width: 100%;
+      max-width: 920px;
+      margin: 0 auto;
+      padding: clamp(2rem, 4vh, 3rem) clamp(1.5rem, 4vw, 3.5rem) 0;
     }
 
     .al-content {
       position: relative;
-      z-index: 2;
+      flex: 1 1 auto;
       display: flex;
       flex-direction: column;
-      flex: 0 0 90%;
-      height: 90%;
-      min-height: 90%;
-      max-height: 90%;
+      min-height: 0;
       overflow-y: auto;
-      padding-right: 0.25rem;
+      padding-bottom: 1rem;
     }
 
     .al-logo { margin-bottom: 2rem; }
@@ -190,36 +192,34 @@
       opacity: 0.82;
     }
 
-    /* ─── RIGHT PANEL ────────────────────────────────────── */
-    .auth-right {
-      width: 58%;
-      background: var(--bg-alt);
-      border-left: 1px solid rgba(0,229,255,0.08);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .auth-right-inner {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
+    /* ─── AUTH FOOTER (welcome + forms) ──────────────────── */
+    .auth-footer {
+      flex-shrink: 0;
       width: 100%;
-      max-width: 460px;
+      max-width: 420px;
       margin: 0 auto;
-      padding: 0 2.5rem;
-      min-height: 100%;
+      margin-top: auto;
+      padding: 1.25rem 0 clamp(1.5rem, 5vh, 2.5rem);
+      border-top: 1px solid rgba(0,229,255,0.1);
+    }
+    .auth-footer--forms {
+      max-width: 460px;
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      padding-top: 0.5rem;
+    }
+    .auth-footer--forms .auth-card {
+      flex: 1;
+      min-height: 0;
+      max-height: min(72vh, 640px);
     }
 
     .auth-welcome {
       text-align: center;
       animation: authFadeIn 0.45s ease;
-      margin-top: auto;
-      flex-shrink: 0;
       width: 100%;
-      padding: 1rem 0 clamp(1.5rem, 5vh, 3rem);
     }
     .auth-welcome.is-hidden { display: none; }
     .auth-welcome-kicker {
@@ -269,11 +269,8 @@
 
     .auth-card {
       width: 100%;
-      flex: 1;
-      min-height: 0;
       overflow-y: auto;
-      padding-top: clamp(2rem, 6vh, 3rem);
-      padding-bottom: 2rem;
+      padding-bottom: 0.5rem;
       animation: authFadeIn 0.35s ease;
     }
     .auth-card.is-hidden { display: none; }
@@ -581,36 +578,12 @@
 
     /* ─── RESPONSIVE ─────────────────────────────────────── */
     @media (max-width: 900px) {
-      .auth-layout   { flex-direction: column; min-height: 100vh; }
-      .auth-left     {
-        width: 100%;
-        padding: 2rem 1.5rem;
-        height: auto;
-        min-height: 90vh;
-      }
-      .al-content    {
-        flex: 0 0 auto;
-        height: auto;
-        min-height: 90vh;
-        max-height: none;
-        overflow-y: visible;
-      }
-      .al-stats      { display: none; }
-      .al-tagline    { font-size: 1.4rem; margin-bottom: 1.2rem; }
-      .vm-card       { padding: 1rem 1rem 1rem 1.3rem; }
+      .auth-shell     { padding: 2rem 1.5rem 0; }
+      .al-stats       { display: none; }
+      .al-tagline     { font-size: 1.4rem; margin-bottom: 1.2rem; }
+      .vm-card        { padding: 1rem 1rem 1rem 1.3rem; }
       .al-services-grid { grid-template-columns: 1fr; }
-      .auth-right    {
-        width: 100%;
-        height: auto;
-        min-height: 0;
-        flex: 1;
-        overflow: visible;
-      }
-      .auth-right-inner {
-        min-height: 28vh;
-        padding: 0 1.5rem;
-      }
-      .auth-welcome  { padding-bottom: 2rem; }
+      .auth-footer--forms .auth-card { max-height: none; }
     }
     @media (max-width: 500px) {
       .form-row      { grid-template-columns: 1fr; }
@@ -621,12 +594,12 @@
 
 <div class="auth-layout">
 
-  <!-- ─── LEFT PANEL ─────────────────────────────────────── -->
-  <aside class="auth-left">
-    <div class="al-orb al-orb-1"></div>
-    <div class="al-orb al-orb-2"></div>
-    <div class="al-orb al-orb-3"></div>
-    <div class="al-grid"></div>
+  <div class="al-orb al-orb-1"></div>
+  <div class="al-orb al-orb-2"></div>
+  <div class="al-orb al-orb-3"></div>
+  <div class="al-grid"></div>
+
+  <div class="auth-shell">
 
     <div class="al-content">
       <div class="al-logo">
@@ -692,11 +665,8 @@
         </div>
       </div>
     </div>
-  </aside>
 
-  <!-- ─── RIGHT PANEL ──────────────────────────────────────  -->
-  <main class="auth-right">
-    <div class="auth-right-inner">
+    <div class="auth-footer" id="authFooter">
 
     <div class="auth-card is-hidden" id="authCard">
 
@@ -947,19 +917,20 @@
 
     </div>
 
-      <div class="auth-welcome" id="authWelcome">
-        <p class="auth-welcome-kicker">SelectAI Innovations</p>
-        <h1 class="auth-welcome-title">Welcome</h1>
-        <p class="auth-welcome-sub">
-          Engineering the Future with AI, Cloud &amp; Innovation.
-        </p>
-        <div class="auth-welcome-btns">
-          <button type="button" class="auth-btn auth-btn--compact" onclick="openAuthForms('login')">Sign In</button>
-        </div>
+    <div class="auth-welcome" id="authWelcome">
+      <p class="auth-welcome-kicker">SelectAI Innovations</p>
+      <h1 class="auth-welcome-title">Welcome</h1>
+      <p class="auth-welcome-sub">
+        Engineering the Future with AI, Cloud &amp; Innovation.
+      </p>
+      <div class="auth-welcome-btns">
+        <button type="button" class="auth-btn auth-btn--compact" onclick="openAuthForms('login')">Sign In</button>
       </div>
+    </div>
 
     </div>
-  </main>
+
+  </div>
 </div>
 
 <!-- Scripts -->
@@ -980,17 +951,22 @@
 window.openAuthForms = function (tab) {
   var welcome = document.getElementById('authWelcome');
   var card    = document.getElementById('authCard');
+  var footer  = document.getElementById('authFooter');
   if (welcome) welcome.classList.add('is-hidden');
   if (card)    card.classList.remove('is-hidden');
+  if (footer)  footer.classList.add('auth-footer--forms');
   if (tab === 'signup') switchTab('signup');
   else if (tab === 'login') switchTab('login');
+  if (footer) footer.scrollIntoView({ behavior: 'smooth', block: 'end' });
 };
 
 window.showAuthWelcome = function () {
   var welcome = document.getElementById('authWelcome');
   var card    = document.getElementById('authCard');
+  var footer  = document.getElementById('authFooter');
   if (welcome) welcome.classList.remove('is-hidden');
   if (card)    card.classList.add('is-hidden');
+  if (footer)  footer.classList.remove('auth-footer--forms');
   switchTab('login');
   clearMessages();
 };
