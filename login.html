@@ -193,54 +193,62 @@
       background: var(--bg-alt);
       border-left: 1px solid rgba(0,229,255,0.08);
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
-      padding: 3rem 2.5rem;
+      padding: clamp(2rem, 8vh, 3.5rem) 2.5rem 2rem;
       overflow-y: auto;
     }
 
     .auth-right-inner {
       width: 100%;
-      max-width: 460px;
+      max-width: 360px;
     }
 
     .auth-welcome {
       text-align: center;
       animation: authFadeIn 0.45s ease;
+      padding: 0.5rem 0;
     }
     .auth-welcome.is-hidden { display: none; }
     .auth-welcome-kicker {
       font-family: var(--ff-display);
-      font-size: 0.6rem;
+      font-size: 0.55rem;
       letter-spacing: 0.28em;
       text-transform: uppercase;
       color: var(--cyan);
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.5rem;
     }
     .auth-welcome-title {
       font-family: var(--ff-display);
-      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-size: clamp(1.15rem, 2.2vw, 1.45rem);
       font-weight: 700;
-      margin-bottom: 0.6rem;
+      margin-bottom: 0.45rem;
       background: linear-gradient(135deg, #fff 0%, #d8daf8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
     .auth-welcome-sub {
-      font-size: 0.92rem;
+      font-size: 0.82rem;
       color: var(--g100);
-      opacity: 0.85;
-      line-height: 1.6;
-      margin-bottom: 2rem;
-      max-width: 340px;
+      opacity: 0.8;
+      line-height: 1.55;
+      margin-bottom: 1.1rem;
+      max-width: 280px;
       margin-left: auto;
       margin-right: auto;
     }
     .auth-welcome-btns {
       display: flex;
-      flex-direction: column;
-      gap: 0.85rem;
+      justify-content: center;
+    }
+    .auth-btn--compact {
+      width: auto;
+      min-width: 7.5rem;
+      padding: 0.5rem 1.25rem;
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      margin-top: 0;
     }
     @keyframes authFadeIn {
       from { opacity: 0; transform: translateY(8px); }
@@ -563,7 +571,7 @@
       .al-tagline    { font-size: 1.4rem; margin-bottom: 1.2rem; }
       .vm-card       { padding: 1rem 1rem 1rem 1.3rem; }
       .al-services-grid { grid-template-columns: 1fr; }
-      .auth-right    { width: 100%; padding: 2rem 1.5rem; }
+      .auth-right    { width: 100%; padding: 1.75rem 1.5rem 2rem; align-items: flex-start; }
     }
     @media (max-width: 500px) {
       .form-row      { grid-template-columns: 1fr; }
@@ -655,12 +663,10 @@
         <p class="auth-welcome-kicker">SelectAI Innovations</p>
         <h1 class="auth-welcome-title">Welcome</h1>
         <p class="auth-welcome-sub">
-          Engineering the Future with AI, Cloud &amp; Innovation.<br>
-          Sign in or create an account to access the platform.
+          Engineering the Future with AI, Cloud &amp; Innovation.
         </p>
         <div class="auth-welcome-btns">
-          <button type="button" class="auth-btn" onclick="openAuthForms('login')">Sign In</button>
-          <button type="button" class="auth-btn auth-btn--outline" onclick="openAuthForms('signup')">Create Account</button>
+          <button type="button" class="auth-btn auth-btn--compact" onclick="openAuthForms('login')">Sign In</button>
         </div>
       </div>
 
