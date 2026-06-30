@@ -103,10 +103,11 @@
 
     .al-tagline {
       font-family: var(--ff-display);
-      font-size: clamp(1.3rem, 2.4vw, 2rem);
+      font-size: clamp(1.45rem, 2.7vw, 2.25rem);
       font-weight: 700;
       line-height: 1.25;
       margin-bottom: 2.5rem;
+      white-space: nowrap;
       background: linear-gradient(135deg, #fff 0%, #d8daf8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -718,7 +719,7 @@
     @media (max-width: 900px) {
       .auth-shell     { padding: 2rem 1.5rem 0; }
       .al-stats       { display: none; }
-      .al-tagline     { font-size: 1.4rem; margin-bottom: 1.2rem; }
+      .al-tagline     { font-size: clamp(1.1rem, 3.8vw, 1.55rem); white-space: nowrap; margin-bottom: 1.2rem; }
       .al-logo img    { height: 72px; }
       .vm-card        { padding: 1rem 1rem 1rem 1.3rem; }
       .al-services-grid { grid-template-columns: 1fr; }
@@ -755,9 +756,7 @@
         <img src="assets/images/logo-full.png" alt="SelectAI Innovations" />
       </div>
 
-      <h2 class="al-tagline">
-        Transforming Ideas<br/>Into Intelligent AI
-      </h2>
+      <h2 class="al-tagline">Transforming Ideas Into Intelligent AI</h2>
 
       <div class="vm-card vision">
         <p class="vm-label">Our Vision</p>
