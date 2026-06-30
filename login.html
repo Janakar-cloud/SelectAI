@@ -85,17 +85,25 @@
       flex: 1 1 auto;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      text-align: center;
       min-height: 0;
       overflow-y: auto;
       padding-bottom: 1rem;
+      width: 100%;
     }
 
-    .al-logo { margin-bottom: 2rem; }
-    .al-logo img { height: 36px; width: auto; }
+    .al-logo {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+    .al-logo img { height: 72px; width: auto; }
 
     .al-tagline {
       font-family: var(--ff-display);
-      font-size: clamp(1.3rem, 2.4vw, 2rem);
+      font-size: clamp(2.6rem, 4.8vw, 4rem);
       font-weight: 700;
       line-height: 1.25;
       margin-bottom: 2.5rem;
@@ -113,6 +121,9 @@
       margin-bottom: 1.2rem;
       position: relative;
       overflow: hidden;
+      width: 100%;
+      max-width: 640px;
+      text-align: center;
     }
     .vm-card::before {
       content: '';
@@ -139,10 +150,13 @@
 
     .al-stats {
       display: flex;
+      justify-content: center;
       gap: 2.5rem;
       margin-top: auto;
       padding-top: 2rem;
       border-top: 1px solid rgba(0,229,255,0.1);
+      width: 100%;
+      max-width: 640px;
     }
     .al-stat-num {
       font-family: var(--ff-display);
@@ -157,6 +171,8 @@
 
     .al-services {
       margin-bottom: 1.2rem;
+      width: 100%;
+      max-width: 640px;
     }
     .al-services-label {
       font-family: var(--ff-display);
@@ -580,7 +596,8 @@
     @media (max-width: 900px) {
       .auth-shell     { padding: 2rem 1.5rem 0; }
       .al-stats       { display: none; }
-      .al-tagline     { font-size: 1.4rem; margin-bottom: 1.2rem; }
+      .al-tagline     { font-size: 2.8rem; margin-bottom: 1.2rem; }
+      .al-logo img    { height: 72px; }
       .vm-card        { padding: 1rem 1rem 1rem 1.3rem; }
       .al-services-grid { grid-template-columns: 1fr; }
       .auth-footer--forms .auth-card { max-height: none; }
