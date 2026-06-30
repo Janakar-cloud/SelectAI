@@ -50,6 +50,8 @@
       flex-direction: column;
       position: relative;
       overflow: hidden;
+      min-height: 100vh;
+      height: 100vh;
     }
     .al-orb {
       position: absolute;
@@ -78,9 +80,10 @@
       z-index: 2;
       display: flex;
       flex-direction: column;
-      flex: 1;
-      min-height: 0;
-      height: 100%;
+      flex: 0 0 90%;
+      height: 90%;
+      min-height: 90%;
+      max-height: 90%;
       overflow-y: auto;
       padding-right: 0.25rem;
     }
@@ -193,21 +196,30 @@
       background: var(--bg-alt);
       border-left: 1px solid rgba(0,229,255,0.08);
       display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: clamp(2rem, 8vh, 3.5rem) 2.5rem 2rem;
-      overflow-y: auto;
+      flex-direction: column;
+      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
     }
 
     .auth-right-inner {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
       width: 100%;
-      max-width: 360px;
+      max-width: 460px;
+      margin: 0 auto;
+      padding: 0 2.5rem;
+      min-height: 100%;
     }
 
     .auth-welcome {
       text-align: center;
       animation: authFadeIn 0.45s ease;
-      padding: 0.5rem 0;
+      margin-top: auto;
+      flex-shrink: 0;
+      width: 100%;
+      padding: 1rem 0 clamp(1.5rem, 5vh, 3rem);
     }
     .auth-welcome.is-hidden { display: none; }
     .auth-welcome-kicker {
@@ -257,6 +269,11 @@
 
     .auth-card {
       width: 100%;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding-top: clamp(2rem, 6vh, 3rem);
+      padding-bottom: 2rem;
       animation: authFadeIn 0.35s ease;
     }
     .auth-card.is-hidden { display: none; }
@@ -564,14 +581,36 @@
 
     /* ─── RESPONSIVE ─────────────────────────────────────── */
     @media (max-width: 900px) {
-      .auth-layout   { flex-direction: column; }
-      .auth-left     { width: 100%; padding: 2rem 1.5rem; max-height: none; }
-      .al-content    { overflow-y: visible; }
+      .auth-layout   { flex-direction: column; min-height: 100vh; }
+      .auth-left     {
+        width: 100%;
+        padding: 2rem 1.5rem;
+        height: auto;
+        min-height: 90vh;
+      }
+      .al-content    {
+        flex: 0 0 auto;
+        height: auto;
+        min-height: 90vh;
+        max-height: none;
+        overflow-y: visible;
+      }
       .al-stats      { display: none; }
       .al-tagline    { font-size: 1.4rem; margin-bottom: 1.2rem; }
       .vm-card       { padding: 1rem 1rem 1rem 1.3rem; }
       .al-services-grid { grid-template-columns: 1fr; }
-      .auth-right    { width: 100%; padding: 1.75rem 1.5rem 2rem; align-items: flex-start; }
+      .auth-right    {
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        flex: 1;
+        overflow: visible;
+      }
+      .auth-right-inner {
+        min-height: 28vh;
+        padding: 0 1.5rem;
+      }
+      .auth-welcome  { padding-bottom: 2rem; }
     }
     @media (max-width: 500px) {
       .form-row      { grid-template-columns: 1fr; }
@@ -658,17 +697,6 @@
   <!-- ─── RIGHT PANEL ──────────────────────────────────────  -->
   <main class="auth-right">
     <div class="auth-right-inner">
-
-      <div class="auth-welcome" id="authWelcome">
-        <p class="auth-welcome-kicker">SelectAI Innovations</p>
-        <h1 class="auth-welcome-title">Welcome</h1>
-        <p class="auth-welcome-sub">
-          Engineering the Future with AI, Cloud &amp; Innovation.
-        </p>
-        <div class="auth-welcome-btns">
-          <button type="button" class="auth-btn auth-btn--compact" onclick="openAuthForms('login')">Sign In</button>
-        </div>
-      </div>
 
     <div class="auth-card is-hidden" id="authCard">
 
@@ -918,6 +946,18 @@
       </div>
 
     </div>
+
+      <div class="auth-welcome" id="authWelcome">
+        <p class="auth-welcome-kicker">SelectAI Innovations</p>
+        <h1 class="auth-welcome-title">Welcome</h1>
+        <p class="auth-welcome-sub">
+          Engineering the Future with AI, Cloud &amp; Innovation.
+        </p>
+        <div class="auth-welcome-btns">
+          <button type="button" class="auth-btn auth-btn--compact" onclick="openAuthForms('login')">Sign In</button>
+        </div>
+      </div>
+
     </div>
   </main>
 </div>
