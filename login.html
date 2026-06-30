@@ -103,7 +103,7 @@
 
     .al-tagline {
       font-family: var(--ff-display);
-      font-size: clamp(2.6rem, 4.8vw, 4rem);
+      font-size: clamp(1.3rem, 2.4vw, 2rem);
       font-weight: 700;
       line-height: 1.25;
       margin-bottom: 2.5rem;
@@ -135,14 +135,14 @@
     .vm-card.mission::before { background: linear-gradient(180deg, #ff006e, #9b00ff); }
     .vm-label {
       font-family: var(--ff-display);
-      font-size: 0.57rem;
+      font-size: 0.75rem;
       letter-spacing: 0.28em;
       text-transform: uppercase;
       color: var(--cyan);
-      margin-bottom: 0.55rem;
+      margin-bottom: 0.65rem;
     }
     .vm-text {
-      font-size: 0.87rem;
+      font-size: 1.1rem;
       color: var(--g100);
       line-height: 1.72;
       opacity: 0.84;
@@ -158,16 +158,38 @@
       width: 100%;
       max-width: 640px;
     }
+    .al-stat-item {
+      text-align: center;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .al-stats.is-visible .al-stat-item {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .al-stats.is-visible .al-stat-item:nth-child(1) { transition-delay: 0s; }
+    .al-stats.is-visible .al-stat-item:nth-child(2) { transition-delay: 0.15s; }
+    .al-stats.is-visible .al-stat-item:nth-child(3) { transition-delay: 0.3s; }
     .al-stat-num {
       font-family: var(--ff-display);
-      font-size: 1.3rem;
+      font-size: 1.7rem;
       font-weight: 700;
       background: linear-gradient(135deg, #00e5ff, #9b00ff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      display: inline-block;
+      min-width: 3ch;
     }
-    .al-stat-lbl { font-size: 0.68rem; color: var(--g400); margin-top: 0.2rem; letter-spacing: 0.05em; }
+    .al-stat-num.is-done {
+      animation: alStatPop 0.55s ease;
+    }
+    @keyframes alStatPop {
+      0%, 100% { transform: scale(1); }
+      45%      { transform: scale(1.08); }
+    }
+    .al-stat-lbl { font-size: 0.88rem; color: var(--g400); margin-top: 0.25rem; letter-spacing: 0.05em; }
 
     .al-services {
       margin-bottom: 1.2rem;
@@ -176,11 +198,11 @@
     }
     .al-services-label {
       font-family: var(--ff-display);
-      font-size: 0.57rem;
+      font-size: 0.75rem;
       letter-spacing: 0.28em;
       text-transform: uppercase;
       color: var(--cyan);
-      margin-bottom: 0.85rem;
+      margin-bottom: 0.95rem;
     }
     .al-services-grid {
       display: grid;
@@ -195,17 +217,117 @@
     }
     .al-service-item h3 {
       font-family: var(--ff-display);
-      font-size: 0.68rem;
+      font-size: 0.88rem;
       letter-spacing: 0.06em;
       text-transform: uppercase;
       color: var(--white);
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.4rem;
     }
     .al-service-item p {
-      font-size: 0.72rem;
+      font-size: 0.94rem;
       color: var(--g100);
       line-height: 1.5;
       opacity: 0.82;
+    }
+
+    /* ─── SCROLLING MARQUEES (partners + tech) ───────────── */
+    .al-marquee-section {
+      width: 100%;
+      max-width: 720px;
+      margin: 0.5rem 0 1.5rem;
+      overflow: hidden;
+    }
+    .al-marquee-label {
+      font-family: var(--ff-display);
+      font-size: 0.57rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.75rem;
+    }
+    .al-marquee {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    }
+    .al-marquee-track {
+      display: flex;
+      width: max-content;
+      animation: alMarqueeScroll 38s linear infinite;
+    }
+    .al-marquee--reverse .al-marquee-track {
+      animation-duration: 44s;
+      animation-direction: reverse;
+    }
+    .al-marquee:hover .al-marquee-track {
+      animation-play-state: paused;
+    }
+    .al-marquee-group {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 0 0.65rem;
+    }
+    .al-marquee-partner {
+      flex-shrink: 0;
+      width: 58px;
+      height: 58px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(0,229,255,0.14);
+      padding: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--ease);
+    }
+    .al-marquee-partner:hover {
+      border-color: rgba(0,229,255,0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,229,255,0.12);
+    }
+    .al-marquee-partner img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .al-marquee-partner--dark {
+      background: rgba(255,255,255,0.94);
+    }
+    .al-marquee-tech {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(0,229,255,0.12);
+      transition: var(--ease);
+    }
+    .al-marquee-tech:hover {
+      border-color: rgba(0,229,255,0.3);
+      background: rgba(0,229,255,0.06);
+    }
+    .al-marquee-tech img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .al-marquee-tech span {
+      font-family: var(--ff-display);
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--g100);
+      white-space: nowrap;
+    }
+    @keyframes alMarqueeScroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
     }
 
     /* ─── AUTH FOOTER (welcome + forms) ──────────────────── */
@@ -596,11 +718,21 @@
     @media (max-width: 900px) {
       .auth-shell     { padding: 2rem 1.5rem 0; }
       .al-stats       { display: none; }
-      .al-tagline     { font-size: 2.8rem; margin-bottom: 1.2rem; }
+      .al-tagline     { font-size: 1.4rem; margin-bottom: 1.2rem; }
       .al-logo img    { height: 72px; }
       .vm-card        { padding: 1rem 1rem 1rem 1.3rem; }
       .al-services-grid { grid-template-columns: 1fr; }
       .auth-footer--forms .auth-card { max-height: none; }
+      .al-marquee-partner { width: 50px; height: 50px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .al-marquee-track { animation: none; }
+      .al-stat-item {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+      .al-stat-num.is-done { animation: none; }
     }
     @media (max-width: 500px) {
       .form-row      { grid-template-columns: 1fr; }
@@ -667,17 +799,79 @@
         </div>
       </div>
 
-      <div class="al-stats">
-        <div>
-          <div class="al-stat-num">47+</div>
+      <div class="al-marquee-section">
+        <p class="al-marquee-label">Trusted Partners</p>
+        <div class="al-marquee" aria-label="Partner logos">
+          <div class="al-marquee-track">
+            <div class="al-marquee-group">
+              <div class="al-marquee-partner"><img src="assets/images/partners/darwinx.png" alt="DarwinX" width="40" height="40" loading="lazy" /></div>
+              <div class="al-marquee-partner"><img src="assets/images/partners/srm-exim.png" alt="SRM EXIM" width="40" height="40" loading="lazy" /></div>
+              <div class="al-marquee-partner"><img src="assets/images/partners/tc-consulting.png" alt="TC Consulting" width="40" height="40" loading="lazy" /></div>
+              <div class="al-marquee-partner"><img src="assets/images/partners/learnify.png" alt="Learnify" width="40" height="40" loading="lazy" /></div>
+              <div class="al-marquee-partner al-marquee-partner--dark"><img src="assets/images/partners/thinkmoveit.png" alt="ThinkMoveIT" width="40" height="40" loading="lazy" /></div>
+              <div class="al-marquee-partner"><img src="assets/images/partners/annexit.png" alt="Annexit" width="40" height="40" loading="lazy" /></div>
+              <div class="al-marquee-partner al-marquee-partner--dark"><img src="assets/images/partners/itechpanda.webp" alt="iTechPanda" width="40" height="40" loading="lazy" /></div>
+            </div>
+            <div class="al-marquee-group" aria-hidden="true">
+              <div class="al-marquee-partner"><img src="assets/images/partners/darwinx.png" alt="" width="40" height="40" loading="lazy" /></div>
+              <div class="al-marquee-partner"><img src="assets/images/partners/srm-exim.png" alt="" width="40" height="40" loading="lazy" /></div>
+              <div class="al-marquee-partner"><img src="assets/images/partners/tc-consulting.png" alt="" width="40" height="40" loading="lazy" /></div>
+              <div class="al-marquee-partner"><img src="assets/images/partners/learnify.png" alt="" width="40" height="40" loading="lazy" /></div>
+              <div class="al-marquee-partner al-marquee-partner--dark"><img src="assets/images/partners/thinkmoveit.png" alt="" width="40" height="40" loading="lazy" /></div>
+              <div class="al-marquee-partner"><img src="assets/images/partners/annexit.png" alt="" width="40" height="40" loading="lazy" /></div>
+              <div class="al-marquee-partner al-marquee-partner--dark"><img src="assets/images/partners/itechpanda.webp" alt="" width="40" height="40" loading="lazy" /></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="al-marquee-section">
+        <p class="al-marquee-label">Tech Stack &amp; Tools</p>
+        <div class="al-marquee al-marquee--reverse" aria-label="Technology stack">
+          <div class="al-marquee-track">
+            <div class="al-marquee-group">
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/amazonaws/FF9900" alt="" width="22" height="22" loading="lazy" /><span>AWS</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/microsoftazure/0078D4" alt="" width="22" height="22" loading="lazy" /><span>Azure</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/googlecloud/4285F4" alt="" width="22" height="22" loading="lazy" /><span>GCP</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/docker/2496ED" alt="" width="22" height="22" loading="lazy" /><span>Docker</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/kubernetes/326CE5" alt="" width="22" height="22" loading="lazy" /><span>Kubernetes</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/terraform/844FBA" alt="" width="22" height="22" loading="lazy" /><span>Terraform</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/python/3776AB" alt="" width="22" height="22" loading="lazy" /><span>Python</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/nodedotjs/339933" alt="" width="22" height="22" loading="lazy" /><span>Node.js</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/react/61DAFB" alt="" width="22" height="22" loading="lazy" /><span>React</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/mongodb/47A248" alt="" width="22" height="22" loading="lazy" /><span>MongoDB</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/openai/412991" alt="" width="22" height="22" loading="lazy" /><span>OpenAI</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/github/ffffff" alt="" width="22" height="22" loading="lazy" /><span>GitHub</span></div>
+            </div>
+            <div class="al-marquee-group" aria-hidden="true">
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/amazonaws/FF9900" alt="" width="22" height="22" loading="lazy" /><span>AWS</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/microsoftazure/0078D4" alt="" width="22" height="22" loading="lazy" /><span>Azure</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/googlecloud/4285F4" alt="" width="22" height="22" loading="lazy" /><span>GCP</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/docker/2496ED" alt="" width="22" height="22" loading="lazy" /><span>Docker</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/kubernetes/326CE5" alt="" width="22" height="22" loading="lazy" /><span>Kubernetes</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/terraform/844FBA" alt="" width="22" height="22" loading="lazy" /><span>Terraform</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/python/3776AB" alt="" width="22" height="22" loading="lazy" /><span>Python</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/nodedotjs/339933" alt="" width="22" height="22" loading="lazy" /><span>Node.js</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/react/61DAFB" alt="" width="22" height="22" loading="lazy" /><span>React</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/mongodb/47A248" alt="" width="22" height="22" loading="lazy" /><span>MongoDB</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/openai/412991" alt="" width="22" height="22" loading="lazy" /><span>OpenAI</span></div>
+              <div class="al-marquee-tech"><img src="https://cdn.simpleicons.org/github/ffffff" alt="" width="22" height="22" loading="lazy" /><span>GitHub</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="al-stats" id="alStats">
+        <div class="al-stat-item" data-stat-value="47" data-stat-suffix="+">
+          <div class="al-stat-num">0</div>
           <div class="al-stat-lbl">Projects Delivered</div>
         </div>
-        <div>
-          <div class="al-stat-num">286</div>
+        <div class="al-stat-item" data-stat-value="286">
+          <div class="al-stat-num">0</div>
           <div class="al-stat-lbl">Professionals Trained</div>
         </div>
-        <div>
-          <div class="al-stat-num">99.9%</div>
+        <div class="al-stat-item" data-stat-value="99.9" data-stat-suffix="%" data-stat-decimals="1">
+          <div class="al-stat-num">0</div>
           <div class="al-stat-lbl">API Uptime</div>
         </div>
       </div>
@@ -1443,6 +1637,78 @@ window.togglePw = function (id, btn) {
   inp.type = inp.type === 'password' ? 'text' : 'password';
   btn.setAttribute('aria-pressed', inp.type === 'text');
 };
+
+/* ── Stats count-up + entrance animation ────────────────── */
+(function initAlStats() {
+  var stats = document.getElementById('alStats');
+  if (!stats) return;
+
+  var items   = stats.querySelectorAll('.al-stat-item');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var started = false;
+
+  function formatStat(val, decimals, suffix) {
+    var text = decimals > 0 ? val.toFixed(decimals) : String(Math.round(val));
+    return text + (suffix || '');
+  }
+
+  function animateItem(item) {
+    var numEl    = item.querySelector('.al-stat-num');
+    var target   = parseFloat(item.dataset.statValue) || 0;
+    var suffix   = item.dataset.statSuffix || '';
+    var decimals = parseInt(item.dataset.statDecimals, 10);
+    if (isNaN(decimals)) {
+      decimals = target !== Math.floor(target) ? 1 : 0;
+    }
+
+    if (reduced) {
+      numEl.textContent = formatStat(target, decimals, suffix);
+      return;
+    }
+
+    var duration = 1600;
+    var startTs  = null;
+    requestAnimationFrame(function step(ts) {
+      if (!startTs) startTs = ts;
+      var progress = Math.min((ts - startTs) / duration, 1);
+      var eased    = 1 - Math.pow(1 - progress, 3);
+      numEl.textContent = formatStat(eased * target, decimals, suffix);
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        numEl.textContent = formatStat(target, decimals, suffix);
+        numEl.classList.add('is-done');
+      }
+    });
+  }
+
+  function runAnimation() {
+    if (started) return;
+    started = true;
+    stats.classList.add('is-visible');
+    items.forEach(function (item, i) {
+      setTimeout(function () { animateItem(item); }, reduced ? 0 : i * 180);
+    });
+  }
+
+  if (reduced) {
+    runAnimation();
+    return;
+  }
+
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        runAnimation();
+        obs.unobserve(stats);
+      });
+    }, { threshold: 0.35 });
+    obs.observe(stats);
+  } else {
+    runAnimation();
+  }
+})();
 </script>
 </body>
 </html>
