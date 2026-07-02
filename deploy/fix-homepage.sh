@@ -95,8 +95,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
+    listen 443 ssl;
+    listen [::]:443 ssl;
     server_name selectai.com www.selectai.com selectai.it.com www.selectai.it.com;
 
     root ${APP_ROOT};
@@ -107,8 +107,14 @@ server {
 
     ssl_certificate     ${SSL_CERT};
     ssl_certificate_key ${SSL_KEY};
-    include /etc/letsencrypt/options-ssl-nginx.conf;
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+NGINX_SSL
+  if [[ -f /etc/letsencrypt/options-ssl-nginx.conf ]]; then
+    echo "    include /etc/letsencrypt/options-ssl-nginx.conf;" >> "${NGINX_AVAILABLE}"
+  fi
+  if [[ -f /etc/letsencrypt/ssl-dhparams.pem ]]; then
+    echo "    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;" >> "${NGINX_AVAILABLE}"
+  fi
+  cat >> "${NGINX_AVAILABLE}" <<NGINX_SSL
 
     location = / {
         try_files /index.html =404;
