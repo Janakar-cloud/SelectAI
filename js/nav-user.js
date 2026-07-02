@@ -14,7 +14,7 @@ function toggleUserMenu() {
 
 function signOutUser() {
   if (window.SelectAI_API) SelectAI_API.signOut();
-  window.location.replace('index.html');
+  window.location.replace((window.SelectAI_ROUTES && window.SelectAI_ROUTES.home) || '/');
 }
 
 document.addEventListener('click', function (e) {

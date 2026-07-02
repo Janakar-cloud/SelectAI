@@ -358,7 +358,7 @@ describe('POST /api/auth/forgot-password', () => {
       .send({ email: 'alice@example.com' });
     expect(res.status).toBe(200);
     if (res.body.devResetLink) {
-      expect(res.body.devResetLink).toMatch(/signin\.html\?reset=/);
+      expect(res.body.devResetLink).toMatch(/\/sign-in\?reset=/);
     }
   });
 });

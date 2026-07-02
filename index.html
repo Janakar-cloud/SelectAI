@@ -3,7 +3,8 @@
 <head>
   <style>html { visibility: hidden; }</style>
   <script src="js/app-config.js?v=20260609e"></script>
-  <script src="js/auth-guard.js?v=20260702a"></script>
+  <script src="js/routes.js?v=20260702c"></script>
+  <script src="js/auth-guard.js?v=20260702b"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SelectAI Innovations - AI Solutions and SaaS</title>
@@ -57,8 +58,8 @@
         <li><a href="#capabilities">Why Us</a></li>
         <li><a href="#live-metrics">Live KPI</a></li>
         <li><a href="#feedback">Stories</a></li>
-        <li><a href="tools.html">AI Tools</a></li>
-        <li id="adminNavItem" style="display:none;"><a href="admin.html">Admin</a></li>
+        <li><a href="/tools">AI Tools</a></li>
+        <li id="adminNavItem" style="display:none;"><a href="/admin">Admin</a></li>
         <li><a href="#connect" class="nav-cta">Connect</a></li>
         <li class="nav-user-item" style="display:list-item">
           <button class="nav-user-btn" id="navUserBtn" onclick="toggleUserMenu()" aria-label="User menu" aria-haspopup="true" aria-expanded="false" aria-controls="navUserDropdown">
@@ -74,11 +75,11 @@
           <div class="nav-user-dropdown" id="navUserDropdown">
             <p class="nav-user-dropdown-hd" id="navUserDropdownName">Account</p>
             <div id="navUserGuest">
-              <a href="signin.html">Sign In</a>
+              <a href="/sign-in">Sign In</a>
             </div>
             <div id="navUserAuthed" hidden>
-              <a href="profile.html">Profile</a>
-              <a href="signin.html?forgot=1">Password Reset</a>
+              <a href="/profile">Profile</a>
+              <a href="/sign-in?forgot=1">Password Reset</a>
               <hr class="nav-user-dropdown-divider" />
               <a href="#" onclick="signOutUser(); return false;">Sign Out</a>
             </div>
@@ -176,7 +177,7 @@
             <li>Completion-led outcomes</li>
           </ul>
           <div class="service-card-actions">
-            <a href="practical-ai-ml-engineering.html" class="btn btn-outline">Practical AI/ML Engineering</a>
+            <a href="/practical-ai-ml-engineering" class="btn btn-outline">Practical AI/ML Engineering</a>
           </div>
         </article>
         <article class="service-card animate-on-scroll animate-delay-4">

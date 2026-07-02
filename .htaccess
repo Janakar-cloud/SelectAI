@@ -1,9 +1,21 @@
-# Serve the marketing homepage at the site root (not login.html or signin.html).
+# SelectAI — Apache clean URLs (if using Apache instead of nginx)
 DirectoryIndex index.html
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
-  # Force / to index.html when Apache would otherwise pick another default file
-  RewriteRule ^$ index.html [L]
+
+  # Legacy .html → clean URLs
+  RewriteRule ^index\.html$ / [R=301,L]
+  RewriteRule ^login\.html$ /welcome [R=301,L,QSA]
+  RewriteRule ^signin\.html$ /sign-in [R=301,L,QSA]
+  RewriteRule ^(.+)\.html$ /$1 [R=301,L,QSA]
+
+  # Serve pages without .html extension
+  RewriteRule ^sign-in/?$ signin.html [L]
+  RewriteRule ^welcome/?$ login.html [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME}.html -f
+  RewriteRule ^(.+)$ $1.html [L]
 </IfModule>

@@ -1,33 +1,45 @@
 /* =========================================================
-   SelectAI — auth-guard.js  v20260702a
+   SelectAI — auth-guard.js  v20260702b
    Public marketing pages are open to guests; protected pages
-   require sign-in. Load AFTER app-config.js (in <head>).
-   Uses JWT stored in localStorage — no Firebase dependency.
+   require sign-in. Load AFTER app-config.js and routes.js.
    ========================================================= */
 
 (function () {
   'use strict';
 
   var TOKEN_KEY = 'selectai_token';
+  var R = window.SelectAI_ROUTES || {
+    home: '/',
+    signIn: '/sign-in',
+    admin: '/admin'
+  };
 
   function _currentPage() {
+    if (window.SelectAI_resolvePage) {
+      return window.SelectAI_resolvePage(window.location.pathname);
+    }
     var path = (window.location.pathname || '').replace(/\/+$/, '');
     var page = path.split('/').pop();
-    if (!page || page === '') return 'index.html';
-    return page.toLowerCase();
+    if (!page || page === '') return 'index';
+    page = page.toLowerCase();
+    if (page.endsWith('.html')) page = page.slice(0, -5);
+    return page;
   }
 
-  var PAGE      = _currentPage();
+  var PAGE = _currentPage();
+
   var PUBLIC_PAGES = {
-    'index.html': true,
-    'tools.html': true,
-    'quotation.html': true,
-    'login.html': true,
-    'signin.html': true
+    index: true,
+    tools: true,
+    quotation: true,
+    login: true,
+    signin: true,
+    practicalaiml: true,
+    practicalAiMl: true
   };
 
   function _isAuthPage() {
-    return PAGE === 'login.html' || PAGE === 'signin.html';
+    return PAGE === 'login' || PAGE === 'signin';
   }
 
   function _isPublicPage() {
@@ -63,7 +75,6 @@
     }
   }
 
-  /* ── No token → allow public pages, else send home ───── */
   var token = _getToken();
   if (!token) {
     if (_isPublicPage()) {
@@ -71,7 +82,7 @@
       _runWhenDomReady(_applyGuestNav);
       _revealPage();
     } else if (!_isAuthPage()) {
-      window.location.replace('index.html');
+      window.location.replace(R.home);
     } else {
       _revealPage();
     }
@@ -83,7 +94,6 @@
     return name || u.displayName || u.email || '';
   }
 
-  /* ── Fetch user profile from API ─────────────────────── */
   fetch('/api/auth/me', {
     headers: {
       'Authorization': 'Bearer ' + token,
@@ -98,7 +108,7 @@
           _revealPage();
           return null;
         }
-        window.location.replace('signin.html');
+        window.location.replace(R.signIn);
         return null;
       }
       return res.json();
@@ -120,28 +130,23 @@
         verified:    profile.verified    || false
       };
 
-      /* Redirect non-admin away from admin.html */
-      if (PAGE === 'admin.html' && role !== 'admin') {
-        window.location.replace('index.html');
+      if (PAGE === 'admin' && role !== 'admin') {
+        window.location.replace(R.home);
         return;
       }
 
-      /* Unverified users may only use public pages until email OTP is complete */
       if (!profile.verified && !_isPublicPage()) {
-        window.location.replace('signin.html?verify=pending');
+        window.location.replace(R.signIn + '?verify=pending');
         return;
       }
 
-      /* Ping active session (fire-and-forget) */
       _ping();
       setInterval(_ping, 2 * 60 * 1000);
 
-      /* Reveal page and populate nav UI */
       _revealPage();
       document.addEventListener('DOMContentLoaded', function () {
         _applyUserToUI(window.SELECTAI_USER);
       });
-      /* Also apply immediately if DOM is already ready */
       if (document.readyState !== 'loading') {
         _applyUserToUI(window.SELECTAI_USER);
       }
@@ -155,7 +160,7 @@
       }
       try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
       if (!_isAuthPage()) {
-        window.location.replace('signin.html');
+        window.location.replace(R.signIn);
       } else {
         _revealPage();
       }
@@ -171,7 +176,6 @@
     }).catch(function () {});
   }
 
-  /* ── Apply user info to nav elements ─────────────────── */
   function _applyUserToUI(u) {
     var item = document.querySelector('.nav-user-item');
     if (item) item.style.display = 'list-item';
@@ -201,5 +205,3 @@
   }
 
 }());
-
-

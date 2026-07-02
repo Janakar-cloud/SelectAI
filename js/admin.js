@@ -118,7 +118,7 @@
   window.signOutAdmin = function () {
     clearInterval(_pollTimer);
     if (window.SelectAI_API) SelectAI_API.signOut();
-    window.location.replace('login.html');
+    window.location.replace((window.SelectAI_ROUTES && window.SelectAI_ROUTES.home) || '/');
   };
 
   /* ── Toast notification ──────────────────────────────── */

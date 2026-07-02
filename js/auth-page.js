@@ -78,7 +78,7 @@ window.handleSignIn = function () {
   SelectAI_API.login(email, password)
     .then(function () {
       setLoading(false);
-      window.location.replace('index.html');
+      window.location.replace((window.SelectAI_ROUTES && window.SelectAI_ROUTES.home) || '/');
     })
     .catch(function (err) {
       setLoading(false);
@@ -211,7 +211,9 @@ window.verifyOtp = function () {
       clearInterval(_otpTimer);
       setLoading(false);
       showSuccess('Email verified! Redirecting…');
-      setTimeout(function () { window.location.replace('index.html'); }, 1200);
+      setTimeout(function () {
+        window.location.replace((window.SelectAI_ROUTES && window.SelectAI_ROUTES.home) || '/');
+      }, 1200);
     })
     .catch(function (err) {
       setLoading(false);
@@ -327,7 +329,7 @@ window.handleSetNewPassword = function () {
     .then(function (res) {
       showSuccess(res.message || 'Password updated! Redirecting to sign in…');
       setTimeout(function () {
-        window.history.replaceState({}, '', 'signin.html');
+        window.history.replaceState({}, '', (window.SelectAI_ROUTES && window.SelectAI_ROUTES.signIn) || '/sign-in');
         showPanel('panelLogin');
         var tabs = document.querySelector('.auth-tabs');
         if (tabs) tabs.style.display = '';
@@ -394,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(function (res) {
         var user = (res && res.user) || {};
         if (user.verified) {
-          window.location.replace('index.html');
+          window.location.replace((window.SelectAI_ROUTES && window.SelectAI_ROUTES.home) || '/');
           return;
         }
         if (user.uid && user.email) {

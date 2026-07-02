@@ -114,8 +114,17 @@ server {
         try_files /index.html =404;
     }
 
+    # Clean URLs (no .html in address bar)
+    location = /index.html  { return 301 /$is_args$args; }
+    location = /login.html  { return 301 /welcome$is_args$args; }
+    location = /signin.html { return 301 /sign-in$is_args$args; }
+    location ~ ^/(.+)\.html$ { return 301 /$1$is_args$args; }
+
+    location = /sign-in { try_files /signin.html =404; }
+    location = /welcome { try_files /login.html =404; }
+
     location / {
-        try_files \$uri \$uri/ =404;
+        try_files \$uri \$uri.html \$uri/ =404;
     }
 
     location /api/ {
@@ -141,7 +150,13 @@ server {
     access_log /var/log/nginx/selectai-access.log;
     error_log  /var/log/nginx/selectai-error.log;
     location = / { try_files /index.html =404; }
-    location / { try_files \$uri \$uri/ =404; }
+    location = /index.html  { return 301 /$is_args$args; }
+    location = /login.html  { return 301 /welcome$is_args$args; }
+    location = /signin.html { return 301 /sign-in$is_args$args; }
+    location ~ ^/(.+)\.html$ { return 301 /$1$is_args$args; }
+    location = /sign-in { try_files /signin.html =404; }
+    location = /welcome { try_files /login.html =404; }
+    location / { try_files \$uri \$uri.html \$uri/ =404; }
     location /api/ {
         proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
@@ -157,17 +172,36 @@ fi
 ln -sf "${NGINX_AVAILABLE}" "${NGINX_ENABLED}"
 rm -f /etc/nginx/sites-enabled/default
 
+# Neuter sites-available/default so re-enabling it cannot restore login redirect
+if [[ -f /etc/nginx/sites-available/default ]]; then
+  cp -a /etc/nginx/sites-available/default "${BACKUP_DIR}/default.sites-available" 2>/dev/null || true
+  sed -i 's/index login\.html/index index.html/g' /etc/nginx/sites-available/default
+  sed -i '/return 302 \/login\.html/d' /etc/nginx/sites-available/default
+  sed -i 's/return 302 \/login\.html;//g' /etc/nginx/sites-available/default
+fi
+
 echo "  Config written: ${NGINX_AVAILABLE}"
+echo "  Enabled: ${NGINX_ENABLED}"
+ls -la /etc/nginx/sites-enabled/ | sed 's/^/    /'
 echo ""
 
 echo "── 7. Test & reload nginx ──"
 nginx -t
+systemctl daemon-reload 2>/dev/null || true
 systemctl reload nginx
+sleep 1
 echo "  nginx reloaded OK"
 echo ""
 
 echo "── 8. After fix: what HTTPS / returns (expect 200, NOT 302 to login) ──"
-HEADERS=$(curl -skI -H "Host: www.selectai.it.com" https://127.0.0.1/ 2>/dev/null || true)
+HEADERS=""
+for i in 1 2 3; do
+  HEADERS=$(curl -skI -H "Host: www.selectai.it.com" https://127.0.0.1/ 2>/dev/null || true)
+  if echo "$HEADERS" | grep -q "HTTP/.* 200"; then
+    break
+  fi
+  sleep 1
+done
 echo "$HEADERS" | head -10 | sed 's/^/  /'
 
 if echo "$HEADERS" | grep -qi "location:.*login\.html"; then

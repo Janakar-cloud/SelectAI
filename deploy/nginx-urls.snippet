@@ -1,0 +1,13 @@
+    # ── Clean URLs (no .html in the address bar) ─────────────────
+    location = /index.html  { return 301 /$is_args$args; }
+    location = /login.html  { return 301 /welcome$is_args$args; }
+    location = /signin.html { return 301 /sign-in$is_args$args; }
+    location ~ ^/(.+)\.html$ { return 301 /$1$is_args$args; }
+
+    location = / { try_files /index.html =404; }
+    location = /sign-in { try_files /signin.html =404; }
+    location = /welcome { try_files /login.html =404; }
+
+    location / {
+        try_files $uri $uri.html $uri/ =404;
+    }
