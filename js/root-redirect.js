@@ -3,6 +3,6 @@
   'use strict';
   var path = (window.location.pathname || '').replace(/\/+$/, '');
   if (path === '' || path === '/') {
-    window.location.replace('index.html');
+    window.location.replace('/index.html');
   }
 }());
