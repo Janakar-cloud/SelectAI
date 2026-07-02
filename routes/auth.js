@@ -5,7 +5,6 @@ const bcrypt     = require('bcryptjs');
 const jwt        = require('jsonwebtoken');
 const { verifyToken } = require('../middleware/auth');
 const mail       = require('../lib/mail');
-const { issueOtp } = require('../lib/otpService');
 const {
   validatePhone,
   phoneForCountry,
@@ -64,34 +63,31 @@ router.post('/register', async (req, res, next) => {
     const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
     const uid          = crypto.randomUUID();
 
-    let otpResult;
-    try {
-      otpResult = await issueOtp(uid, emailLower, {
-        firstName:    firstName.trim(),
-        lastName:     lastName.trim(),
-        passwordHash,
-        phone:        phoneNorm,
-        country:      countryVal
-      });
-    } catch (smtpErr) {
-      await OtpVerification.deleteOne({ uid });
-      console.error('[SelectAI] SMTP error (register):', smtpErr.message, smtpErr.code || '');
-      return res.status(502).json({ message: 'Failed to send verification email. Please try again.' });
-    }
+    await User.create({
+      uid,
+      firstName:    firstName.trim(),
+      lastName:     lastName.trim(),
+      email:        emailLower,
+      passwordHash,
+      phone:        phoneNorm,
+      country:      countryVal,
+      provider:     'email',
+      role:         'user',
+      verified:     true,
+      lastLogin:    new Date()
+    });
 
     const token = _signToken(uid, emailLower, 'user');
     res.status(201).json({
       token,
-      otpSent: true,
       user: {
         uid,
         firstName: firstName.trim(),
         lastName:  lastName.trim(),
         email:     emailLower,
         role:      'user',
-        verified:  false
-      },
-      ...(otpResult.isDev ? { devCode: otpResult.code } : {})
+        verified:  true
+      }
     });
   } catch (err) {
     next(err);
@@ -118,23 +114,6 @@ router.post('/login', async (req, res, next) => {
     const match = await bcrypt.compare(password, user.passwordHash);
     if (!match)
       return res.status(401).json({ message: 'Invalid email or password.' });
-
-    if (!user.verified) {
-      const token = _signToken(user.uid, user.email, user.role);
-      return res.status(403).json({
-        message: 'Please verify your email before signing in. Check your inbox for the verification code.',
-        needsVerification: true,
-        token,
-        user: {
-          uid:       user.uid,
-          firstName: user.firstName,
-          lastName:  user.lastName,
-          email:     user.email,
-          role:      user.role,
-          verified:  false
-        }
-      });
-    }
 
     user.lastLogin = new Date();
     await user.save();

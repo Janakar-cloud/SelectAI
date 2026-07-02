@@ -66,19 +66,20 @@ describe('POST /api/auth/register', () => {
   beforeEach(() => {
     User.findOne = jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
     OtpVerification.findOne = jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
-    OtpVerification.findOneAndUpdate = jest.fn().mockResolvedValue({});
-    OtpVerification.deleteOne = jest.fn().mockResolvedValue({});
-    User.create = jest.fn();
+    User.create = jest.fn().mockResolvedValue({});
   });
 
-  test('201 on valid data — pending until OTP, no User.create', async () => {
+  test('201 on valid data — creates verified user', async () => {
     const res = await request(app).post('/api/auth/register').send(VALID);
     expect(res.status).toBe(201);
     expect(res.body.token).toBeDefined();
-    expect(res.body.otpSent).toBe(true);
     expect(res.body.user.email).toBe('alice@example.com');
-    expect(User.create).not.toHaveBeenCalled();
-    expect(OtpVerification.findOneAndUpdate).toHaveBeenCalled();
+    expect(res.body.user.verified).toBe(true);
+    expect(User.create).toHaveBeenCalledWith(expect.objectContaining({
+      email: 'alice@example.com',
+      verified: true,
+      role: 'user'
+    }));
   });
 
   test('400 when India phone missing or too short', async () => {
@@ -92,7 +93,8 @@ describe('POST /api/auth/register', () => {
       ...VALID, country: 'GB', phone: ''
     });
     expect(res.status).toBe(201);
-    expect(res.body.otpSent).toBe(true);
+    expect(res.body.user.verified).toBe(true);
+    expect(User.create).toHaveBeenCalled();
   });
 
   test('400 when firstName too short', async () => {
@@ -177,11 +179,10 @@ describe('POST /api/auth/login', () => {
     expect(res.body.user.email).toBe('alice@example.com');
   });
 
-  test('403 when email not verified', async () => {
+  test('200 when email not yet verified (legacy accounts)', async () => {
     const res = await request(app).post('/api/auth/login')
       .send({ email: 'alice@example.com', password: PASSWORD });
-    expect(res.status).toBe(403);
-    expect(res.body.needsVerification).toBe(true);
+    expect(res.status).toBe(200);
     expect(res.body.token).toBeDefined();
     expect(res.body.user.verified).toBe(false);
   });

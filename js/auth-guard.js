@@ -135,11 +135,6 @@
         return;
       }
 
-      if (!profile.verified && !_isPublicPage()) {
-        window.location.replace(R.signIn + '?verify=pending');
-        return;
-      }
-
       _ping();
       setInterval(_ping, 2 * 60 * 1000);
 

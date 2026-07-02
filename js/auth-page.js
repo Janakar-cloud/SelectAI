@@ -82,11 +82,6 @@ window.handleSignIn = function () {
     })
     .catch(function (err) {
       setLoading(false);
-      if (err.needsVerification && err.user) {
-        showError(err.message || 'Please verify your email to continue.');
-        initiateOtp(err.user.uid, err.user.email);
-        return;
-      }
       showError(err.message || 'Sign in failed. Please try again.');
     });
 };
@@ -118,13 +113,9 @@ window.handleSignUp = function () {
   clearMessages();
   setLoading(true);
   SelectAI_API.register(data)
-    .then(function (res) {
+    .then(function () {
       setLoading(false);
-      if (res.otpSent) {
-        openOtpPanel(res.user.email, res.devCode || null, res.user.uid);
-      } else {
-        initiateOtp(res.user.uid, res.user.email);
-      }
+      window.location.replace((window.SelectAI_ROUTES && window.SelectAI_ROUTES.home) || '/');
     })
     .catch(function (err) {
       setLoading(false);
@@ -391,23 +382,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  if (params.get('verify') === 'pending') {
-    SelectAI_API.getMe()
-      .then(function (res) {
-        var user = (res && res.user) || {};
-        if (user.verified) {
-          window.location.replace((window.SelectAI_ROUTES && window.SelectAI_ROUTES.home) || '/');
-          return;
-        }
-        if (user.uid && user.email) {
-          showPanel('panelOtp');
-          var verifyTabs = document.querySelector('.auth-tabs');
-          if (verifyTabs) verifyTabs.style.display = 'none';
-          initiateOtp(user.uid, user.email);
-        }
-      })
-      .catch(function () { /* stay on signin */ });
-  }
 });
 
 window.updatePwStrength = function (val, prefix) {
