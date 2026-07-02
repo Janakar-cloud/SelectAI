@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    (function () {
+      var p = window.location.pathname;
+      if (p === '/' || p === '') window.location.replace('index.html');
+    })();
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign In — SelectAI Innovations</title>
@@ -429,6 +435,9 @@
     }
     @media (max-width: 500px) {
       .form-row      { grid-template-columns: 1fr; }
+      .auth-shell    { padding: 1.5rem 1rem 0; }
+      .al-tagline    { white-space: normal; }
+      .auth-welcome-btns .auth-btn { width: 100%; min-height: 44px; }
     }
   </style>
 </head>

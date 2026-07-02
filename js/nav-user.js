@@ -6,7 +6,10 @@
 
 function toggleUserMenu() {
   var drop = document.getElementById('navUserDropdown');
-  if (drop) drop.classList.toggle('open');
+  var btn  = document.getElementById('navUserBtn');
+  if (!drop) return;
+  var open = drop.classList.toggle('open');
+  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
 }
 
 function signOutUser() {
@@ -19,5 +22,6 @@ document.addEventListener('click', function (e) {
   var drop = document.getElementById('navUserDropdown');
   if (drop && drop.classList.contains('open') && btn && !btn.contains(e.target) && !drop.contains(e.target)) {
     drop.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
   }
 });

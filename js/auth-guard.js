@@ -1,7 +1,7 @@
 /* =========================================================
-   SelectAI — auth-guard.js  v20260609d
-   Protects every page from unauthenticated access.
-   Load AFTER app-config.js (in <head>).
+   SelectAI — auth-guard.js  v20260702a
+   Public marketing pages are open to guests; protected pages
+   require sign-in. Load AFTER app-config.js (in <head>).
    Uses JWT stored in localStorage — no Firebase dependency.
    ========================================================= */
 
@@ -9,7 +9,15 @@
   'use strict';
 
   var TOKEN_KEY = 'selectai_token';
-  var PAGE      = (window.location.pathname.split('/').pop() || 'index.html').toLowerCase();
+
+  function _currentPage() {
+    var path = (window.location.pathname || '').replace(/\/+$/, '');
+    var page = path.split('/').pop();
+    if (!page || page === '') return 'index.html';
+    return page.toLowerCase();
+  }
+
+  var PAGE      = _currentPage();
   var PUBLIC_PAGES = {
     'index.html': true,
     'tools.html': true,
@@ -55,10 +63,11 @@
     }
   }
 
-  /* ── No token → redirect to login ────────────────────── */
+  /* ── No token → allow public pages, else send home ───── */
   var token = _getToken();
   if (!token) {
     if (_isPublicPage()) {
+      _applyGuestNav();
       _runWhenDomReady(_applyGuestNav);
       _revealPage();
     } else if (!_isAuthPage()) {

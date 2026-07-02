@@ -413,15 +413,26 @@
     }
 
     @media (max-width: 640px) {
+      body { padding: 20px 12px 40px; }
       .q-header, .q-party, .q-scope, .q-payment,
       .q-deliverables, .q-timeline, .q-terms, .q-totals, .q-footer {
         padding: 22px 20px;
       }
+      .q-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
       .q-parties    { grid-template-columns: 1fr; }
       .q-milestones { grid-template-columns: 1fr; }
       .q-checklist  { grid-template-columns: 1fr; }
-      .q-tl-row     { grid-template-columns: 130px 1fr 50px; }
+      .q-tl-row     { grid-template-columns: 1fr; gap: 8px; }
       .q-meta { text-align: left; }
+      .q-table-wrap table { min-width: 520px; }
+    }
+    @media (max-width: 400px) {
+      .q-header h1 { font-size: 1.35rem; }
+      .q-grand-amount { font-size: 1.5rem; }
     }
   </style>
 </head>

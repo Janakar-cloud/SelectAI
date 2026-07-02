@@ -342,7 +342,19 @@
     .auth-success.show { display: block; }
 
 
-    @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+    @media (max-width: 600px) {
+      .signin-layout { padding: 1.25rem 1rem 2rem; align-items: flex-start; }
+      .signin-shell { max-width: 100%; }
+      .auth-tabs { flex-direction: column; gap: 0.45rem; }
+      .auth-tab { width: 100%; min-height: 44px; }
+      .form-row { grid-template-columns: 1fr; }
+      .auth-heading { font-size: 1.35rem; }
+      .auth-btn, .oauth-btn { width: 100%; min-height: 44px; }
+      .otp-input { width: 2.35rem; height: 2.75rem; font-size: 1.1rem; }
+    }
+    @media (max-width: 380px) {
+      .otp-input { width: 2rem; height: 2.5rem; }
+    }
   </style>
 </head>
 <body>

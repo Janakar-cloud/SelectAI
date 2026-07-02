@@ -1481,6 +1481,7 @@ img         { max-width: 100%; display: block; }
   :root { --nav-height: 72px; }
 
   .section { padding: 70px 0; }
+  .nav-container { padding: 0 1rem; }
 
   /* Mobile nav — full-screen overlay so page text cannot bleed through */
   .navbar { z-index: 2000; }
@@ -1534,16 +1535,34 @@ img         { max-width: 100%; display: block; }
     background-clip: text !important;
   }
 
+  .nav-user-item {
+    border-bottom: none;
+    padding-top: 0.35rem;
+  }
+
   .nav-user-btn {
     width: 100%;
     justify-content: center;
     margin-top: 0.5rem;
+    min-height: 44px;
+  }
+
+  .nav-user-dropdown {
+    position: static;
+    width: 100%;
+    min-width: 0;
+    margin-top: 0.35rem;
+    border-radius: 6px;
   }
 
   .hamburger {
     display: flex;
     position: relative;
     z-index: 2001;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
   }
 
   body.nav-open {
@@ -1551,8 +1570,10 @@ img         { max-width: 100%; display: block; }
     touch-action: none;
   }
 
-  .hero-btns     { flex-direction: column; align-items: center; }
+  .hero-btns     { flex-direction: column; align-items: center; width: 100%; }
+  .hero-btns .btn { width: 100%; max-width: 320px; text-align: center; }
   .lead-actions  { flex-direction: column; }
+  .lead-actions .btn { width: 100%; }
   .cap-grid      { grid-template-columns: 1fr; }
   .testimonial-grid { grid-template-columns: 1fr; }
   .services-grid { grid-template-columns: 1fr; }
@@ -1561,14 +1582,44 @@ img         { max-width: 100%; display: block; }
   .footer-grid   { grid-template-columns: 1fr; gap: 2rem; }
   .cta-box       { padding: 3rem 1.5rem; }
   .connect-text h2 { font-size: 1.9rem; }
+
+  .kpi-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+  }
+  .kpi-toolbar .btn {
+    width: 100%;
+    text-align: center;
+    min-height: 44px;
+  }
+  .kpi-updated { font-size: 0.8rem; }
+  .kpi-value { font-size: 1.65rem; }
+
+  .partners-row { grid-template-columns: 1fr; }
+
+  .profile-card { padding: 1.35rem; }
+  .profile-card-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .profile-card-actions .btn { width: 100%; text-align: center; }
+
+  .back-top {
+    right: 1rem;
+    bottom: 1rem;
+  }
 }
 
 @media (max-width: 480px) {
   .container { padding: 0 1rem; }
-  .ht-main   { font-size: 3rem; }
-  .ht-accent { font-size: 5.5rem; }
+  .ht-main   { font-size: 2.2rem; }
+  .ht-accent { font-size: 3.5rem; }
+  .ht-main--welcome { font-size: clamp(1.35rem, 6.5vw, 2rem); }
   .partner-card { max-width: 100%; }
   .cta-btns  { flex-direction: column; align-items: center; }
+  .section-header h2 { font-size: 1.75rem; }
+  .footer-bottom p { font-size: 0.78rem; line-height: 1.55; }
 }
 
 /* =========================================================
@@ -1582,6 +1633,7 @@ img         { max-width: 100%; display: block; }
    USER NAV MENU  (populated by auth-guard.js)
    ========================================================= */
 .nav-user-item { position: relative; display: none; }
+.has-public-nav .nav-user-item { display: list-item; }
 
 .nav-user-btn {
   display: inline-flex;
@@ -1764,6 +1816,11 @@ img         { max-width: 100%; display: block; }
 
 @media (max-width: 520px) {
   .profile-form-row { grid-template-columns: 1fr; }
+}
+
+.profile-section { padding-top: 120px; }
+@media (max-width: 768px) {
+  .profile-section { padding-top: 96px; }
 }
 
 /* Homepage welcome hero (index.html) */

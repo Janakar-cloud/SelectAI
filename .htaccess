@@ -1,0 +1,2 @@
+# Serve the marketing homepage at the site root (not login.html).
+DirectoryIndex index.html

@@ -80,7 +80,29 @@
   });
 
   /* ── View switcher (called from HTML onclick) ──────────── */
+  window.toggleAdminSidebar = function () {
+    var sidebar = document.getElementById('admSidebar');
+    var backdrop = document.getElementById('admSidebarBackdrop');
+    var btn = document.getElementById('admMenuBtn');
+    if (!sidebar || !backdrop) return;
+    var open = sidebar.classList.toggle('open');
+    backdrop.classList.toggle('open', open);
+    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+
+  window.closeAdminSidebar = function () {
+    var sidebar = document.getElementById('admSidebar');
+    var backdrop = document.getElementById('admSidebarBackdrop');
+    var btn = document.getElementById('admMenuBtn');
+    if (sidebar) sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('open');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  };
+
   window.showView = function (name) {
+    closeAdminSidebar();
     document.querySelectorAll('.adm-view').forEach(function (v) { v.classList.remove('active'); });
     document.querySelectorAll('.sb-nav a').forEach(function (a) { a.classList.remove('active'); });
     var view = document.getElementById('view-' + name);
@@ -232,7 +254,7 @@
       wrap.innerHTML = '<table class="data-table"><tbody><tr class="empty-row"><td colspan="8">No users found.</td></tr></tbody></table>';
       return;
     }
-    var html = '<div style="overflow-x:auto"><table class="data-table">'
+    var html = '<div class="table-scroll"><table class="data-table">'
       + '<thead><tr>'
       + '<th>Name</th><th>Email</th><th>Country</th><th>Role</th><th>Provider</th><th>Joined</th><th>Actions</th>'
       + '</tr></thead><tbody>';
@@ -272,7 +294,7 @@
       wrap.innerHTML = '<table class="data-table"><tbody><tr class="empty-row"><td colspan="6">No enquiries found.</td></tr></tbody></table>';
       return;
     }
-    var html = '<div style="overflow-x:auto"><table class="data-table">'
+    var html = '<div class="table-scroll"><table class="data-table">'
       + '<thead><tr>'
       + '<th>Name</th><th>Email</th><th>Phone</th><th>Company</th><th>Message</th><th>Date</th>'
       + '</tr></thead><tbody>';
