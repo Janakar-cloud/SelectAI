@@ -39,6 +39,8 @@ app.use(cors({
     process.env.FRONTEND_URL   || 'https://www.selectai.it.com',
     'https://www.selectai.it.com',
     'https://selectai.it.com',
+    'https://www.selectai.com',
+    'https://selectai.com',
     'http://selectai.it.com',
     'http://3.7.130.187'
   ],

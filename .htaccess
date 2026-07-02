@@ -1,2 +1,9 @@
-# Serve the marketing homepage at the site root (not login.html).
+# Serve the marketing homepage at the site root (not login.html or signin.html).
 DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  # Force / to index.html when Apache would otherwise pick another default file
+  RewriteRule ^$ index.html [L]
+</IfModule>
