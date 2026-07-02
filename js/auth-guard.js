@@ -34,9 +34,17 @@
     document.documentElement.style.visibility = 'visible';
   }
 
-  function _hideUserNav() {
+  function _applyGuestNav() {
     var item = document.querySelector('.nav-user-item');
-    if (item) item.style.display = 'none';
+    if (item) item.style.display = 'list-item';
+
+    var nameEl = document.getElementById('navUserDropdownName');
+    if (nameEl) nameEl.textContent = 'Account';
+
+    var guest = document.getElementById('navUserGuest');
+    var authed = document.getElementById('navUserAuthed');
+    if (guest) guest.hidden = false;
+    if (authed) authed.hidden = true;
   }
 
   function _runWhenDomReady(fn) {
@@ -51,10 +59,10 @@
   var token = _getToken();
   if (!token) {
     if (_isPublicPage()) {
-      _runWhenDomReady(_hideUserNav);
+      _runWhenDomReady(_applyGuestNav);
       _revealPage();
     } else if (!_isAuthPage()) {
-      window.location.replace('login.html');
+      window.location.replace('index.html');
     } else {
       _revealPage();
     }
@@ -75,8 +83,12 @@
   })
     .then(function (res) {
       if (res.status === 401 || res.status === 403) {
-        /* Token expired or invalid — clear and go to login */
         try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+        if (_isPublicPage()) {
+          _runWhenDomReady(_applyGuestNav);
+          _revealPage();
+          return null;
+        }
         window.location.replace('signin.html');
         return null;
       }
@@ -128,7 +140,7 @@
     .catch(function (err) {
       console.error('[SelectAI] Auth guard error:', err.message);
       if (_isPublicPage()) {
-        _runWhenDomReady(_hideUserNav);
+        _runWhenDomReady(_applyGuestNav);
         _revealPage();
         return;
       }
@@ -154,6 +166,11 @@
   function _applyUserToUI(u) {
     var item = document.querySelector('.nav-user-item');
     if (item) item.style.display = 'list-item';
+
+    var guest = document.getElementById('navUserGuest');
+    var authed = document.getElementById('navUserAuthed');
+    if (guest) guest.hidden = true;
+    if (authed) authed.hidden = false;
 
     var adminLink = document.getElementById('adminNavItem');
     if (adminLink) adminLink.style.display = (u.role === 'admin') ? '' : 'none';

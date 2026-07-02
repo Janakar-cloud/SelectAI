@@ -3,7 +3,7 @@
 <head>
   <style>html { visibility: hidden; }</style>
   <script src="js/app-config.js?v=20260609e"></script>
-  <script src="js/auth-guard.js?v=20260626b"></script>
+  <script src="js/auth-guard.js?v=20260628a"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Profile — SelectAI</title>
@@ -44,11 +44,16 @@
             <svg class="nav-user-chevron" width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><path d="M0 3l5 5 5-5z"/></svg>
           </button>
           <div class="nav-user-dropdown" id="navUserDropdown">
-            <p class="nav-user-dropdown-hd" id="navUserDropdownName"></p>
-            <a href="profile.html" aria-current="page">Profile</a>
-            <a href="signin.html?forgot=1">Password Reset</a>
-            <hr class="nav-user-dropdown-divider" />
-            <a href="#" onclick="signOutUser(); return false;">Sign Out</a>
+            <p class="nav-user-dropdown-hd" id="navUserDropdownName">Account</p>
+            <div id="navUserGuest">
+              <a href="login.html">Sign In</a>
+            </div>
+            <div id="navUserAuthed" hidden>
+              <a href="profile.html" aria-current="page">Profile</a>
+              <a href="signin.html?forgot=1">Password Reset</a>
+              <hr class="nav-user-dropdown-divider" />
+              <a href="#" onclick="signOutUser(); return false;">Sign Out</a>
+            </div>
           </div>
         </li>
       </ul>
@@ -112,7 +117,7 @@
 
   <script src="js/api.js?v=20260626a"></script>
   <script src="js/main.js?v=20260625a"></script>
-  <script src="js/nav-user.js?v=20260626a"></script>
+  <script src="js/nav-user.js?v=20260628a"></script>
   <script>
     function formatPhone(digits) {
       if (!digits) return '—';

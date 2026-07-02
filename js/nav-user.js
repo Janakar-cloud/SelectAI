@@ -11,7 +11,7 @@ function toggleUserMenu() {
 
 function signOutUser() {
   if (window.SelectAI_API) SelectAI_API.signOut();
-  window.location.replace('login.html');
+  window.location.replace('index.html');
 }
 
 document.addEventListener('click', function (e) {
