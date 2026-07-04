@@ -4,7 +4,7 @@
   <style>html { visibility: hidden; }</style>
   <script src="js/app-config.js?v=20260609e"></script>
   <script src="js/routes.js?v=20260702c"></script>
-  <script src="js/auth-guard.js?v=20260702b"></script>
+  <script src="js/auth-guard.js?v=20260704a"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SelectAI Innovations - AI Solutions and SaaS</title>
@@ -19,7 +19,7 @@
   <meta name="twitter:title" content="SelectAI Innovations - AI Solutions and SaaS" />
   <meta name="twitter:description" content="AI-powered IT services, SaaS, and training solutions." />
   <link rel="icon" type="image/png" href="assets/images/logo-mark.png" />
-  <link rel="stylesheet" href="css/style.css?v=20260702b" />
+  <link rel="stylesheet" href="css/style.css?v=20260704a" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -61,7 +61,10 @@
         <li><a href="/tools">AI Tools</a></li>
         <li id="adminNavItem" style="display:none;"><a href="/admin">Admin</a></li>
         <li><a href="#connect" class="nav-cta">Connect</a></li>
-        <li class="nav-user-item" style="display:list-item">
+        <li class="nav-signin-item" id="navSignInItem">
+          <a href="/sign-in" class="nav-signin-btn">Sign In</a>
+        </li>
+        <li class="nav-user-item" id="navUserItem">
           <button class="nav-user-btn" id="navUserBtn" onclick="toggleUserMenu()" aria-label="User menu" aria-haspopup="true" aria-expanded="false" aria-controls="navUserDropdown">
             <span class="nav-user-avatar-wrap">
               <img id="navUserAvatar" src="" alt="" class="nav-user-photo" style="display:none;" />
@@ -74,10 +77,7 @@
           </button>
           <div class="nav-user-dropdown" id="navUserDropdown">
             <p class="nav-user-dropdown-hd" id="navUserDropdownName">Account</p>
-            <div id="navUserGuest">
-              <a href="/sign-in">Sign In</a>
-            </div>
-            <div id="navUserAuthed" hidden>
+            <div id="navUserAuthed">
               <a href="/profile">Profile</a>
               <a href="/sign-in?forgot=1">Password Reset</a>
               <hr class="nav-user-dropdown-divider" />

@@ -55,16 +55,10 @@
   }
 
   function _applyGuestNav() {
-    var item = document.querySelector('.nav-user-item');
-    if (item) item.style.display = 'list-item';
-
-    var nameEl = document.getElementById('navUserDropdownName');
-    if (nameEl) nameEl.textContent = 'Account';
-
-    var guest = document.getElementById('navUserGuest');
-    var authed = document.getElementById('navUserAuthed');
-    if (guest) guest.hidden = false;
-    if (authed) authed.hidden = true;
+    var signInItem = document.getElementById('navSignInItem');
+    var userItem   = document.getElementById('navUserItem');
+    if (signInItem) signInItem.style.display = 'list-item';
+    if (userItem) userItem.style.display = 'none';
   }
 
   function _runWhenDomReady(fn) {
@@ -172,13 +166,10 @@
   }
 
   function _applyUserToUI(u) {
-    var item = document.querySelector('.nav-user-item');
-    if (item) item.style.display = 'list-item';
-
-    var guest = document.getElementById('navUserGuest');
-    var authed = document.getElementById('navUserAuthed');
-    if (guest) guest.hidden = true;
-    if (authed) authed.hidden = false;
+    var signInItem = document.getElementById('navSignInItem');
+    var userItem   = document.getElementById('navUserItem');
+    if (signInItem) signInItem.style.display = 'none';
+    if (userItem) userItem.style.display = 'list-item';
 
     var adminLink = document.getElementById('adminNavItem');
     if (adminLink) adminLink.style.display = (u.role === 'admin') ? '' : 'none';

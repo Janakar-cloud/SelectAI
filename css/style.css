@@ -1540,6 +1540,18 @@ img         { max-width: 100%; display: block; }
     padding-top: 0.35rem;
   }
 
+  .nav-signin-item {
+    border-bottom: none;
+    padding-top: 0.35rem;
+  }
+
+  .nav-signin-btn {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+    min-height: 44px;
+  }
+
   .nav-user-btn {
     width: 100%;
     justify-content: center;
@@ -1633,7 +1645,32 @@ img         { max-width: 100%; display: block; }
    USER NAV MENU  (populated by auth-guard.js)
    ========================================================= */
 .nav-user-item { position: relative; display: none; }
-.has-public-nav .nav-user-item { display: list-item; }
+.nav-signin-item { display: none; }
+.has-public-nav .nav-signin-item { display: list-item; }
+
+.nav-signin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.42rem 0.85rem;
+  border: 1px solid rgba(0,229,255,0.35);
+  border-radius: 4px;
+  color: var(--white);
+  font-family: var(--ff-display);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  text-decoration: none;
+  line-height: 1;
+  white-space: nowrap;
+  transition: var(--ease);
+}
+.nav-signin-btn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: rgba(0,229,255,0.06);
+}
 
 .nav-user-btn {
   display: inline-flex;
